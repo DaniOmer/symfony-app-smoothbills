@@ -53,7 +53,7 @@ class AddFontCommand extends Command
 
         $this->insertFont($fonts);
 
-        $io->success('Font JSON file procssed successfully.');
+        $io->success('Font JSON file processed successfully.');
 
         return Command::SUCCESS;
     }

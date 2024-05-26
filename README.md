@@ -4,9 +4,10 @@ Smooth Bills is a web application developed in Symfony for managing quotations a
 
 ## Requirements
 
-| Name                                                   | Version |
-| ------------------------------------------------------ | ------- |
-| <a name="requirement_php"></a> [php](#requirement_php) | >=8.3.2 |
+| Name                                                               | Version |
+| ------------------------------------------------------------------ | ------- |
+| <a name="requirement_php"></a> [php](#requirement_php)             | >=8.3.2 |
+| <a name="requirement_symfony"></a> [Symfony](#requirement_symfony) | >=6.4   |
 
 ## Getting Started
 
@@ -33,6 +34,7 @@ For more shortcuts, take a look at the [Makefile](./Makefile).
 ## Documentation
 
 1. [Build options](docs/build.md).
+2. [Symfony Console Command](docs/symfony_command.md)
 
 ## License
 
