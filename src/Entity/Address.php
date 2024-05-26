@@ -38,7 +38,7 @@ class Address
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated_at = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\OneToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Company $company = null;
 
