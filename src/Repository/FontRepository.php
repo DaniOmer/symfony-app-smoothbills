@@ -21,6 +21,16 @@ class FontRepository extends ServiceEntityRepository
         parent::__construct($registry, Font::class);
     }
 
+    public function findOneByName($name): ?Font
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.name = :val')
+            ->setParameter('val', $name)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
 //    /**
 //     * @return Font[] Returns an array of Font objects
 //     */
