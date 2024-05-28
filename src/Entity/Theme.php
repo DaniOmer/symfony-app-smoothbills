@@ -6,9 +6,13 @@ use App\Repository\ThemeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
 class Theme
 {
+    public const SIDEBAR_POSITION_LEFT = 'left';
+    public const SIDEBAR_POSITION_RIGHT = 'right';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -50,6 +54,9 @@ class Theme
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\Column(type: 'string', length: 10)]
+    private ?string $sidebar_position = null;
 
     public function getId(): ?int
     {
@@ -185,6 +192,20 @@ class Theme
     {
         $this->user = $user;
 
+        return $this;
+    }
+
+    public function getSidebarPosition(): ?string
+    {
+        return $this->sidebar_position;
+    }
+
+    public function setSidebarPosition(string $sidebar_position): static
+    {
+        if (!in_array($sidebar_position, [self::SIDEBAR_POSITION_LEFT, self::SIDEBAR_POSITION_RIGHT])) {
+            throw new \InvalidArgumentException("Invalid sidebar position");
+        }
+        $this->sidebar_position = $sidebar_position;
         return $this;
     }
 }
