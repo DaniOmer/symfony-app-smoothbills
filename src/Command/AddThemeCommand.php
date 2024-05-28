@@ -2,29 +2,33 @@
 
 namespace App\Command;
 
+use App\Service\ThemeService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'AddTheme',
+    name: 'app:AddTheme',
     description: 'Add new theme to smoothbill application',
 )]
 class AddThemeCommand extends Command
 {
-    public function __construct()
+    private $themeService;
+
+    public function __construct(ThemeService $themeService)
     {
         parent::__construct();
+        $this->themeService = $themeService;
     }
 
     protected function configure(): void
     {
         $this
             ->addArgument('file', InputArgument::REQUIRED, 'The JSON file containing themes details.')
+            ->setHelp('This command allows you to create theme from a JSON file.')
         ;
     }
 
@@ -39,17 +43,29 @@ class AddThemeCommand extends Command
         }
 
         $jsonContent = file_get_contents($file);
-        $theme = json_decode($jsonContent);
+        $themes = json_decode($jsonContent, true);
 
-        if($theme === null){
+        if($themes === null){
             $io->error("Unable to parse the provided JSON file.");
             return Command::FAILURE;
         }
 
-        // Process the insertions and updates
+        foreach($themes as $theme){
+
+            $themeName = $theme['name'];
+
+            try {
+                if($this->themeService->createTheme($theme)){
+                    $io->success(sprintf('Theme with name "%s" has been added successfully.', $themeName));
+                }
+            } catch (\Exception $e) {
+                $io->error(sprintf('An error occured while adding the theme "%s".', $themeName));
+                $io->error(sprintf('Error: "%s".', $e));
+                return Command::FAILURE;
+            }
+        }
 
         $io->success('Theme JSON file processed successfully.');
-
         return Command::SUCCESS;
     }
 }
