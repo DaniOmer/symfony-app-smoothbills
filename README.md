@@ -13,13 +13,13 @@ Smooth Bills is a web application developed in Symfony for managing quotations a
 
 If not already done, install Docker Compose (v2.10+).
 
-1. Run `docker compose build --no-cache` or `Make build` to build fresh images.
-2. Run `docker compose up --pull always -d --wait` or `Make up` to set up and start a fresh Symfony project.
-3. Run `composer install` to install required dependancies.
+1. Run `docker compose build --no-cache` or `make build` to build fresh images.
+2. Run `docker compose up --pull always -d --wait` or `make up` to set up and start a fresh Symfony project.
+3. Run `docker compose exec php composer install` or `make install` to install required dependancies.
 4. Run `npm install` to install required packages for TailwindCSS.
 5. Run `npm run watch` to start the tailwind build process.
 6. Open `https://localhost` in your favorite web browser and accept the auto-generated TLS certificate.
-7. If `https://localhost` don't work as expected, run `php -S localhost:8000 -t public` and open `https://localhost:8000`.
+7. If `https://localhost` don't work as expected, run `php -S localhost:8000 -t public` and open `https://localhost:8000` or `make run`.
 8. Run `docker compose down --remove-orphans` or `make down` to stop the Docker containers.
 
 For more shortcuts, take a look at the [Makefile](./Makefile).
@@ -34,7 +34,8 @@ For more shortcuts, take a look at the [Makefile](./Makefile).
 ## Documentation
 
 1. [Build options](docs/build.md).
-2. [Symfony Console Command](docs/symfony_command.md)
+2. [Symfony Console Command](docs/symfony_command.md).
+3. [Automatic management of `created_at` and `updated_at` fields](docs/timestampable_doc.md).
 
 ## License
 
