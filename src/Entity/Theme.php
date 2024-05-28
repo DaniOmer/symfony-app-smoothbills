@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ThemeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
@@ -45,18 +47,23 @@ class Theme
     #[ORM\Column]
     private ?bool $is_active = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]
+    private $created_at;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
+    private $updated_at;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
 
     #[ORM\Column(type: 'string', length: 10)]
     private ?string $sidebar_position = null;
+
+    #[ORM\Column(length: 45)]
+    private ?string $bg_color = null;
 
     public function getId(): ?int
     {
@@ -147,7 +154,7 @@ class Theme
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function getIsActive(): ?bool
     {
         return $this->is_active;
     }
@@ -206,6 +213,18 @@ class Theme
             throw new \InvalidArgumentException("Invalid sidebar position");
         }
         $this->sidebar_position = $sidebar_position;
+        return $this;
+    }
+
+    public function getBgColor(): ?string
+    {
+        return $this->bg_color;
+    }
+
+    public function setBgColor(string $bg_color): static
+    {
+        $this->bg_color = $bg_color;
+
         return $this;
     }
 }
