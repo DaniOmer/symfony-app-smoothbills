@@ -2,7 +2,19 @@
 module.exports = {
   content: ["./assets/**/*.js", "./templates/**/*.html.twig"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "rgba(var(--primary-color))",
+        secondary: "rgba(var(--secondary-color))",
+        tertiary: "rgba(var(--tertiary-color))",
+        background: "rgba(var(--background-color))",
+      },
+      fontFamily: {
+        title: ["var(--title-font)", "Arial", "sans-serif"],
+        subtitle: ["var(--subtitle-font)", "Arial", "sans-serif"],
+        content: ["var(--content-font)", "Arial", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

@@ -44,9 +44,6 @@ class Theme
     #[ORM\JoinColumn(nullable: false)]
     private ?Font $subtitle_font = null;
 
-    #[ORM\Column]
-    private ?bool $is_active = null;
-
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]
     private $created_at;
@@ -55,15 +52,14 @@ class Theme
     #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
     private $updated_at;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?User $user = null;
-
     #[ORM\Column(type: 'string', length: 10)]
     private ?string $sidebar_position = null;
 
     #[ORM\Column(length: 45)]
     private ?string $bg_color = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_default = null;
 
     public function getId(): ?int
     {
@@ -154,18 +150,6 @@ class Theme
         return $this;
     }
 
-    public function getIsActive(): ?bool
-    {
-        return $this->is_active;
-    }
-
-    public function setIsActive(bool $is_active): static
-    {
-        $this->is_active = $is_active;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -186,18 +170,6 @@ class Theme
     public function setUpdatedAt(\DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
 
         return $this;
     }
@@ -224,6 +196,18 @@ class Theme
     public function setBgColor(string $bg_color): static
     {
         $this->bg_color = $bg_color;
+
+        return $this;
+    }
+
+    public function isDefault(): ?bool
+    {
+        return $this->is_default;
+    }
+
+    public function setDefault(?bool $is_default): static
+    {
+        $this->is_default = $is_default;
 
         return $this;
     }

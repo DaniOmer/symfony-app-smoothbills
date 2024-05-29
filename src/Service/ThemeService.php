@@ -40,7 +40,6 @@ class ThemeService
             $theme->setTitleFont($this->fontRepository->findOneByName($themeData['title_font']));
             $theme->setSubtitleFont($this->fontRepository->findOneByName($themeData['subtitle_font']));
             $theme->setContentFont($this->fontRepository->findOneByName($themeData['content_font']));
-            $theme->setIsActive($themeData['is_active']);
             $theme->setSidebarPosition($themeData['sidebar_position']);
 
             $this->entityManager->persist($theme);

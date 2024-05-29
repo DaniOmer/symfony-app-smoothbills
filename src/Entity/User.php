@@ -5,33 +5,46 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 60)]
-    private ?string $first_name = null;
+    #[ORM\Column(length: 180)]
+    private ?string $email = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $last_name = null;
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $mail = null;
+    private ?string $first_name = null;
 
-    #[ORM\Column(length: 128)]
-    private ?string $password = null;
+    #[ORM\Column(length: 255)]
+    private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_auth_id = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $is_mail_validated = null;
+    #[ORM\Column]
+    private ?bool $is_email_validated = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
@@ -39,19 +52,16 @@ class User
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $job_title = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[Gedmo\Timestampable(on: 'create')]
+    #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]
+    private $created_at;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
+    #[Gedmo\Timestampable(on: 'update')]
+    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
+    private $updated_at;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
-    #[ORM\JoinColumn(nullable: false)]
     private ?self $owner = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Role $role = null;
 
     #[ORM\ManyToOne]
     private ?Company $company = null;
@@ -59,6 +69,76 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     *
+     * @return list<string>
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getFirstName(): ?string
@@ -85,30 +165,6 @@ class User
         return $this;
     }
 
-    public function getMail(): ?string
-    {
-        return $this->mail;
-    }
-
-    public function setMail(string $mail): static
-    {
-        $this->mail = $mail;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function getGoogleAuthId(): ?string
     {
         return $this->google_auth_id;
@@ -121,14 +177,14 @@ class User
         return $this;
     }
 
-    public function isIsMailValidated(): ?bool
+    public function isEmailValidated(): ?bool
     {
-        return $this->is_mail_validated;
+        return $this->is_email_validated;
     }
 
-    public function setIsMailValidated(?bool $is_mail_validated): static
+    public function setEmailValidated(bool $is_email_validated): static
     {
-        $this->is_mail_validated = $is_mail_validated;
+        $this->is_email_validated = $is_email_validated;
 
         return $this;
     }
@@ -181,26 +237,14 @@ class User
         return $this;
     }
 
-    public function getCreatedBy(): ?self
+    public function getOwner(): ?self
     {
         return $this->owner;
     }
 
-    public function setCreatedBy(?self $owner): static
+    public function setOwner(?self $owner): static
     {
         $this->owner = $owner;
-
-        return $this;
-    }
-
-    public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): static
-    {
-        $this->role = $role;
 
         return $this;
     }
