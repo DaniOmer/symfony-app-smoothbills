@@ -35,7 +35,7 @@ For more shortcuts, take a look at the [Makefile](./Makefile).
 
 1. [Build options](docs/build.md).
 2. [Symfony Console Command](docs/symfony_command.md).
-3. [Automatic management of `created_at` and `updated_at` fields](docs/timestampable_doc.md).
+3. [Automatic management of `created_at` and `updated_at` fields](docs/timestampable_trait.md).
 
 ## License
 

@@ -3,12 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\AddressRepository;
+use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 class Address
 {
+    use TimestampableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,12 +34,6 @@ class Address
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $latitude = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
 
     #[ORM\OneToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -115,30 +112,6 @@ class Address
     public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
 
         return $this;
     }

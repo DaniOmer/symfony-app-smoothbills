@@ -14,6 +14,11 @@ module.exports = {
         subtitle: ["var(--subtitle-font)", "Arial", "sans-serif"],
         content: ["var(--content-font)", "Arial", "sans-serif"],
       },
+      fontSize: {
+        title: "var(--title-font-size)",
+        subtitle: "var(--subtitle-font-size)",
+        content: "var(--content-font-size)",
+      },
     },
   },
   plugins: [],

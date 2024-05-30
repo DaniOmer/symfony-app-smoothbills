@@ -1,8 +1,8 @@
-Sure, here's the revised documentation using attributes instead of annotations:
-
 ## Using Gedmo Timestampable for Automatic Management of `created_at` and `updated_at`
 
 The Gedmo Timestampable extension allows for automatic management of `created_at` and `updated_at` fields in Doctrine entities. This simplifies the process of tracking when entities are created and updated.
+
+PS : There's already a PHP Trait [TimestampableTrait](/docs/timestampable_trait.md) that can be directly used in your entity class to simplify the process of tracking when entities are created and updated..
 
 ### Installation
 

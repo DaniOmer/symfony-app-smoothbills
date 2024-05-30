@@ -3,12 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
+use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
+    use TimestampableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -49,12 +52,6 @@ class Company
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $signing = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
     private ?LegalForm $legal_form = null;
@@ -204,30 +201,6 @@ class Company
     public function setSigning(?string $signing): static
     {
         $this->signing = $signing;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
 
         return $this;
     }

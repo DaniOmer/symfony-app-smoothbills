@@ -3,9 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\DBAL\Types\Types;
+use App\Trait\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -14,6 +13,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use TimestampableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,14 +52,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $job_title = null;
-
-    #[Gedmo\Timestampable(on: 'create')]
-    #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]
-    private $created_at;
-
-    #[Gedmo\Timestampable(on: 'update')]
-    #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
-    private $updated_at;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     private ?self $owner = null;
@@ -209,30 +202,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setJobTitle(?string $job_title): static
     {
         $this->job_title = $job_title;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
 
         return $this;
     }
