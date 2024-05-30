@@ -4,11 +4,30 @@
 
 {% block body %}
     <div class="container mx-auto">
-        <span class="text-md text-primary font-content font-semibold">Réalisé par la team Smoothbill</span>
-        <h1 class="text-title font-title font-semibold">Design Guide - Charte Graphique et Composants</h1>
-        <div>
-            <span>TWIG</span>
-            <span>TailwindCSS</span>
-        </div>
+        <section class="flex pb-10 border-b border-tertiary/10">
+            <article>
+                <span class="text-sm text-primary font-content font-semibold">Réalisé par la team Smoothbill</span>
+                <h1 class="text-title font-title font-semibold">Design Guide - Charte Graphique et Composants</h1>
+                <div class="flex gap-10 mb-3">
+                    <div class="w-fit flex gap-1 items-center">
+                        {{ ux_icon('vscode-icons:file-type-twig') }}
+                        <span class="inline-block text-tertiary/60">TWIG</span>
+                    </div>
+                    <div class="w-fit flex gap-1 items-center text-primary/70">
+                        {{ ux_icon('teenyicons:tailwind-solid') }}
+                        <span class="inline-block text-tertiary/60">TailwindCSS</span>
+                    </div>   
+                </div>
+                <p class="text-content">
+                    L'équipe de Smoothbill, composée de développeurs et de designers UX/UI, a élaboré ce Guide de Conception.
+                    La charte graphique met en avant les couleurs, les polices et les tailles de police utilisées dans 
+                    l'application. Quant à la section des composants, elle répertorie les différents éléments disponibles 
+                    pour assurer une cohérence visuelle et une expérience utilisateur harmonieuse.
+                </p>
+            </article>
+            <article>
+                Hello world !
+            </article>
+        </section>
     </div>
 {% endblock %}
