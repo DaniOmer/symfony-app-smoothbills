@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container mx-auto">
-        <section class="flex pb-10 border-b border-tertiary/10">
+        <section class="flex pt-5 pb-10 border-b border-tertiary/10">
             <article>
                 <span class="text-sm text-primary font-content font-semibold">Réalisé par la team Smoothbill</span>
                 <h1 class="text-title font-title font-semibold">Design Guide - Charte Graphique et Composants</h1>
@@ -26,7 +26,26 @@
                 </p>
             </article>
             <article>
-                Hello world !
+                <twig:Button bg="outlined" rounded="sm" type="submit" >
+                    Annuler
+                </twig:Button>
+            </article>
+        </section>
+        <section class="pt-5 pb-10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Couleurs</h2>
+            <article class="flex gap-5">
+                <div class="flex flex-col-reverse justify-center items-center gap-3">
+                    <span>primary</span>
+                    <div class="h-40 w-40 rounded-md bg-primary"></div>
+                </div>
+                <div class="flex flex-col-reverse justify-center items-center gap-3">
+                    <span>secondary</span>
+                    <div class="h-40 w-40 rounded-md bg-secondary"></div>
+                </div>
+                <div class="flex flex-col-reverse justify-center items-center gap-3">
+                    <span>tertiary</span>
+                    <div class="h-40 w-40 rounded-md bg-tertiary"></div>
+                </div>
             </article>
         </section>
     </div>

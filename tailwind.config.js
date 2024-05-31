@@ -19,6 +19,9 @@ module.exports = {
         subtitle: "var(--subtitle-font-size)",
         content: "var(--content-font-size)",
       },
+      borderRadius: {
+        small: "10px",
+      },
     },
   },
   plugins: [],
