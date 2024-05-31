@@ -2,6 +2,11 @@
 module.exports = {
   content: ["./assets/**/*.js", "./templates/**/*.html.twig"],
   theme: {
+    container: {
+      padding: {
+        md: "1rem",
+      },
+    },
     extend: {
       colors: {
         primary: "rgba(var(--primary-color))",
@@ -18,6 +23,10 @@ module.exports = {
         title: "var(--title-font-size)",
         subtitle: "var(--subtitle-font-size)",
         content: "var(--content-font-size)",
+      },
+      borderRadius: {
+        small: "10px",
+        half: "40px",
       },
     },
   },
