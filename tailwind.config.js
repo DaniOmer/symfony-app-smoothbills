@@ -2,6 +2,11 @@
 module.exports = {
   content: ["./assets/**/*.js", "./templates/**/*.html.twig"],
   theme: {
+    container: {
+      padding: {
+        md: "1rem",
+      },
+    },
     extend: {
       colors: {
         primary: "rgba(var(--primary-color))",
