@@ -1,5 +1,5 @@
 <li class="menu-item">
-    <a href="{{ href }}" class="flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 hover:text-primary hover:border-l-4 hover:border-primary">
+    <a href="{{ href }}" class="flex items-center gap-2 p-2 rounded-md {{ additional_classes|default('') }}">
         {% block content %}
         Valider
         {% endblock %}
