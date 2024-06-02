@@ -1,0 +1,50 @@
+{# templates/site/registration/index.html.twig #}
+
+{% extends 'base/base_site.html.twig' %}
+
+{% form_theme registrationForm 'theme/authentification.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container mx-auto">
+    <h1 class='text-center font-semibold text-title py-10'>SMOOTHBILL</h1>
+    <div class='lg:w-1/3 mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
+        <h2 class='w-full bg-white font-semibold text-subtitle text-center py-[18px]'>Inscription</h2>
+        <div class='px-[20px]'>
+            {% for flash_error in app.flashes('verify_email_error') %}
+            <div class="" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.lastName, {
+                    label: 'NOM',
+                }) }}
+                {{ form_row(registrationForm.firstName, {
+                    label: 'PRÉNOM',
+                }) }}
+                {{ form_row(registrationForm.email, {
+                    label: 'EMAIL'
+                }) }}
+                {{ form_row(registrationForm.password, {
+                    label: 'MOT DE PASSE'
+                }) }}
+                {{ form_row(registrationForm.confirmedPassword, {
+                    label: 'CONFIRMATION DE MOT DE PASSE'
+                }) }}
+                
+                <twig:Button bg="filled" rounded="sm" type="submit" additionalClasses='w-full rounded-sm'>
+                    Inscription
+                </twig:Button>
+                <div class='text-[14px] mt-2'>
+                    <span class='text-tertiary/60'>Vous avez déjà un compte ?</span>
+                    <a href='site.login' class='text-primary'>Connexion</a>
+                </div>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

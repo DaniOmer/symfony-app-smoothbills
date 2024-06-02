@@ -1,0 +1,11 @@
+<h1>Bonjour! Merci de bien vouloir valider votre adresse mail!</h1>
+
+<p>
+    Validez votre adresse mail en cliquant sur le lien suivant : <br><br>
+    <a href="{{ signedUrl|raw }}">Validation</a>.
+    Ce lien expire dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>
+
+<p>
+    L'équipe Smoothbill !
+</p>
