@@ -1,0 +1,81 @@
+{% set classes = "flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 hover:border-l-4 hover:border-primary border-l-4 border-transparent transition ease-in-out delay-75" %}
+
+<aside class="sidebar p-4 border border-gray-300 rounded-md">
+    <div class="logo flex items-center gap-4">
+        <img src="{{ asset('build/images/logo.png') }}" alt="SmoothBill Logo">
+        <h1 class="text-xl font-bold">SMOOTHBILL</h1>
+    </div>
+    <nav class="menu mt-10">
+    <h2 class="text-lg font-semibold mb-4">MENU</h2>
+        <ul class="space-y-4">
+            <twig:MenuItem href="#" alt="General" additionalClasses="{{ classes }}">
+                {{ ux_icon('zondicons:view-tile') }}
+                Général
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Clients" additionalClasses="{{ classes }}">
+                {{ ux_icon('fluent:people-team-16-regular') }}
+                Clients
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Services" additionalClasses="{{ classes }}">
+                {{ ux_icon('ph:handshake') }}
+                Services
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Devis" additionalClasses="{{ classes }}">
+                {{ ux_icon('teenyicons:cost-estimate-outline') }}
+                Devis
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Factures" additionalClasses="{{ classes }}">
+                {{ ux_icon('la:file-invoice-dollar') }}
+                Factures
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Paiement" additionalClasses="{{ classes }}">
+                {{ ux_icon('solar:hand-money-linear') }}
+                Paiement
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Rapports" additionalClasses="{{ classes }}">
+                {{ ux_icon('lets-icons:line-up') }}
+                Rapports
+            </twig:MenuItem>
+        </ul>
+    </nav>
+    <div class="integration mt-10">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">INTEGRATION</h2>
+            {{ ux_icon('ph:plus-fill') }}
+        </div>
+        <div class="rounded-lg p-4 bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+            <ul class="space-y-4">
+                <twig:MenuItem href="#" alt="Slack" additionalClasses="{{ classes }}">
+                    {{ ux_icon('ant-design:slack-circle-filled') }}
+                    Slack
+                </twig:MenuItem>
+                <twig:MenuItem href="#" alt="Jira software" additionalClasses="{{ classes }}">
+                    {{ ux_icon('mdi:jira') }}
+                    Jira software
+                </twig:MenuItem>
+            </ul>
+        </div>
+    </div>
+    <div class="settings mt-10 space-y-6">
+        <ul class="space-y-4">
+            <twig:MenuItem href="#" alt="Settings" additionalClasses="{{ classes }}">
+                {{ ux_icon('clarity:settings-line') }}
+                Settings
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Aide & Support" additionalClasses="{{ classes }}">
+                {{ ux_icon('material-symbols:chat-outline') }}
+                Aide & Support
+            </twig:MenuItem>
+        </ul>
+    </div>
+    <div class="theme_switcher flex items-center justify-between mt-10 mb-6 p-2 rounded-md bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+        <button type="button" class="flex items-center gap-2 px-6 py-2 rounded-md bg-secondary">
+            {{ ux_icon('noto:light-bulb') }}
+            <span class="text-white">Light</span>
+        </button>
+        <button type="button" class="flex items-center gap-2 px-6 py-2 bg-transparent rounded-small">
+            {{ ux_icon('ph:moon-bold') }}
+            <span>Dark</span>
+        </button>
+    </div>
+</aside>
