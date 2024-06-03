@@ -15,11 +15,21 @@ class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /*
+            - Callback pour gérer match password et confirmedPassword
+            - Comprendre pourquoi le 'toggle' => true ne fonctionne pas
+        */
+
+
         $builder
             ->add('firstName', TextType::class)
             ->add('lastName', TextType::class)
             ->add('email')
-            ->add('password', PasswordType::class, [
+            ->add('password', PasswordType::class,  [
+                'toggle' => true,
+                'use_toggle_form_theme' => false,
+                'hidden_label' => 'Masquer',
+                'visible_label' => 'Afficher',
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
@@ -34,6 +44,9 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('confirmedPassword', PasswordType::class, [
+                'toggle' => true,
+                'hidden_label' => 'Masquer',
+                'visible_label' => 'Afficher',
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
