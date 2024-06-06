@@ -1,5 +1,5 @@
 <li class="menu-item">
-    <a href="{{ href }}" class="hover:text-primary {{ additionalClasses|default('') }}">
+    <a href="{{ href }}" class="{{ additionalClasses|default('') }}">
         {% block content %}
         Valider
         {% endblock %}
