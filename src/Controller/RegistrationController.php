@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
+use App\Security\Role;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,9 +19,6 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_EDITOR = 'editor';
-
     public function __construct(private EmailVerifier $emailVerifier)
     {
     }
@@ -33,7 +31,7 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+            $user->setRoles([Role::ROLE_ADMIN]);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -41,12 +39,10 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $user->setRoles([self::ROLE_ADMIN]);
-
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
+            // Generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('site.verify_email', $user,
                 (new TemplatedEmail())
                     ->from(new Address('no-reply@login.smoothbill.com', 'Smoothbill'))
@@ -54,8 +50,6 @@ class RegistrationController extends AbstractController
                     ->subject('Validez votre adresse email')
                     ->htmlTemplate('site/registration/confirmation_email.html.twig')
             );
-
-            // do anything else you need here, like send an email
 
             return $this->redirectToRoute('site.home');
         }
