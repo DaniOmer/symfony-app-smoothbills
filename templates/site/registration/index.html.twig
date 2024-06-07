@@ -37,10 +37,10 @@
                 {{ form_row(registrationForm.email, {
                     label: 'EMAIL'
                 }) }}
-                {{ form_row(registrationForm.password, {
+                {{ form_row(registrationForm.password.first, {
                     label: 'MOT DE PASSE'
                 }) }}
-                {{ form_row(registrationForm.confirmedPassword, {
+                {{ form_row(registrationForm.password.second, {
                     label: 'CONFIRMATION DE MOT DE PASSE'
                 }) }}
                 
