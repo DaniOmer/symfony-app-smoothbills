@@ -28,6 +28,9 @@ module.exports = {
         small: "10px",
         half: "40px",
       },
+      gap:{
+        '13':"52px"
+       }
     },
   },
   plugins: [],
