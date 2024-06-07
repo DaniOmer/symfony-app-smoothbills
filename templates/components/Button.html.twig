@@ -1,4 +1,4 @@
-{% props bg = 'outline', rounded = 'sm' %}
+{% props bg = 'outline', rounded = 'sm', additionalClasses = '' %}
 
 {% set button = cva({
     base: 'button ',
@@ -14,7 +14,7 @@
     }
 }) %}
 
-<button {{ attributes.defaults({type:"button"}) }} class="px-6 py-2 border border-primary w-fit {{ button.apply({ bg, rounded }) }}">
+<button {{ attributes.defaults({type:"button"}) }} class="px-6 py-2 border border-primary {{ button.apply({ bg, rounded }) }} {{ additionalClasses }}">
     {% block content %}
         Valider
     {% endblock %}
