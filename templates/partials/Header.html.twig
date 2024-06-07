@@ -1,23 +1,25 @@
-{% set baseClasses = "flex items-center gap-2 p-1 border-transparent border-b-2 hover:border-primary hover:text-primary" %}
-{% set createAccountClasses = "flex items-center gap-2 p-1 border-transparent bg-primary text-white rounded-half px-6 py-4" %}
+{% set baseClasses = "flex items-center gap-2 p-1 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
+{% set createAccountClasses = "flex items-center gap-2 p-1 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
 
-<header class="container mx-auto p-4 flex items-center">
-    <div class="flex items-center">
-        <img src="{{ asset('build/images/logo.png') }}" alt="SmoothBill Logo">
-        <span class="text-xl font-bold ml-2">SMOOTHBILL</span>
+<header >
+   <div class="container mx-auto py-4 flex items-center" >
+        <div class="flex items-center">
+            <img src="{{ asset('build/images/logo.png') }}" alt="SmoothBill Logo">
+            <span class="text-xl font-bold ml-2">SMOOTHBILL</span>
+        </div>
+
+        <nav class="flex-grow flex items-center justify-between">
+            <ul class="flex justify-center flex-grow gap-13">
+                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Accueil</twig:MenuItem>
+                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Features</twig:MenuItem>
+                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Pricing</twig:MenuItem>
+                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Blog</twig:MenuItem>
+            </ul>
+
+            <ul class="flex items-center gap-4">
+                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
+                <twig:MenuItem href="#" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
+            </ul>
+        </nav>
     </div>
-
-    <nav class="flex-grow flex items-center justify-between">
-        <ul class="flex justify-center flex-grow gap-13">
-            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Accueil</twig:MenuItem>
-            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Features</twig:MenuItem>
-            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Pricing</twig:MenuItem>
-            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Blog</twig:MenuItem>
-        </ul>
-
-        <ul class="flex items-center gap-4">
-            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
-            <twig:MenuItem href="#" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
-        </ul>
-    </nav>
 </header>
