@@ -1,0 +1,22 @@
+{% set baseClasses = "flex items-center gap-2 p-1 border-transparent border-b-2  hover:border-primary  hover:text-primary" %}
+{% set createAccountClasses = "flex items-center gap-2 p-1 border-transparent bg-primary text-white rounded-3xl px-6 py-4" %} 
+
+<nav class="p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <img src="{{ asset('build/images/logo.png') }}" alt="SmoothBill Logo">
+                    <span class="text-xl font-bold">SMOOTHBILL</span>
+                </div>
+                
+                <ul class="flex space-x-6">
+                    <twig:MenuItem href="#" additionalClasses="{{baseClasses}} ">Accueil</twig:MenuItem>
+                    <twig:MenuItem href="#" additionalClasses="{{baseClasses}} ">Features</twig:MenuItem>
+                    <twig:MenuItem href="#" additionalClasses="{{baseClasses}} ">Pricing</twig:MenuItem>
+                    <twig:MenuItem href="#" additionalClasses="{{baseClasses}} ">Blog</twig:MenuItem>
+                </ul>
+                <ul class="flex items-center">
+                    <twig:MenuItem href="#" additionalClasses="{{baseClasses}} pr-2">Se connecter</twig:MenuItem>
+                    <twig:MenuItem href="#" additionalClasses="{{createAccountClasses}} " >Créer un compte</twig:MenuItem>
+                </ul>
+ </nav>
+
+

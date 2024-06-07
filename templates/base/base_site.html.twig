@@ -14,7 +14,12 @@
         {% endblock %}
     </head>
     <body >
-        {# Composant ou Partial Header #}
+
+          {# Include the partial header conditionally #}
+                {% set current_route = app.request.attributes.get('_route') %}
+                {% if current_route not in ['site.register', 'site.login'] %}
+                    {% include 'partials/header.html.twig' %}
+                {% endif %}
 
         <main class="bg-background min-h-screen font-content text-content">
             {% block body %}{% endblock %}
