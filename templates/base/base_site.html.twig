@@ -20,6 +20,12 @@
 	</head>
 	<body>
 
+		
+		{% set current_route = app.request.attributes.get('_route') %}
+		{% if current_route not in ['site.register', 'site.login'] %}
+			{% include 'partials/header.html.twig' %}
+		{% endif %}
+
 
 		{% set current_route = app.request.attributes.get('_route') %}
 		{% if current_route not in ['site.register', 'site.login'] %}
