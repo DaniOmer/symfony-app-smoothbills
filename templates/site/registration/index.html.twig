@@ -49,7 +49,7 @@
                 </twig:Button>
                 <div class='text-[14px] mt-2'>
                     <span class='text-tertiary/60'>Vous avez déjà un compte ?</span>
-                    <a href='site.login' class='text-primary'>Connexion</a>
+                    <a href={{path('site.login')}} class='text-primary'>Connexion</a>
                 </div>
 
             {{ form_end(registrationForm) }}
