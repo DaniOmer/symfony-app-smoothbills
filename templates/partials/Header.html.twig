@@ -1,5 +1,6 @@
-{% set baseClasses = "flex items-center gap-2 p-1 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
-{% set createAccountClasses = "flex items-center gap-2 p-1 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+{% set baseClasses = "flex items-center gap-2 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
+{% set createAccountClasses = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+{% set disconectClasses = "flex items-center gap-2 border border-primary bg-transparent text-black hover:bg-primary hover:text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
 
 <header >
    <div class="container mx-auto py-4 flex items-center" >
@@ -16,9 +17,14 @@
                 <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Blog</twig:MenuItem>
             </ul>
 
+            
             <ul class="flex items-center gap-4">
-                <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
-                <twig:MenuItem href="#" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
+                {% if not app.user %}
+                    <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
+                    <twig:MenuItem href="{{path('site.register')}}" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
+                {% else %}
+                    <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="{{disconectClasses}}">Se déconnecter</twig:MenuItem>
+                {% endif %}
             </ul>
         </nav>
     </div>
