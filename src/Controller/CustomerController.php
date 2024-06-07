@@ -30,6 +30,7 @@ class CustomerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $customer->setCreatedBy($this->getUser());
             $entityManager->persist($customer);
             $entityManager->flush();
 

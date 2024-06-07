@@ -296,6 +296,9 @@
             "config/routes/ux_live_component.yaml"
         ]
     },
+    "symfony/ux-toggle-password": {
+        "version": "v2.17.0"
+    },
     "symfony/ux-turbo": {
         "version": "v2.14.0"
     },
@@ -351,6 +354,9 @@
             "package.json",
             "webpack.config.js"
         ]
+    },
+    "symfonycasts/verify-email-bundle": {
+        "version": "v1.17.0"
     },
     "twig/extra-bundle": {
         "version": "v3.8.0"

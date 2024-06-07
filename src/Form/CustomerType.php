@@ -28,10 +28,6 @@ class CustomerType extends AbstractType
                 'class' => Company::class,
                 'choice_label' => 'id',
             ])
-            ->add('created_by', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
