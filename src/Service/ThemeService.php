@@ -55,7 +55,7 @@ class ThemeService
 
     private function validateThemeData(array $themeData): bool
     {
-        return isset($themeData['name'], $themeData['primary_color'], $themeData['secondary_color'], $themeData['tertiary_color'], $themeData['bg_color'], $themeData['title_font'], $themeData['subtitle_font'], $themeData['content_font'], $themeData['is_active'], $themeData['sidebar_position']);
+        return isset($themeData['name'], $themeData['primary_color'], $themeData['secondary_color'], $themeData['tertiary_color'], $themeData['bg_color'], $themeData['title_font'], $themeData['subtitle_font'], $themeData['content_font'], $themeData['sidebar_position']);
     }
 
 }
