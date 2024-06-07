@@ -1,0 +1,186 @@
+{% extends 'base/base_site.html.twig' %}
+
+{% block title %}Smoothbill - Design Guide{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto">
+        <section class="flex pt-5 pb-10 border-b border-tertiary/10">
+            <article>
+                <span class="text-sm text-primary font-content font-semibold">Réalisé par la team Smoothbill</span>
+                <h1 class="text-title font-title font-semibold">Design Guide - Charte Graphique et Composants</h1>
+                <div class="flex gap-10 mb-3">
+                    <div class="w-fit flex gap-1 items-center">
+                        {{ ux_icon('vscode-icons:file-type-twig') }}
+                        <span class="inline-block text-tertiary/60">TWIG</span>
+                    </div>
+                    <div class="w-fit flex gap-1 items-center text-primary/70">
+                        {{ ux_icon('teenyicons:tailwind-solid') }}
+                        <span class="inline-block text-tertiary/60">TailwindCSS</span>
+                    </div>   
+                </div>
+                <p class="text-content">
+                    L'équipe de Smoothbill, composée de développeurs et de designers UX/UI, a élaboré ce Guide de Conception.
+                    La charte graphique met en avant les couleurs, les polices et les tailles de police utilisées dans 
+                    l'application. La section des composants répertorie les différents éléments disponibles 
+                    pour assurer une cohérence visuelle et une expérience utilisateur harmonieuse.
+                </p>
+            </article>
+            <article>
+                <twig:Button bg="outlined" rounded="sm" type="submit">
+                    Annuler
+                </twig:Button>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Couleurs</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p>
+                    Cette section regroupe les couleurs utilisées par défaut dans notre application.
+                    Smoothbill permet à ses utilisateurs de personnaliser le thème
+                    du tableau de bord à leur convenance, mais cette section présente uniquement les couleurs
+                    définies par défaut.
+                </p>
+                <div class="flex lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Primary</h3>
+                        <div class="h-40 w-40 rounded-md bg-primary"></div>
+                    </div>
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Secondary</h3>
+                        <div class="h-40 w-40 rounded-md bg-secondary"></div>
+                    </div>
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Tertiary</h3>
+                        <div class="h-40 w-40 rounded-md bg-tertiary"></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Typographie</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p class="row-span-1">
+                    Tout comme pour les couleurs, nous présentons ici les typographies,
+                    soigneusement choisies par nos équipes, disponibles par défaut.
+                    L'utilisateur peut également définir les typographies qu'il souhaite pour
+                    personnaliser son tableau de bord.
+                </p>
+                <div class="flex lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Titre h1</h3>
+                        <div>
+                            Font family: Raleway<br>
+                            Font size: 36px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Titre h2</h3>
+                        <div>
+                            Font family: David Libre<br>
+                            Font size: 26px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Contenu p</h3>
+                        <div>
+                            Font family: Poppins<br>
+                            Font size: 16px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Boutons</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p class="row-span-1">
+                    Les boutons sont des éléments interactifs essentiels dans notre application. 
+                    Nous avons conçu un composant TWIG Button qui peut prendre une variété de styles 
+                    de boutons pour répondre à différents besoins d'interaction, tout en assurant une 
+                    cohérence visuelle avec le reste de la charte graphique. 
+                </p>
+                <div class="flex flex-wrap lg:flex-nowrap lg:justify-end gap-10 col-span-2">
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="filled" rounded="sm" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=filled </br> rounded=sm</p>
+                    </div>
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="outline" rounded="sm" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=outline </br> rounded=sm</p>
+                    </div>
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="filled" rounded="half" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=filled </br> rounded=half</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <twig:Button bg="outline" rounded="half" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=outline </br> rounded=half</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Indicateurs clés de performance (KPI)</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p>
+                    Cette section illustre comment utiliser le composant KpiCard pour afficher divers indicateurs clés.
+                </p>
+                <div class="flex flex-wrap lg:flex-nowrap lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col gap-3">
+                        <twig:KpiCard kpi_name="Clients récurents" kpi_value="421" icon_name="skill-icons:billing-icon">
+                        </twig:KpiCard>
+                        <p>Clients récurents: 421</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <twig:KpiCard kpi_name="Devis acceptés" kpi_value="120" icon_name="skill-icons:invoice">
+                        </twig:KpiCard>
+                        <p>Devis acceptés : 120</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+        <h2 class="text-subtitle font-subtitle font-semibold mb-5">Cartes Sélectionnables</h2>
+        <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <p>
+                Les cartes sélectionnables permettent aux utilisateurs de choisir plusieurs éléments pour des actions groupées, 
+                comme la suppression ou la mise à jour. Voici un exemple de carte que vous pouvez sélectionner :
+            </p>
+            <div class="flex lg:justify-end gap-10 col-span-2">
+                <div class="flex flex-col gap-3">
+                    <twig:SelectableCard card_title="Rapport de Ventes" card_id="1">
+                       Rapport de ventes des services et des produits consomés
+                    </twig:SelectableCard>
+
+                </div>
+            </div>
+        </article>
+    </section>
+   <section class="pt-5 pb-10 border-b border-tertiary/10">
+        <h2 class="text-subtitle font-subtitle font-semibold mb-5">Drag and Drop File Upload</h2>
+        <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <p>
+                Utilisez le composant de téléchargement par glisser-déposer pour facilement télécharger des images ou des documents. Glissez vos fichiers directement dans la zone ci-dessous ou cliquez pour sélectionner les fichiers à télécharger.
+            </p>
+            <div class="flex lg:justify-end gap-10 col-span-2">
+                <div class="flex flex-col gap-3">
+                    <twig:DragDropUpload id="custom-drop-area" main_text="Glissez vos fichiers ici ou cliquez pour télécharger" file_types_text="Formats acceptés : SVG, PNG, JPG, GIF (max. 800x400px)">
+                    </twig:DragDropUpload>
+                    <p>Vous pouvez télécharger des fichiers SVG, PNG, JPG ou GIF jusqu'à une taille maximale de 800x400px.</p>
+                </div>
+            </div>
+        </article>
+    </section>
+    </div>
+{% endblock %}
