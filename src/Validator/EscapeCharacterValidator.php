@@ -5,17 +5,18 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class PasswordValidator extends ConstraintValidator
+class EscapeCharacterValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        /* @var Password $constraint */
+        /* @var EscapeCharacter $constraint */
 
         if (null === $value || '' === $value) {
             return;
         }
 
-        if (!preg_match('/[A-Z]/', $value) || !preg_match('/[0-9]/', $value) || !preg_match('/[a-zA-Z0-9]/', $value) || strlen($value) < 10) {
+        $escapedValue = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        if ($value !== $escapedValue) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->addViolation();

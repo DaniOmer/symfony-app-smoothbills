@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\EscapeCharacter;
 use App\Validator\Password;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -31,6 +32,9 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez saisir un prénom valide.',
                     ]),
                     new Length(['min' => 3]),
+                    new EscapeCharacter([
+                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
+                    ]),
                 ]
             ])
             ->add('lastName', TextType::class, [
@@ -39,6 +43,9 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Veuillez saisir un nom valide.',
                     ]),
                     new Length(['min' => 3]),
+                    new EscapeCharacter([
+                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
+                    ]),
                 ]
             ])
             ->add('email', EmailType::class, [
