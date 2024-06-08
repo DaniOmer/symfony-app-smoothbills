@@ -1,0 +1,9 @@
+login:
+    title: "Connexion"
+    google: "Se connecter avec Google"
+    or: "ou"
+    email: "Email"
+    password: "Mot de passe"
+    create: "Vous n'avez pas de compte ?"
+    register: "Inscription"
+    legal_notice: "Mentions légales"

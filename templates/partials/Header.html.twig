@@ -19,11 +19,11 @@
 
             
             <ul class="flex items-center gap-4">
-                {% if not app.user %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="{{disconectClasses}}">Se déconnecter</twig:MenuItem>
+                {% else %}
                     <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
                     <twig:MenuItem href="{{path('site.register')}}" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
-                {% else %}
-                    <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="{{disconectClasses}}">Se déconnecter</twig:MenuItem>
                 {% endif %}
             </ul>
         </nav>

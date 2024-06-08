@@ -1,0 +1,9 @@
+login:
+    title: "Login"
+    google: "Login with Google"
+    or: "ou"
+    email: "Email"
+    password: "Password"
+    create: "You don't have account ?"
+    register: "Register"
+    legal_notice: "Legal notices"
