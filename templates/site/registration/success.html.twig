@@ -1,0 +1,24 @@
+{# templates/site/registration/success.html.twig #}
+
+{% extends 'base/base_site.html.twig' %}
+
+{% block title %}Inscription réussie{% endblock %}
+
+{% block body %}
+    <section class="container mx-auto mt-20">
+        <article class='w-full max-w-3xl mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
+            <header class="flex gap-2 text-primary justify-center items-center bg-white py-8 shadow-sm mb-5">
+                <span class="block text-5xl">{{ ux_icon('ri:mail-send-line') }}</span>
+                <h2 class="font-medium text-subtitle">{{ 'register.welcome'|trans }}</h2>
+            </header>
+            <div class="p-4 text-center">
+                <h3 class="mb-4 font-medium">{{ 'register.success'|trans }}</h3>
+                <p class="">{{ 'register.message'|trans }}</p>
+                <p class="block">{{ 'register.additional_info'|trans }}</p>
+                <div class="mt-10 flex justify-center">
+                    <twig:MenuItem href="https://mail.google.com/" additionalClasses="px-6 py-3 border border-primary rounded-full bg-transparent hover:bg-primary hover:text-white transition ease-in-out delay-75">{{ 'register.link_to_gmail'|trans }}</twig:MenuItem>
+                </div>
+            </div>
+        </article>
+    </section>
+{% endblock %}

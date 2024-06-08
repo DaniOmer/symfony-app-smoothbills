@@ -1,0 +1,16 @@
+login:
+    title: "Login"
+    google: "Login with Google"
+    or: "or"
+    email: "Email"
+    password: "Password"
+    create: "You don't have account ?"
+    register: "Register"
+    legal_notice: "Legal notices"
+
+register:
+    welcome: "Welcome!"
+    success: "Your account has been successfully created."
+    message: "A confirmation email has been sent to the address you provided during registration. Please check your inbox and click on the confirmation link to activate your account."
+    additional_info: "Once you have confirmed your account, you'll be able to log in and enjoy all the features of our application."
+    link_to_gmail: "Go to your emails"
