@@ -21,10 +21,12 @@ security:
                 check_path: site.login
                 enable_csrf: true
             logout:
-                path: /logout
+                path: site.logout
                 target: site.home
             login_throttling:
                 max_attempts: 3 # per minute ...
+
+            user_checker: App\Security\UserChecker
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

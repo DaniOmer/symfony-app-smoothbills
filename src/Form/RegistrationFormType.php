@@ -11,7 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -35,7 +38,8 @@ class RegistrationFormType extends AbstractType
                     new EscapeCharacter([
                         'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
                     ]),
-                ]
+                ],
+                'trim' => true,
             ])
             ->add('lastName', TextType::class, [
                 'constraints' => [
@@ -46,14 +50,19 @@ class RegistrationFormType extends AbstractType
                     new EscapeCharacter([
                         'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
                     ]),
-                ]
+                ],
+                'trim' => true,
             ])
             ->add('email', EmailType::class, [
                 'constraints' => [
+                    new Email([
+                        'message' => 'Veuillez fournir une adresse e-mail valide.',
+                    ]),
                     new NotBlank([
                         'message' => 'Veuillez saisir un email valide.',
                     ]),
-                ]
+                ],
+                'trim' => true,
             ])
             ->add('password', RepeatedType::class,  [
                 'type' => PasswordType::class,
@@ -72,9 +81,18 @@ class RegistrationFormType extends AbstractType
                         'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} charactères.',
                         'max' => 32,
                     ]),
-                ]
+                ],
+                'trim' => true,
             ])
         ;
+
+        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+            $data->setFirstName(ucfirst(strtolower($data->getFirstName()))); ;
+            $data->setLastName(ucfirst(strtolower($data->getLastName())));
+            $data->setEmail(ucfirst(strtolower($data->getEmail())));
+            $event->setData($data);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
