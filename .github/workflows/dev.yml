@@ -20,8 +20,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-            sudo su smoothbill -c "
-            cd /home/smoothbill/<PROJECT_DIRECTORY> &&
+            cd /home/ec2-user/symfony-app-smoothbills &&
             git checkout dev &&
             git fetch --all &&
             git reset --hard origin/dev &&
@@ -31,6 +30,5 @@ jobs:
             docker compose exec php composer install &&
             npm install &&
             npm run watch
-            "
           '
           rm private_key
