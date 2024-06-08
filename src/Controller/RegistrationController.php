@@ -64,8 +64,13 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register/success', name: 'site.register.success')]
-    public function index(): Response
+    public function registerSuccess(Request $request): Response
     {
+        $referer = $request->headers->get('referer');
+        if (!$referer || strpos($referer, $this->generateUrl('site.register')) === false) {
+            return $this->redirectToRoute('site.register');
+        }
+
         return $this->render('site/registration/success.html.twig');
     }
 
