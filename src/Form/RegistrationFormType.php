@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\Password;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -23,28 +25,47 @@ class RegistrationFormType extends AbstractType
 
 
         $builder
-            ->add('firstName', TextType::class)
-            ->add('lastName', TextType::class)
-            ->add('email')
+            ->add('firstName', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir un prénom valide.',
+                    ]),
+                    new Length(['min' => 3]),
+                ]
+            ])
+            ->add('lastName', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir un nom valide.',
+                    ]),
+                    new Length(['min' => 3]),
+                ]
+            ])
+            ->add('email', EmailType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez saisir un email valide.',
+                    ]),
+                ]
+            ])
             ->add('password', RepeatedType::class,  [
                 'type' => PasswordType::class,
-                // 'toggle' => true,
-                // 'use_toggle_form_theme' => false,
-                // 'hidden_label' => 'Masquer',
-                // 'visible_label' => 'Afficher',
                 'invalid_message' => 'Les mots de passe ne correspondent pas. Veuillez vérifier et réessayer.',
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Veuillez saisir un mot de passe valide',
+                        'message' => 'Veuillez saisir un mot de passe valide.',
+                    ]),
+                    new Password([
+                        'message' => 'Votre mot de passe doit contenir au moins une majuscule, un chiffre et un caractère alphanumérique.'
                     ]),
                     new Length([
                         'min' => 10,
-                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} characters',
-                        'max' => 4096,
+                        'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} charactères.',
+                        'max' => 32,
                     ]),
-                ],
+                ]
             ])
         ;
     }
