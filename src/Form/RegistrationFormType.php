@@ -90,7 +90,7 @@ class RegistrationFormType extends AbstractType
             $data = $event->getData();
             $data->setFirstName(ucfirst(strtolower($data->getFirstName()))); ;
             $data->setLastName(ucfirst(strtolower($data->getLastName())));
-            $data->setEmail(ucfirst(strtolower($data->getEmail())));
+            $data->setEmail(strtolower($data->getEmail()));
             $event->setData($data);
         });
     }
