@@ -12,8 +12,11 @@ class LoginController extends AbstractController
     #[Route(path: '/login', name: 'site.login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        $error = $authenticationUtils->getLastAuthenticationError();
+        if($this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('site.home');
+        }
 
+        $error = $authenticationUtils->getLastAuthenticationError();
         return $this->render('site/login/login.html.twig', [
             'error' => $error,
         ]);
