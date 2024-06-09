@@ -1,10 +1,10 @@
 {% set classes = "hover:text-primary flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 hover:border-l-4 hover:border-primary border-l-4 border-transparent transition ease-in-out delay-75" %}
 
 <aside id="sidebar" class="max-h-screen h-screen py-4 px-6 border border-gray-300 rounded-md ">
-    <div class="flex items-center gap-4 text-xl">
+    <a href={{ path('site.home') }} class="flex items-center gap-4 text-xl">
         <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
         <h1 class="font-bold">SMOOTHBILL</h1>
-    </div>
+    </a>
 
     <h2 class="text-subtitle font-semibold mt-10 mb-4">MENU</h2>
     <nav class="menu">
