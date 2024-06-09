@@ -1,13 +1,14 @@
 {% set classes = "hover:text-primary flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 hover:border-l-4 hover:border-primary border-l-4 border-transparent transition ease-in-out delay-75" %}
 
-<aside class="sidebar p-4 border border-gray-300 rounded-md">
-    <div class="logo flex items-center gap-4">
-        <img src="{{ asset('build/images/logo.png') }}" alt="SmoothBill Logo">
-        <h1 class="text-xl font-bold">SMOOTHBILL</h1>
+<aside id="sidebar" class="max-h-screen h-screen py-4 px-6 border border-gray-300 rounded-md ">
+    <div class="flex items-center gap-4 text-xl">
+        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+        <h1 class="font-bold">SMOOTHBILL</h1>
     </div>
-    <nav class="menu mt-10">
-    <h2 class="text-lg font-semibold mb-4">MENU</h2>
-        <ul class="space-y-4">
+
+    <h2 class="text-subtitle font-semibold mt-10 mb-4">MENU</h2>
+    <nav class="menu">
+        <ul class="flex flex-col gap-1">
             <twig:MenuItem href="#" alt="General" additionalClasses="{{ classes }}">
                 {{ ux_icon('zondicons:view-tile') }}
                 Général
@@ -38,13 +39,13 @@
             </twig:MenuItem>
         </ul>
     </nav>
-    <div class="integration mt-10">
+    <div id="integration" class="mt-14">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold">INTEGRATION</h2>
+            <h2 class="text-subtitle font-semibold">INTEGRATION</h2>
             {{ ux_icon('ph:plus-fill') }}
         </div>
-        <div class="rounded-lg p-4 bg-[#F5F1F1] shadow-sm drop-shadow-sm">
-            <ul class="space-y-4">
+        <div class="rounded-lg p-2 bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+            <ul class="flex flex-col gap-1">
                 <twig:MenuItem href="#" alt="Slack" additionalClasses="{{ classes }}">
                     {{ ux_icon('ant-design:slack-circle-filled') }}
                     Slack
@@ -56,8 +57,8 @@
             </ul>
         </div>
     </div>
-    <div class="settings mt-10 space-y-6">
-        <ul class="space-y-4">
+    <div id="settings" class="mt-14">
+        <ul class="flex flex-col gap-1">
             <twig:MenuItem href="#" alt="Settings" additionalClasses="{{ classes }}">
                 {{ ux_icon('clarity:settings-line') }}
                 Settings
@@ -68,7 +69,7 @@
             </twig:MenuItem>
         </ul>
     </div>
-    <div class="theme_switcher flex items-center justify-between mt-10 mb-6 p-2 rounded-md bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+    {# <div id="theme_switcher" class="flex items-center justify-between mt-10 mb-6 p-2 rounded-md bg-[#F5F1F1] shadow-sm drop-shadow-sm">
         <button type="button" class="flex items-center gap-2 px-6 py-2 rounded-md bg-secondary">
             {{ ux_icon('noto:light-bulb') }}
             <span class="text-white">Light</span>
@@ -77,5 +78,5 @@
             {{ ux_icon('ph:moon-bold') }}
             <span>Dark</span>
         </button>
-    </div>
+    </div> #}
 </aside>

@@ -33,7 +33,11 @@
         {% endblock %}
     </head>
     <body>
-        <main > {% block body %}{% endblock %}
-		</main>
+        <div class="flex bg-background">
+            {% include "partials/Sidebar.html.twig" %}
+            <main class="flex-1"> 
+                {% block body %}{% endblock %}
+            </main>
+        </div>
     </body>
 </html>
