@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+{% extends 'base/base_dashboard.html.twig' %}
 
-<title>{{ 'customer.index_title'|trans }}</title>
+{% block title %}{{ 'customer.index_title'|trans }}{% endblock %}
 
 {% block body %}
+    
     <h1>{{ 'customer.index_title'|trans }}</h1>
-
     <table class="table">
         <thead>
             <tr>
@@ -25,8 +25,8 @@
                 <td>{{ customer.phone }}</td>
                 <td>{{ customer.type }}</td>
                 <td>
-                    <a href="{{ path('app_customer_show', {'id': customer.id}) }}">{{ 'crud.show'|trans }}</a>
-                    <a href="{{ path('app_customer_edit', {'id': customer.id}) }}">{{ 'crud.edit'|trans }}</a>
+                    <a href="{{ path('dashboard.customer.show', {'id': customer.id}) }}">{{ 'crud.show'|trans }}</a>
+                    <a href="{{ path('dashboard.customer.edit', {'id': customer.id}) }}">{{ 'crud.edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
@@ -37,5 +37,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_customer_new') }}">{{ 'crud.create_new'|trans }}</a>
+    <a href="{{ path('dashboard.customer.new') }}">{{ 'crud.create_new'|trans }}</a>
 {% endblock %}

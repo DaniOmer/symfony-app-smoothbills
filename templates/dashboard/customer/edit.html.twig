@@ -1,0 +1,12 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Customer - Edition{% endblock %}
+
+{% block body %}
+    <div class="bg-[#FEF9F9] drop-shadow-md p-10">
+
+        {{ include('dashboard/customer/_form.html.twig', {'button_label': 'crud.update'|trans }) }}
+        <a href="{{ path('dashboard.customer.index') }}">{{ 'crud.back_to_list'|trans }}</a>
+        {{ include('dashboard/customer/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

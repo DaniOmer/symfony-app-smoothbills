@@ -1,0 +1,14 @@
+{# templates/dashboard/customer/new.html.twig #}
+
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <div class="bg-[#FEF9F9] drop-shadow-md p-10">
+
+        {{ include('dashboard/customer/_form.html.twig') }}
+        <a href="{{ path('dashboard.customer.index') }}">{{ 'crud.back_to_list'|trans }}</a>
+
+    </div>
+{% endblock %}
