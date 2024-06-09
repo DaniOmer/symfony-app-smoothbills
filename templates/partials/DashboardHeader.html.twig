@@ -19,10 +19,10 @@
         <div class="flex justify-between items-center gap-4 border-l-2 pl-5">
             <div class="text-sm">
                 <span class="block font-semibold">
-                    Stephane Plazza
+                    {{ app.user.firstName }} {{ app.user.lastName }}
                 </span>
                 <span class="block">
-                    Super Admin
+                    {{ role_labels[prior_role] }}
                 </span>
             </div>
             <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">

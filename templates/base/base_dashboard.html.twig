@@ -31,6 +31,13 @@
             {{ encore_entry_script_tags('app') }}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
+
+        {% set prior_role = app.user.roles[0] ?? null %}
+        {% set role_labels = {
+            'ROLE_ADMIN': 'Admin',
+            'ROLE_EDITOR': 'Éditeur',
+            'ROLE_ACCOUNTANT': 'Comptable',
+        } %}
     </head>
     <body>
         <div class="flex bg-background">
