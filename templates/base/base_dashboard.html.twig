@@ -35,7 +35,8 @@
     <body>
         <div class="flex bg-background">
             {% include "partials/Sidebar.html.twig" %}
-            <main class="flex-1"> 
+            <main class="flex-1 ml-[40px] mr-[33px]">
+                {% include "partials/DashboardHeader.html.twig" %}
                 {% block body %}{% endblock %}
             </main>
         </div>

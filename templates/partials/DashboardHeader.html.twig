@@ -1,0 +1,33 @@
+{% set baseClasses = "flex items-center gap-2 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
+{% set createAccountClasses = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+{% set disconectClasses = "flex items-center gap-2 border border-primary bg-transparent text-black hover:bg-primary hover:text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+
+<header class="mb-8">
+   <div class="py-4 flex justify-between items-center" >
+        <form class="flex gap-2 relative">
+            <input type="text" class="px-1 py-2 border rounded-full bg-transparent w-80"/>
+            <button class="absolute border-none right-3 bottom-1/2 translate-y-1/2">{{ ux_icon('teenyicons:search-outline') }}</button>
+        </form>
+        <div class="flex justify-center items-center gap-5">
+            {{ ux_icon('clarity:notification-outline-badged') }}
+            <select name="language" id="language" data-controller="langue" class="bg-transparent">
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
+
+        <div class="flex justify-between items-center gap-4 border-l-2 pl-5">
+            <div class="text-sm">
+                <span class="block font-semibold">
+                    Stephane Plazza
+                </span>
+                <span class="block">
+                    Super Admin
+                </span>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
+                SP
+            </div>
+        </div>
+    </div>
+</header>
