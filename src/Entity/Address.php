@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\AddressRepository;
 use App\Trait\TimestampableTrait;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,21 +34,6 @@ class Address
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $latitude = null;
-
-    #[ORM\OneToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Company $company = null;
-
-    /**
-     * @var Collection<int, Customer>
-     */
-    #[ORM\OneToMany(mappedBy: 'address', targetEntity: Customer::class)]
-    private Collection $customers;
-
-    public function __construct()
-    {
-        $this->customers = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -125,48 +108,6 @@ class Address
     public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?Company $company): static
-    {
-        $this->company = $company;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Customer>
-     */
-    public function getCustomers(): Collection
-    {
-        return $this->customers;
-    }
-
-    public function addCustomer(Customer $customer): static
-    {
-        if (!$this->customers->contains($customer)) {
-            $this->customers->add($customer);
-            $customer->setAddress($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomer(Customer $customer): static
-    {
-        if ($this->customers->removeElement($customer)) {
-            // set the owning side to null (unless already changed)
-            if ($customer->getAddress() === $this) {
-                $customer->setAddress(null);
-            }
-        }
 
         return $this;
     }

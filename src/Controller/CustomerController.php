@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Address;
 use App\Entity\Customer;
 use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
@@ -26,12 +27,21 @@ class CustomerController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
+        $address = new Address();
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $address->setZipcode($form->get('address')->getData()->getZipcode());
+            $address->setCity($form->get('address')->getData()->getCity());
+            $address->setCountry($form->get('address')->getData()->getCountry());
+            $address->setAddress($form->get('address')->getData()->getAddress());
+            $entityManager->persist($address);
+
             $customer->setCreatedBy($this->getUser());
+            $customer->setCompany($this->getUser()->getCompany());
             $entityManager->persist($customer);
+            
             $entityManager->flush();
 
             return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);

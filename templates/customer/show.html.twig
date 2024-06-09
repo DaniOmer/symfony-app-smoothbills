@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<title>Customer</title>
+<title>{{ 'customer.name'|trans }}</title>
 
 {% block body %}
-    <h1>Customer</h1>
+    <h1>{{ 'customer.name'|trans }}</h1>
 
     <table class="table">
         <tbody>
@@ -30,9 +30,9 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_customer_index') }}">back to list</a>
+    <a href="{{ path('app_customer_index') }}">{{ 'crud.back_to_list'|trans }}</a>
 
-    <a href="{{ path('app_customer_edit', {'id': customer.id}) }}">edit</a>
+    <a href="{{ path('app_customer_edit', {'id': customer.id}) }}">{{ 'crud.edit'|trans }}</a>
 
     {{ include('customer/_delete_form.html.twig') }}
 {% endblock %}

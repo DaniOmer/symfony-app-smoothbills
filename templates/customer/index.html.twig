@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<title>Customer index</title>
+<title>{{ 'customer.index_title'|trans }}</title>
 
 {% block body %}
-    <h1>Customer index</h1>
+    <h1>{{ 'customer.index_title'|trans }}</h1>
 
     <table class="table">
         <thead>
@@ -25,17 +25,17 @@
                 <td>{{ customer.phone }}</td>
                 <td>{{ customer.type }}</td>
                 <td>
-                    <a href="{{ path('app_customer_show', {'id': customer.id}) }}">show</a>
-                    <a href="{{ path('app_customer_edit', {'id': customer.id}) }}">edit</a>
+                    <a href="{{ path('app_customer_show', {'id': customer.id}) }}">{{ 'crud.show'|trans }}</a>
+                    <a href="{{ path('app_customer_edit', {'id': customer.id}) }}">{{ 'crud.edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="6">{{ 'crud.no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_customer_new') }}">Create new</a>
+    <a href="{{ path('app_customer_new') }}">{{ 'crud.create_new'|trans }}</a>
 {% endblock %}

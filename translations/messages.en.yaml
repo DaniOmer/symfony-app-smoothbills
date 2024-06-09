@@ -14,3 +14,20 @@ register:
     message: "A confirmation email has been sent to the address you provided during registration. Please check your inbox and click on the confirmation link to activate your account."
     additional_info: "Once you have confirmed your account, you'll be able to log in and enjoy all the features of our application."
     link_to_gmail: "Go to your emails"
+
+crud:
+    delete: "Delete"
+    delete_confirmation: "Are you sure you want to delete this item?"
+    save: "Save"
+    update: "Update"
+    back_to_list: "Back to list"
+    show: "Show"
+    edit: "Edit"
+    no_records_found: "No records found"
+    create_new: "Create new"
+
+customer:
+    edit_title: "Edit Customer"
+    index_title: "Customer index"
+    new: "New Customer"
+    name: "Customer"
