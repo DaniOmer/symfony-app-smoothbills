@@ -3,39 +3,18 @@
 {% block title %}{{ 'customer.index_title'|trans }}{% endblock %}
 
 {% block body %}
-    
-    <h1>{{ 'customer.index_title'|trans }}</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Mail</th>
-                <th>Phone</th>
-                <th>Type</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for customer in customers %}
-            <tr>
-                <td>{{ customer.id }}</td>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.mail }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.type }}</td>
-                <td>
-                    <a href="{{ path('dashboard.customer.show', {'id': customer.id}) }}">{{ 'crud.show'|trans }}</a>
-                    <a href="{{ path('dashboard.customer.edit', {'id': customer.id}) }}">{{ 'crud.edit'|trans }}</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">{{ 'crud.no_records_found'|trans }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <section>
+        <header class="w-full flex justify-between mb-[40px]">
+            <h1 class="text-title font-title font-semibold">{{ 'customer.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <twig:MenuItem href="{{ path('dashboard.customer.new') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                     <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
+                    {{ 'crud.upload'|trans }}
+                </twig:MenuItem>
+                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.customer.new') }}">{{ 'crud.create_new'|trans }}</a>
+            </div>
+        </header>
 
-    <a href="{{ path('dashboard.customer.new') }}">{{ 'crud.create_new'|trans }}</a>
+        {{ component('table', { headers: headers, rows: rows, title: 'customer.table_title'|trans }) }}
+    </section>
 {% endblock %}

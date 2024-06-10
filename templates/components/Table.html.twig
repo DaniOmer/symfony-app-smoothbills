@@ -1,0 +1,67 @@
+{# templates/components/table.html.twig #}
+{% set rowClasses = "py-3 px-4" %}
+<section class="bg-white border table w-full rounded-md">
+    <h1 class="font-bold ml-4 py-4">{{ title }}<h1>
+    <div class="border-t table w-full text-left">
+        <div class="table-header-group bg-background">
+            <div class="table-row font-semibold">
+                {% for header in headers %}
+                    <div class="{{ rowClasses }} table-cell text-left">{{ header }}</div>
+                {% endfor %}
+                <div class="{{ rowClasses }} table-cell text-center">Actions</div>
+            </div>
+        </div>
+        <div class="table-row-group overflow-x-hidden">
+            {% for row in rows %}
+                <div class="table-row">
+                    {% for key, value in row %}
+                        {% if key != 'id' %}
+                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                                {% if statusColors is defined and key == 'status' and value in statusColors %}
+                                    <span class="bg-[{{ statusColors[value] }}]">{{ value }}</span>
+                                {% else %}
+                                    {{ value|raw }}
+                                {% endif %}
+                            </div>   
+                        {% endif %}
+                    {% endfor %}
+                    <div data-controller="actions" class="relative text-center">
+                        <button class="actions-button" data-action="click->actions#showModal" data-customer-id="{{ row['id'] }}">
+                            {{ ux_icon('charm:menu-kebab') }}
+                        </button>
+                        <div id="actions-modal" class="modal w-60 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
+                            <div class="modal-content">
+                                <div class="close text-right p-2 text-3xl font-bold flex justify-end" data-action="click->actions#closeModal">
+                                    <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
+                                </div>
+                                <nav id="actions-list" class="flex flex-col">
+                                    <a 
+                                        href={{ path('dashboard.customer.show', {'id': row.id}) }}
+                                        id="show-link"
+                                        class="border-b hover:bg-primary/10 hover:border-primary px-4 py-2"
+                                    >
+                                        {{ 'crud.show'|trans }}
+                                    </a>
+                                    <a 
+                                        href={{ path('dashboard.customer.edit', {'id': row.id}) }}
+                                        id="edit-link"
+                                        class="border-b hover:bg-primary/10 hover:border-primary px-4 py-2"
+                                    >
+                                        {{ 'crud.edit'|trans }}
+                                    </a>
+                                    <a
+                                        href={{ path('dashboard.customer.delete', {'id': row.id}) }} 
+                                        id="delete-link"
+                                        class="border-b border-b-transparent hover:bg-primary/10 hover:border-primary px-4 py-2"
+                                    >
+                                        {{ 'crud.delete'|trans }}
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

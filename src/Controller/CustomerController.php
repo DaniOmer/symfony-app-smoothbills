@@ -18,8 +18,24 @@ class CustomerController extends AbstractController
     #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
     public function index(CustomerRepository $customerRepository): Response
     {
+        $customers = $customerRepository->findAll();
+
+        $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
+        $rows = [];
+        foreach ($customers as $customer) {
+            $rows[] = [
+                'name' => $customer->getName(),
+                'mail' => $customer->getMail(),
+                'phone' => $customer->getPhone(),
+                'type' => $customer->getType(),
+                'id' => $customer->getId(),
+            ];
+        }
+
         return $this->render('dashboard/customer/index.html.twig', [
-            'customers' => $customerRepository->findAll(),
+            'headers' => $headers,
+            'rows' => $rows,
+            'customers' => $customers,
         ]);
     }
 
