@@ -1,7 +1,5 @@
-<li class="menu-item">
-    <a href="{{ href }}" class="{{ additionalClasses|default('') }}">
-        {% block content %}
+<a href="{{ href }}" class="{{ additionalClasses|default('') }}">
+    {% block content %}
         Valider
-        {% endblock %}
-    </a>
-</li>
+    {% endblock %}
+</a>

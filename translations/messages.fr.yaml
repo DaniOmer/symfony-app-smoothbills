@@ -25,9 +25,12 @@ crud:
     edit: "Modifier"
     no_records_found: "Aucun enregistrement trouvé"
     create_new: "Créer un nouveau"
+    upload: "Importer"
+    download: "Exporter"
 
 customer:
+    title: "Clients"
     edit_title: "Modifier le client"
-    index_title: "Index des clients"
-    new: "Nouveau client"
+    table_title: "Tous les clients"
+    new: "Ajouter un client"
     name: "Client"

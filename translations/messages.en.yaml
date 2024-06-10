@@ -25,9 +25,12 @@ crud:
     edit: "Edit"
     no_records_found: "No records found"
     create_new: "Create new"
+    upload: "Upload"
+    download: "Download"
 
 customer:
+    title: "Clients"
     edit_title: "Edit Customer"
-    index_title: "Customer index"
-    new: "New Customer"
+    table_title: "All customers"
+    new: "Add new Customer"
     name: "Customer"
