@@ -22,6 +22,6 @@
             </div>
         </header>
 
-        {{ component('table', { headers: headers, rows: rows, title: 'customer.table_title'|trans, actions: actions }) }}
+        {{ component('table', { customers: customers, headers: headers, rows: rows, title: 'customer.table_title'|trans, actions: actions }) }}
     </section>
 {% endblock %}

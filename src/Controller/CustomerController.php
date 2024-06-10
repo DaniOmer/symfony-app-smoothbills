@@ -16,12 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 class CustomerController extends AbstractController
 {
     #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
-    public function index(CustomerRepository $customerRepository): Response
+    public function index(CustomerRepository $customerRepository, Request $request): Response
     {
-        $customers = $customerRepository->findAll();
+        $page = $request->query->getInt('page', 1);
+        $paginateCustumers = $customerRepository->paginateCustomers($page);
+        
         $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
         $rows = [];
-        foreach ($customers as $customer) {
+
+        foreach ($paginateCustumers as $customer) {
             $rows[] = [
                 'name' => $customer->getName(),
                 'mail' => $customer->getMail(),
@@ -34,7 +37,7 @@ class CustomerController extends AbstractController
         return $this->render('dashboard/customer/index.html.twig', [
             'headers' => $headers,
             'rows' => $rows,
-            'customers' => $customers,
+            'customers' => $paginateCustumers,
         ]);
     }
 
