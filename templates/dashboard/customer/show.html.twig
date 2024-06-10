@@ -1,6 +1,8 @@
-<!DOCTYPE html>
+{# templates/dashboard/customer/show.html.twig #}
 
-<title>{{ 'customer.name'|trans }}</title>
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'customer.name'|trans }}{% endblock %}
 
 {% block body %}
     <h1>{{ 'customer.name'|trans }}</h1>
