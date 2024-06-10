@@ -19,7 +19,6 @@ class CustomerController extends AbstractController
     public function index(CustomerRepository $customerRepository): Response
     {
         $customers = $customerRepository->findAll();
-
         $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
         $rows = [];
         foreach ($customers as $customer) {

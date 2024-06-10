@@ -2,6 +2,13 @@
 
 {% block title %}{{ 'customer.index_title'|trans }}{% endblock %}
 
+{% set actions = [
+    {'route': 'dashboard.customer.show', 'label': 'crud.show'|trans},
+    {'route': 'dashboard.customer.edit', 'label': 'crud.edit'|trans},
+    {'route': 'dashboard.customer.delete', 'label': 'crud.delete'|trans}
+]
+%}
+
 {% block body %}
     <section>
         <header class="w-full flex justify-between mb-[40px]">
@@ -15,6 +22,6 @@
             </div>
         </header>
 
-        {{ component('table', { headers: headers, rows: rows, title: 'customer.table_title'|trans }) }}
+        {{ component('table', { headers: headers, rows: rows, title: 'customer.table_title'|trans, actions: actions }) }}
     </section>
 {% endblock %}
