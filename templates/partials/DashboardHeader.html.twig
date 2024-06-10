@@ -1,0 +1,29 @@
+<header class="mb-8">
+   <div class="py-4 flex justify-between items-center" >
+        <form class="flex gap-2 relative">
+            <input type="text" class="px-1 py-2 border rounded-full bg-transparent w-80"/>
+            <button class="absolute border-none right-3 bottom-1/2 translate-y-1/2">{{ ux_icon('teenyicons:search-outline') }}</button>
+        </form>
+        <div class="flex justify-center items-center gap-5">
+            {{ ux_icon('clarity:notification-outline-badged') }}
+            <select name="language" id="language" data-controller="langue" class="bg-transparent">
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
+
+        <div class="flex justify-between items-center gap-4 border-l-2 pl-5">
+            <div class="text-sm">
+                <span class="block font-semibold">
+                    {{ app.user.firstName }} {{ app.user.lastName }}
+                </span>
+                <span class="block">
+                    {{ role_labels[prior_role] }}
+                </span>
+            </div>
+            <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
+                SP
+            </div>
+        </div>
+    </div>
+</header>

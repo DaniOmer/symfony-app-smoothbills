@@ -14,3 +14,23 @@ register:
     message: "Un e-mail de confirmation a été envoyé à l'adresse que vous avez fournie lors de l'inscription. Veuillez vérifier votre boîte de réception et cliquer sur le lien de confirmation pour activer votre compte."
     additional_info: "Une fois que vous avez confirmé votre compte, vous pourrez vous connecter et profiter de toutes les fonctionnalités de notre application."
     link_to_gmail: "Accéder à vos e-mails"
+
+crud:
+    delete: "Supprimer"
+    delete_confirmation: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    save: "Enregistrer"
+    update: "Mettre à jour"
+    back_to_list: "Retour à la liste"
+    show: "Afficher"
+    edit: "Modifier"
+    no_records_found: "Aucun enregistrement trouvé"
+    create_new: "Créer un nouveau"
+    upload: "Importer"
+    download: "Exporter"
+
+customer:
+    title: "Clients"
+    edit_title: "Modifier le client"
+    table_title: "Tous les clients"
+    new: "Ajouter un client"
+    name: "Client"

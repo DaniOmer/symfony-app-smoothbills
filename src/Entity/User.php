@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Trait\TimestampableTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -58,6 +60,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne]
     private ?Company $company = null;
 
+    /**
+     * @var Collection<int, Customer>
+     */
+    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Customer::class)]
+    private Collection $customers;
+
+    public function __construct()
+    {
+        $this->customers = new ArrayCollection();
+    }
     #[ORM\Column]
     private bool $isVerified = false;
 
@@ -218,6 +230,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->company = $company;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): static
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): void
+    {
+        if ($this->customers->removeElement($customer)) {
+            // set the owning side to null (unless already changed)
+            if ($customer->getCreatedBy() === $this) {
+                $customer->setCreatedBy(null);
+            }
+        }
     }
 
     public function isVerified(): bool

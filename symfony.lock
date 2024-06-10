@@ -13,6 +13,18 @@
             "src/Repository/.gitignore"
         ]
     },
+    "doctrine/doctrine-fixtures-bundle": {
+        "version": "3.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "1f5514cfa15b947298df4d771e694e578d4c204d"
+        },
+        "files": [
+            "src/DataFixtures/AppFixtures.php"
+        ]
+    },
     "doctrine/doctrine-migrations-bundle": {
         "version": "3.3",
         "recipe": {
@@ -25,6 +37,9 @@
             "config/packages/doctrine_migrations.yaml",
             "migrations/.gitignore"
         ]
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.4.0"
     },
     "phpunit/phpunit": {
         "version": "9.6",
@@ -50,21 +65,6 @@
         },
         "files": [
             "config/packages/stof_doctrine_extensions.yaml"
-        ]
-    },
-    "symfony/asset-mapper": {
-        "version": "6.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "6.4",
-            "ref": "4ff49f66191ce9356098e588684c27b935958b33"
-        },
-        "files": [
-            "assets/app.js",
-            "assets/styles/app.css",
-            "config/packages/asset_mapper.yaml",
-            "importmap.php"
         ]
     },
     "symfony/console": {
@@ -221,7 +221,7 @@
         ]
     },
     "symfony/stimulus-bundle": {
-        "version": "2.14",
+        "version": "2.18",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -288,7 +288,7 @@
         "version": "v2.17.0"
     },
     "symfony/ux-turbo": {
-        "version": "v2.14.0"
+        "version": "v2.18.0"
     },
     "symfony/ux-twig-component": {
         "version": "2.17",

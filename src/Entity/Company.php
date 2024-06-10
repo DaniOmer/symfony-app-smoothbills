@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CompanyRepository;
 use App\Trait\TimestampableTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -55,6 +57,21 @@ class Company
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
     private ?LegalForm $legal_form = null;
+
+    /**
+     * @var Collection<int, Customer>
+     */
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Customer::class)]
+    private Collection $customers;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $address = null;
+
+    public function __construct()
+    {
+        $this->customers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -213,6 +230,48 @@ class Company
     public function setLegalForm(?LegalForm $legal_form): static
     {
         $this->legal_form = $legal_form;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): static
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): static
+    {
+        if ($this->customers->removeElement($customer)) {
+            // set the owning side to null (unless already changed)
+            if ($customer->getCompany() === $this) {
+                $customer->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }

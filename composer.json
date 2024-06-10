@@ -12,13 +12,14 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.17",
+        "fakerphp/faker": "^1.23",
         "gedmo/doctrine-extensions": "^3.15",
+        "knplabs/knp-paginator-bundle": "^6.4",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.25",
         "runtime/frankenphp-symfony": "^0.2.0",
         "stof/doctrine-extensions-bundle": "^1.11",
         "symfony/asset": "6.4.*",
-        "symfony/asset-mapper": "6.4.*",
         "symfony/console": "6.4.*",
         "symfony/doctrine-messenger": "6.4.*",
         "symfony/dotenv": "6.4.*",
@@ -39,15 +40,15 @@
         "symfony/runtime": "6.4.*",
         "symfony/security-bundle": "6.4.*",
         "symfony/serializer": "6.4.*",
-        "symfony/stimulus-bundle": "^2.17",
+        "symfony/stimulus-bundle": "^2.18",
         "symfony/string": "6.4.*",
         "symfony/translation": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
         "symfony/ux-icons": "^2.17",
         "symfony/ux-live-component": "^2.17",
         "symfony/ux-toggle-password": "^2.17",
-        "symfony/ux-turbo": "^2.14",
-        "symfony/ux-twig-component": "^2.17",
+        "symfony/ux-turbo": "^2.18",
+        "symfony/ux-twig-component": "^2.18",
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/webpack-encore-bundle": "^2.1",
@@ -86,8 +87,7 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "importmap:install": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -107,6 +107,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",

@@ -35,10 +35,6 @@ class Address
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $latitude = null;
 
-    #[ORM\OneToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Company $company = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -112,18 +108,6 @@ class Address
     public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?Company $company): static
-    {
-        $this->company = $company;
 
         return $this;
     }

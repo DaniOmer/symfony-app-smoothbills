@@ -1,0 +1,52 @@
+{# tailwindcss Sliding pagination control implementation #}
+{% if pageCount > 1 %}
+	<div class="inline-block">
+		<div class="flex items-center flex-row border border-primary rounded-sm w-auto">
+			{% if first is defined and current != first %}
+				<span class="bg-white text-primary w-8 h-8 flex items-center justify-center border-r border-primary font-bold">
+					<a href="{{ path(route, query|merge({(pageParameterName): first})) }}">
+						&lt;&lt;
+					</a>
+				</span>
+			{% endif %}
+
+			<span class="{% if previous is not defined %} bg-gray-300 text-gray-500 cursor-not-allowed {% else %}bg-white text-primary {% endif %} w-8 h-8 flex items-center justify-center border-r border-primary">
+				{% if previous is defined %}
+					<a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">
+						&lt;
+					</a>
+				{% else %}
+					&lt;
+				{% endif %}
+			</span>
+
+			{% for page in pagesInRange %}
+				{% if page != current %}
+					<span class="bg-white text-primary w-8 h-8 flex items-center justify-center border-r border-primary">
+						<a href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+					</span>
+				{% else %}
+					<span class="bg-primary text-white w-8 h-8 flex items-center justify-center text-lg font-bold underline underline-offset-2">{{ page }}</span>
+				{% endif %}
+			{% endfor %}
+
+			<span class="{% if next is not defined %} bg-gray-300 text-gray-500 cursor-not-allowed {% else %}bg-white text-primary {% endif %} w-8 h-8 flex items-center justify-center border-r border-primary">
+				{% if next is defined %}
+					<a rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}">
+						&gt;
+					</a>
+				{% else %}
+					&gt;
+				{% endif %}
+			</span>
+
+			{% if last is defined and current != last %}
+				<span class="bg-white text-primary w-8 h-8 flex items-center justify-center border-primary font-bold">
+					<a href="{{ path(route, query|merge({(pageParameterName): last})) }}">
+						&gt;&gt;
+					</a>
+				</span>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}

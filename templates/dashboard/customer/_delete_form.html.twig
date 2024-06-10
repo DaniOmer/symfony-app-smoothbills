@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('dashboard.customer.delete', {'id': customer.id}) }}" onsubmit="return confirm(`{{ 'crud.delete_confirmation'|trans }}`);">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
+    <button class="btn">{{ 'crud.delete'|trans }}</button>
+</form>
