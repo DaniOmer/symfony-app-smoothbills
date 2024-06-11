@@ -1,0 +1,16 @@
+{# templates/site/registration/complete_registration.html.twig #}
+
+{% extends 'base/base_site.html.twig' %}
+
+{% block title %}Completer l'Inscription{% endblock %}
+
+{% block body %}
+    <section class="container mx-auto mt-20">
+        <article class='w-full max-w-3xl mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
+            <header class="flex gap-2 text-primary justify-center items-center bg-white py-8 shadow-sm mb-5">
+                <span class="block text-5xl">{{ ux_icon('ri:mail-send-line') }}</span>
+                <h2 class="font-medium text-subtitle">{{ 'register.complete_registration'|trans }}</h2>
+            </header>
+        </article>
+    </section>
+{% endblock %}
