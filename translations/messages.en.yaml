@@ -41,3 +41,7 @@ error:
 
 site:
     home: "Home"
+
+dashboard:
+    home:
+        title: "General"

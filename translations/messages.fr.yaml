@@ -41,3 +41,7 @@ error:
 
 site:
     home: "Acceuil"
+
+general:
+    home:
+        title: "Général"
