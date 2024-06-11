@@ -34,3 +34,10 @@ customer:
     table_title: "Tous les clients"
     new: "Ajouter un client"
     name: "Client"
+
+error:
+    not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
+    general: "Une erreur s'est produite. Veuillez réessayer plus tard."
+
+site:
+    home: "Acceuil"

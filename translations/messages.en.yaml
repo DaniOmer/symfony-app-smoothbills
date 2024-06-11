@@ -34,3 +34,10 @@ customer:
     table_title: "All customers"
     new: "Add new Customer"
     name: "Customer"
+
+error:
+    not_found: "The page requested is not found. We suggest you to go back home."
+    general: "An error has occurred. Please try again later."
+
+site:
+    home: "Home"
