@@ -12,17 +12,50 @@
             </select>
         </div>
 
-        <div class="flex justify-between items-center gap-4 border-l-2 pl-5">
-            <div class="text-sm">
-                <span class="block font-semibold">
-                    {{ app.user.firstName }} {{ app.user.lastName }}
-                </span>
-                <span class="block">
-                    {{ role_labels[prior_role] }}
-                </span>
-            </div>
-            <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
-                SP
+        <div data-controller="actions" class="relative text-center">
+            <button class="actions-button flex justify-between items-center gap-4 border-l-2 pl-5" data-action="click->actions#showModal">
+                <div class="text-sm">
+                    <span class="block font-semibold">
+                        {{ app.user.firstName }} {{ app.user.lastName }}
+                    </span>
+                    <span class="block">
+                        {{ role_labels[prior_role] }}
+                    </span>
+                </div>
+                <div class="flex justify-center items-center gap-1">
+                    <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
+                        {% if app.user.avatar is not none %}
+                            <img src="{{ url(app.user.avatar) }}" alt="avatar" class="" />
+                        {% else %}
+                            {{ app.user.firstName|slice(0, 1) }}{{ app.user.lastName|slice(0, 1) }}
+                        {% endif %}
+                    </div>
+                    <span class="text-lg">{{ ux_icon('solar:alt-arrow-down-bold') }}</span>
+                </div>
+            </button>
+
+            <div class="modal w-60 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
+                <div class="actions-content">
+                    <div class="close text-right p-2 text-3xl font-bold flex justify-end" data-action="click->actions#closeModal">
+                        <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
+                    </div>
+                    <nav id="actions-list" class="flex flex-col">
+                        <a 
+                            href="#"
+                            id="profile-link"
+                            class="border-b hover:bg-primary/10 hover:border-primary px-4 py-2"
+                        >
+                            Profil
+                        </a>
+                        <a 
+                            href="#"
+                            id="setting-link"
+                            class="border-b hover:bg-primary/10 hover:border-primary px-4 py-2"
+                        >
+                            Settings
+                        </a>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
