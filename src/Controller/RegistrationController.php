@@ -54,7 +54,7 @@ class RegistrationController extends AbstractController
                     ->from(new Address($this->adminEmail, 'Smoothbill'))
                     ->to($user->getEmail())
                     ->subject('Bienvenue chez Smoothbill !')
-                    ->htmlTemplate('site/registration/confirmation_email.html.twig')
+                    ->htmlTemplate('site/registration/mail/verification_email.html.twig')
             );
 
             return $this->redirectToRoute('site.register.success');
@@ -66,10 +66,8 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register/success', name: 'site.register.success')]
-    public function registerSuccess(Request $request, MailerService $mailerService): Response
+    public function registerSuccess(Request $request): Response
     {
-        $mailerService->sendWelcomeEmail();
-
         $referer = $request->headers->get('referer');
         if (!$referer || strpos($referer, $this->generateUrl('site.register')) === false) {
             return $this->redirectToRoute('site.register');
@@ -79,9 +77,12 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'site.verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository, MailerService $mailerService): Response
     {
+        $currentTimeStamp = time();
         $userId = $request->query->get('id');
+        $expire = $request->query->get('expires');
+
         if (null === $userId) {
             $this->addFlash('verify_email_error', 'Le lien de vérification est invalide.');
             return $this->redirectToRoute('site.register');
@@ -93,8 +94,29 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('site.register');
         }
 
+        if($currentTimeStamp > $expire){
+            if($user->isVerified()){
+                return $this->redirectToRoute('site.login');
+            }
+
+            $this->emailVerifier->sendEmailConfirmation('site.verify_email', $user,
+                (new TemplatedEmail())
+                    ->from(new Address($this->adminEmail, 'Smoothbill'))
+                    ->to($user->getEmail())
+                    ->subject('Nouveau lien de vérification')
+                    ->htmlTemplate('site/registration/mail/verification_email.html.twig')
+            );
+
+            return $this->redirectToRoute('site.resend.verification.email');
+        }
+
         try {
+            $context = [
+                'user' => $user,
+            ];
             $this->emailVerifier->handleEmailConfirmation($request, $user);
+            $mailerService->sendWelcomeEmail($user, 'Smoothbill', $context, 'site/registration/mail/confirmation_email.html.twig');
+
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
@@ -103,5 +125,12 @@ class RegistrationController extends AbstractController
 
         $this->addFlash('success', 'Votre adresse mail a été vérifié avec succès.');
         return $this->redirectToRoute('site.login');
+    }
+
+
+    #[Route('/resend/verification/email', name: 'site.resend.verification.email')]
+    public function resendVerificationEmail(Request $request): Response
+    {
+        return $this->render('site/registration/resend_verification.html.twig');
     }
 }
