@@ -4,11 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\Role;
+use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -19,7 +22,7 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(private EmailVerifier $emailVerifier, #[Autowire('%admin_email%')] private $adminEmail)
     {
     }
 
@@ -46,12 +49,11 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('site.verify_email', $user,
                 (new TemplatedEmail())
-                    ->from(new Address('no-reply@login.smoothbill.com', 'Smoothbill'))
+                    ->from(new Address($this->adminEmail, 'Smoothbill'))
                     ->to($user->getEmail())
-                    ->subject('Validez votre adresse email')
+                    ->subject('Bienvenue chez Smoothbill !')
                     ->htmlTemplate('site/registration/confirmation_email.html.twig')
             );
 
@@ -64,8 +66,10 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register/success', name: 'site.register.success')]
-    public function registerSuccess(Request $request): Response
+    public function registerSuccess(Request $request, MailerService $mailerService): Response
     {
+        $mailerService->sendWelcomeEmail();
+
         $referer = $request->headers->get('referer');
         if (!$referer || strpos($referer, $this->generateUrl('site.register')) === false) {
             return $this->redirectToRoute('site.register');
@@ -75,13 +79,22 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'site.verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $userId = $request->query->get('id');
+        if (null === $userId) {
+            $this->addFlash('verify_email_error', 'Le lien de vérification est invalide.');
+            return $this->redirectToRoute('site.register');
+        }
 
-        // validate email confirmation link, sets User::isVerified=true and persists
+        $user = $userRepository->findOneBy(['id' => $userId]);
+        if(!$user) {
+            $this->addFlash('verify_email_error', 'Le lien de vérification est invalide.');
+            return $this->redirectToRoute('site.register');
+        }
+
         try {
-            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
+            $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
@@ -89,6 +102,6 @@ class RegistrationController extends AbstractController
         }
 
         $this->addFlash('success', 'Votre adresse mail a été vérifié avec succès.');
-        return $this->redirectToRoute('dashboard.home');
+        return $this->redirectToRoute('site.login');
     }
 }

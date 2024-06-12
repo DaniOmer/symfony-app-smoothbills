@@ -1,20 +1,14 @@
-<div class="text-sm text-center">
-    <div class="flex items-center gap-4 text-xl mb-5 text-subtitle">
-        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
-        <span class="font-bold">SMOOTHBILL</span>
-    </div>
-    <h1 class="font-semibold m-4 text-subtitle">Activez votre compte</h1>
+<div style="font-family: Arial, sans-serif; color: #333;">
+    <h1 style="font-weight: bold; font-size: 1.25rem; text-center; margin-bottom: 20px;">SMOOTHBILL</h1>
+    <h2 style="font-weight: 600; margin: 0 16px; color: #666;">Activez votre compte</h2>
     <p>
         Afin de pouvoir activer votre compte, nous devons valider votre adresse email. Cliquez simplement sur le lien :
-        <a class="block px-4 py-2 bg-primary/20 mt-10 mb-6" href="{{ signedUrl|raw }}">Validation</a>
+        <a style="display: block; width: fit-content; padding: 10px 16px; color: black; background-color: rgba(0, 123, 255, 0.2); margin-top: 40px; margin-bottom: 24px; color: #007bff; text-decoration: none;" href="{{ signedUrl|raw }}">Validation</a>
     </p>
-    <p>
-        Si ce lien ne fonctionne pas, copiez-collez l'URL suivante dans votre navgateur :</br>
-        {{ signedUrl|raw }}
-    </p>
+    <p>Si ce lien ne fonctionne pas, copiez-collez l'URL suivante dans votre navigateur :</p>
+    <p>{{ signedUrl|raw }}</p>
+    <p>Ce lien expire dans 24 heures.</p>
 
-    <p class="mt-10 text-center">
-        Bienvenue à bord !</br>
-        L'équipe Smoothbill
-    </p>
+    <p style="margin-top: 40px; text-align: center;">Bienvenue à bord !</p>
+    <p style="text-align: center;">L'équipe Smoothbill</p>
 </div>
