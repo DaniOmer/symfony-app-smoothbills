@@ -1,11 +1,20 @@
-<h1>Bonjour! Merci de bien vouloir valider votre adresse mail!</h1>
+<div class="text-sm text-center">
+    <div class="flex items-center gap-4 text-xl mb-5 text-subtitle">
+        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+        <span class="font-bold">SMOOTHBILL</span>
+    </div>
+    <h1 class="font-semibold m-4 text-subtitle">Activez votre compte</h1>
+    <p>
+        Afin de pouvoir activer votre compte, nous devons valider votre adresse email. Cliquez simplement sur le lien :
+        <a class="block px-4 py-2 bg-primary/20 mt-10 mb-6" href="{{ signedUrl|raw }}">Validation</a>
+    </p>
+    <p>
+        Si ce lien ne fonctionne pas, copiez-collez l'URL suivante dans votre navgateur :</br>
+        {{ signedUrl|raw }}
+    </p>
 
-<p>
-    Validez votre adresse mail en cliquant sur le lien suivant : <br><br>
-    <a href="{{ signedUrl|raw }}">Validation</a>.
-    Ce lien expire dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
-</p>
-
-<p>
-    L'équipe Smoothbill !
-</p>
+    <p class="mt-10 text-center">
+        Bienvenue à bord !</br>
+        L'équipe Smoothbill
+    </p>
+</div>
