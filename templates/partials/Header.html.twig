@@ -20,7 +20,6 @@
             
             <ul class="flex items-center gap-4">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    {# <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="{{disconectClasses}}">Se déconnecter</twig:MenuItem> #}
                     <twig:MenuItem href="{{path('dashboard.home')}}" additionalClasses="{{dashboardClasses}}">Dashboard</twig:MenuItem>
                 {% else %}
                     <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
