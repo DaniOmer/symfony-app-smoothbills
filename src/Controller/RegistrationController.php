@@ -34,10 +34,10 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'site.register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
-        if($this->isGranted('ROLE_USER')){
+        if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('site.home');
         }
-        
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -124,5 +124,16 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('site/registration/resend_verification.html.twig');
+    }
+
+    #[Route('/complete/registration', name: 'site.complete_registration')]
+    public function completeRegistration(Request $request): Response
+    {
+        $user = $this->getUser();
+        if ($user->isRegistrationComplete()) {
+            return $this->redirectToRoute('dashboard.home');
+        }
+
+        return $this->render('site/registration/complete_registration.html.twig');
     }
 }

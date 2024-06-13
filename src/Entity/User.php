@@ -275,4 +275,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function isRegistrationComplete(): bool
+    {
+        return $this->getCompany() !== null;
+    }
 }
