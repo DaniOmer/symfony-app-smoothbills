@@ -22,3 +22,17 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\UserRegistrationChecker:
+        arguments:
+            $cache: '@cache.app'
+            $userRepository: '@App\Repository\UserRepository'
+            $security: '@security.helper'
+
+    App\EventSubscriber\UserRegistrationSubscriber:
+        arguments:
+            $registrationChecker: '@App\Service\UserRegistrationChecker'
+            $router: '@router'
+            $twig: '@twig'
+        tags:
+            - { name: 'kernel.event_subscriber' }
