@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        self::UuidConstruct();
+        $this->UuidConstruct();
         $this->customers = new ArrayCollection();
     }
 

@@ -81,26 +81,26 @@ class RegistrationController extends AbstractController
     public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository, MailerService $mailerService, SessionInterface $session): Response
     {
         $currentTimeStamp = time();
-        $userId = $request->query->get('id');
+        $userUid = $request->query->get('id');
         $expire = $request->query->get('expires');
-
         $token = bin2hex(random_bytes(32));
 
-        if (null === $userId) {
+        if (null === $userUid) {
             $this->addFlash('verify_email_error', 'Le lien de vérification est invalide.');
             return $this->redirectToRoute('site.register');
         }
 
-        $user = $userRepository->findOneBy(['id' => $userId]);
+        $user = $userRepository->findOneBy(['uid' => $userUid]);
         if(!$user) {
             $this->addFlash('verify_email_error', 'Le lien de vérification est invalide.');
             return $this->redirectToRoute('site.register');
         }
 
+        if($user->isVerified()){
+            return $this->redirectToRoute('site.login');
+        }
+
         if($currentTimeStamp > $expire){
-            if($user->isVerified()){
-                return $this->redirectToRoute('site.login');
-            }
 
             $this->emailVerifier->sendEmailConfirmation('site.verify_email', $user,
                 (new TemplatedEmail())
@@ -118,7 +118,7 @@ class RegistrationController extends AbstractController
         try {
 
             $this->emailVerifier->handleEmailConfirmation($request, $user);
-            $mailerService->sendWelcomeEmail($user, 'Smoothbill', ['user' => $user,], 'site/registration/mail/confirmation_email.html.twig');
+            $mailerService->sendWelcomeEmail($user, 'Votre compte a été validé !', ['user' => $user,], 'site/registration/mail/confirmation_email.html.twig');
             return $this->redirectToRoute('site.login');
 
         } catch (VerifyEmailExceptionInterface $exception) {
