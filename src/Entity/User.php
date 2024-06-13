@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,8 +18,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte associé à cette adresse e-mail.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
     use TimestampableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -66,12 +68,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Customer::class)]
     private Collection $customers;
 
-    public function __construct()
-    {
-        $this->customers = new ArrayCollection();
-    }
     #[ORM\Column]
     private bool $isVerified = false;
+
+    public function __construct()
+    {
+        self::UuidConstruct();
+        $this->customers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
