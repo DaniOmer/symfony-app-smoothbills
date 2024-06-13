@@ -118,8 +118,8 @@ class RegistrationController extends AbstractController
     {
         $token = $request->query->get('token');
         $sessionToken = $session->get('verification_token');
-
-        if ($token !== $sessionToken) {
+        
+        if (!$token || !$sessionToken || $token !== $sessionToken) {
             return $this->redirectToRoute('site.login');
         }
 
