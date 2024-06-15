@@ -6,6 +6,8 @@ use App\Entity\Address;
 use App\Entity\Customer;
 use App\Form\CustomerType;
 use App\Service\CustomerService;
+use App\Service\UserRegistrationChecker;
+use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/dashboard/customer')]
 class CustomerController extends AbstractController
 {
+    use ProfileCompletionTrait;
+
     private $customerService;
     public function __construct(CustomerService $customerService)
     {
@@ -22,7 +26,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
-    public function index(Request $request,): Response
+    public function index(Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
         $customers = $this->customerService->getPaginatedCustomers($page);
@@ -31,7 +35,6 @@ class CustomerController extends AbstractController
         $rows = $this->customerService->getCustomersRows($page);
 
         $config = [
-            'title' => 'Liste des Clients',
             'headers' => $headers,
             'rows' => $rows,
             'actions' => [
@@ -46,8 +49,12 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/new', name: 'dashboard.customer.new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(Request $request, UserRegistrationChecker $userRegistrationChecker): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         $user = $this->getUser();
         $customer = new Customer();
         $address = new Address();
