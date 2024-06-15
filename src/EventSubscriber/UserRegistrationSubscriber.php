@@ -35,10 +35,10 @@ class UserRegistrationSubscriber implements EventSubscriberInterface
         $isRegistrationComplete = $this->registrationChecker->isRegistrationComplete();
         $this->twig->addGlobal('isRegistrationComplete', $isRegistrationComplete);
 
-        if (!$isRegistrationComplete) {
-            $url = $this->router->generate('site.complete_registration');
-            $event->setController(fn () => new RedirectResponse($url));
-        }
+        // if (!$isRegistrationComplete) {
+        //     $url = $this->router->generate('site.complete_registration');
+        //     $event->setController(fn () => new RedirectResponse($url));
+        // }
     }
 
     public static function getSubscribedEvents(): array
