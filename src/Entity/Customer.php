@@ -3,11 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,6 +41,11 @@ class Customer
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
+
+    public function __construct()
+    {
+        $this->UuidConstruct();
+    }
 
     public function getId(): ?int
     {
