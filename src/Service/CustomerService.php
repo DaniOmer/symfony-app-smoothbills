@@ -54,7 +54,7 @@ class CustomerService
         $address->setAddress($form->get('address')->getData()->getAddress());
         $this->entityManager->persist($address);
 
-        $customer->setCreatedBy($user);
+        $customer->setOwner($user);
         $customer->setCompany($user->getCompany());
         $this->entityManager->persist($customer);
             

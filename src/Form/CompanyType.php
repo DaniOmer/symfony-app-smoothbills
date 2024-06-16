@@ -29,19 +29,13 @@ class CompanyType extends AbstractType
             ->add('sector')
             ->add('logo')
             ->add('signing')
-            ->add('created_at', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updated_at', null, [
-                'widget' => 'single_text',
-            ])
             ->add('legal_form', EntityType::class, [
                 'class' => LegalForm::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
-            ->add('address', EntityType::class, [
-                'class' => Address::class,
-                'choice_label' => 'id',
+            ->add('address', AddressType::class, [
+                'data_class' => Address::class,
+                'label' => false
             ])
         ;
     }
