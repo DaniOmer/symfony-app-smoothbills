@@ -1,0 +1,13 @@
+{# templates/bundles/TwigBundle/Exception/error.html.twig #}
+{% extends app.request.attributes.get('_route') starts with 'dashboard' ? 'base/base_dashboard.html.twig' : 'base/base_site.html.twig' %}
+{% set class = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-4 py-2 transition ease-in-out delay-100" %}
+
+{% block body %}
+    <section class="w-lvw h-2/3 mx-auto py-10 rounded-md flex flex-col items-center translate-y-1/2 ">
+
+        <h1 class="text-7xl font-subtitle font-semibold mb-10">Oops...</h1>
+        <p class="mb-5"> {{ 'error.not_found'|trans}} </p>
+        <twig:MenuItem href="#" additionalClasses="{{ class }}">{{ 'error.general'|trans}}</twig:MenuItem>
+
+    </section>
+{% endblock %}

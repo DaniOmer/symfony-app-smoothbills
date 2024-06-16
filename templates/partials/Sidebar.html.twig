@@ -9,7 +9,7 @@
     <h2 class="text-subtitle font-semibold mt-10 mb-4">MENU</h2>
     <nav class="menu">
         <ul class="flex flex-col gap-1">
-            <twig:MenuItem href="#" alt="General" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.home' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+            <twig:MenuItem href="{{ path('dashboard.home') }}" alt="General" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.home' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
                 {{ ux_icon('zondicons:view-tile') }}
                 Général
             </twig:MenuItem>

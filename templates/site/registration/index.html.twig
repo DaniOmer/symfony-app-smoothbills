@@ -22,7 +22,7 @@
             </div>
 
             {% for flash_error in app.flashes('verify_email_error') %}
-            <div class="" role="alert">{{ flash_error }}</div>
+                <div class="text-red-500 my-1 text-sm" role="alert">{{ flash_error }}</div>
             {% endfor %}
 
             {{ form_errors(registrationForm) }}

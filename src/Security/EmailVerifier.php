@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ class EmailVerifier
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
         private MailerInterface $mailer,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -24,7 +25,8 @@ class EmailVerifier
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
             (string) $user->getId(),
-            $user->getEmail()
+            $user->getEmail(),
+            ['id' => $user->getUid()]
         );
 
         $context = $email->getContext();
@@ -48,5 +50,37 @@ class EmailVerifier
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+    }
+
+    public function verify(Request $request, object $user, string $expire): void
+    {
+
+        $this->guardAgainstInvalidUser($user);
+        $this->guardAgainstAlreadyVerified($user);
+        $this->guardAgainstExpiredLink($expire, $user);
+
+        $this->handleEmailConfirmation($request, $user);
+    }
+
+    private function guardAgainstInvalidUser(?object $user): void
+    {
+        if (!$user) {
+            throw new \LogicException('Le lien de vérification est invalide.');
+        }
+    }
+
+    private function guardAgainstAlreadyVerified(object $user): void
+    {
+        if ($user->isVerified()) {
+            throw new \LogicException('Votre compte a déjà été vérifié.');
+        }
+    }
+
+    private function guardAgainstExpiredLink(string $expire, $user): void
+    {
+        $currentTimeStamp = time();
+        if ($currentTimeStamp > $expire) {
+            throw new \LogicException('Le lien de vérification a expiré.');
+        }
     }
 }

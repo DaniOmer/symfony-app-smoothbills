@@ -1,9 +1,9 @@
 {% set baseClasses = "flex items-center gap-2 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
 {% set createAccountClasses = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
-{% set disconectClasses = "flex items-center gap-2 border border-primary bg-transparent text-black hover:bg-primary hover:text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+{% set dashboardClasses = "flex items-center border border-primary bg-transparent text-black hover:bg-primary hover:text-white rounded-half px-4 py-2 transition ease-in-out delay-100" %}
 
-<header >
-   <div class="container mx-auto py-4 flex items-center" >
+<header>
+   <div class="container mx-auto py-4 flex" >
         <div class="flex items-center gap-4 text-xl">
             <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
             <h1 class="font-bold">SMOOTHBILL</h1>
@@ -20,7 +20,7 @@
             
             <ul class="flex items-center gap-4">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="{{disconectClasses}}">Se déconnecter</twig:MenuItem>
+                    <twig:MenuItem href="{{path('dashboard.home')}}" additionalClasses="{{dashboardClasses}}">Dashboard</twig:MenuItem>
                 {% else %}
                     <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
                     <twig:MenuItem href="{{path('site.register')}}" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
