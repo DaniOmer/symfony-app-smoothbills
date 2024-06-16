@@ -38,11 +38,40 @@
         <header class="w-full flex justify-between mb-[40px]">
             <h1 class="text-title font-title font-semibold">{{ 'customer.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
-                <twig:MenuItem href="{{ path('dashboard.customer.new') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                {# <a 
+                    data-controller="tooltip" 
+                    data-tooltip-target="link"
+                    href="{{ path('dashboard.customer.new') }}" 
+                    class="relative flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 "
+                >
                     <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
                     {{ 'crud.upload'|trans }}
-                </twig:MenuItem>
-                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.customer.new') }}">{{ 'crud.create_new'|trans }}</a>
+                </a>
+                <a
+                    data-controller="tooltip" 
+                    data-tooltip-target="link"
+                    href="{{ path('dashboard.customer.new') }}"
+                    class="block px-4 py-3 border border-primary bg-primary text-white disa rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75 {% if not isRegistrationComplete %} pointer-events-none opacity-50 {% endif %}" 
+                >
+                    {{ 'crud.create_new'|trans }}
+                </a> #}
+                <div data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                    <a 
+                        href="{{ path('dashboard.customer.new') }}" 
+                        class="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}"
+                    >
+                        <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
+                        {{ 'crud.upload'|trans }}
+                    </a>
+                </div>
+                <div data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                    <a
+                        href="{{ path('dashboard.customer.new') }}"
+                        class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75 {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}" 
+                    >
+                        {{ 'crud.create_new'|trans }}
+                    </a>
+                </div>
             </div>
         </header>
 
