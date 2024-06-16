@@ -46,9 +46,10 @@ class UserService
     public function sendAccountValidationConfirmation(object $user): void
     {
         $this->mailerService->sendWelcomeEmail(
-            $user, 'Votre compte a été validé !', 
+            $user, 
+            'site/registration/mail/confirmation_email.html.twig',
             ['user' => $user,], 
-            'site/registration/mail/confirmation_email.html.twig'
+            'Votre compte a été validé !', 
         );
     }
 }

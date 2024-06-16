@@ -14,7 +14,7 @@ class MailerService
     {
     }
 
-    public function sendWelcomeEmail(User $user, $subject='no-reply', $context=[], $template): void
+    public function sendWelcomeEmail(User $user,  $template, $context=[], $subject='no-reply',): void
     {
         $email = (new NotificationEmail())
             ->from(new Address($this->adminEmail, 'Smoothbill'))
