@@ -20,19 +20,27 @@ class CustomerController extends AbstractController
     use ProfileCompletionTrait;
 
     private $customerService;
-    public function __construct(CustomerService $customerService)
+    private $userRegistrationChecker;
+
+    public function __construct(CustomerService $customerService, UserRegistrationChecker $userRegistrationChecker)
     {
         $this->customerService = $customerService;
+        $this->userRegistrationChecker = $userRegistrationChecker;
     }
 
     #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
     public function index(Request $request): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
-        $customers = $this->customerService->getPaginatedCustomers($page);
+        $customers = $this->customerService->getPaginatedCustomers($user, $page);
 
         $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
-        $rows = $this->customerService->getCustomersRows($page);
+        $rows = $this->customerService->getCustomersRows($user, $page);
 
         $config = [
             'headers' => $headers,
@@ -49,9 +57,9 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/new', name: 'dashboard.customer.new', methods: ['GET', 'POST'])]
-    public function new(Request $request, UserRegistrationChecker $userRegistrationChecker): Response
+    public function new(Request $request): Response
     {
-        if ($redirectResponse = $this->isProfileComplete($userRegistrationChecker)) {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
@@ -76,6 +84,9 @@ class CustomerController extends AbstractController
     #[Route('/{uid}/edit', name: 'dashboard.customer.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
         
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);

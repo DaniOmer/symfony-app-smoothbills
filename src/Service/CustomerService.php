@@ -21,18 +21,18 @@ class CustomerService
         $this->entityManager = $entityManager;
     }
 
-    public function getPaginatedCustomers($page): PaginationInterface
+    public function getPaginatedCustomers(User $user, $page): PaginationInterface
     {
-        $paginateCustumers = $this->customerRepository->paginateCustomers($page);
+        $paginateCustumers = $this->customerRepository->paginateCustomersByCompany($user, $page);
 
         return $paginateCustumers;
     }
 
-    public function getCustomersRows($page): Array
+    public function getCustomersRows(User $user, $page): Array
     {
         $rows = [];
 
-        foreach ($this->getPaginatedCustomers($page) as $customer) {
+        foreach ($this->getPaginatedCustomers($user, $page) as $customer) {
             $rows[] = [
                 'name' => $customer->getName(),
                 'mail' => $customer->getMail(),
