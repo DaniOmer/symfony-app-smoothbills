@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Address;
 use App\Entity\Company;
 use App\Entity\LegalForm;
-use App\Form\DataTransformer\FileToUrlTransformer;
 use App\Validator\EscapeCharacter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,15 +19,9 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class CompanyType extends AbstractType
 {
-    public function __construct(
-        private FileToUrlTransformer $fileToUrlTransformer
-    ){
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -120,18 +113,6 @@ class CompanyType extends AbstractType
                 ],
                 'trim' => true,
             ])
-            // ->add('signing', DropzoneType::class, [
-            //     'attr' => [
-            //         'placeholder' => 'Cliquez pour télécharger ou drag and drop.',
-            //         'data-controller' => 'dropzone',
-            //     ],
-            // ])
-            // ->add('logo', DropzoneType::class, [
-            //     'attr' => [
-            //         'placeholder' => 'Cliquez pour télécharger ou drag and drop.',
-            //         'data-controller' => 'dropzone',
-            //     ],
-            // ])
             ->add('legal_form', EntityType::class, [
                 'class' => LegalForm::class,
                 'choice_label' => 'name',
@@ -148,10 +129,6 @@ class CompanyType extends AbstractType
             $data->setMail(strtolower($data->getMail()));
             $event->setData($data);
         });
-
-        // $builder->get('signing')->addModelTransformer($this->fileToUrlTransformer);
-
-        // $builder->get('logo')->addModelTransformer($this->fileToUrlTransformer);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
