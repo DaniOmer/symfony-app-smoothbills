@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CompanyRepository;
 use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,8 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
     use TimestampableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -40,7 +42,7 @@ class Company
     #[ORM\Column(length: 255)]
     private ?string $mail = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creation_date = null;
 
     #[ORM\Column]
@@ -70,6 +72,7 @@ class Company
 
     public function __construct()
     {
+        $this->UuidConstruct();
         $this->customers = new ArrayCollection();
     }
 

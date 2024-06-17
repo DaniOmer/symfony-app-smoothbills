@@ -30,13 +30,11 @@ class Customer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'customers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne(inversedBy: 'customers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $created_by = null;
+    #[ORM\ManyToOne]
+    private ?User $owner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -112,14 +110,14 @@ class Customer
         return $this;
     }
 
-    public function getCreatedBy(): ?User
+    public function getOwner(): ?User
     {
-        return $this->created_by;
+        return $this->owner;
     }
 
-    public function setCreatedBy(?User $created_by): static
+    public function setOwner(?User $owner): static
     {
-        $this->created_by = $created_by;
+        $this->owner = $owner;
 
         return $this;
     }

@@ -27,8 +27,8 @@ class CustomerRepository extends ServiceEntityRepository
     {
         return $this->paginator->paginate(
             $this->createQueryBuilder('c')
-                ->andWhere('c.company_id = :companyId')
-                ->setParameter('companyId', $user->getCompany()->getId())
+                ->andWhere('c.company = :company')
+                ->setParameter('company', $user->getCompany())
                 ->orderBy('c.id', 'ASC')
                 ->getQuery(),
             $page,

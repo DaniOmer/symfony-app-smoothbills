@@ -22,7 +22,7 @@
                 <twig:MenuItem 
                     href="{{ path('dashboard.customer.index') }}" 
                     alt="Clients" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.customer' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.customer' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('fluent:people-team-16-regular') }}
                     Clients
                 </twig:MenuItem>
@@ -31,7 +31,7 @@
                 <twig:MenuItem 
                     href="#" 
                     alt="Services" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.service' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.service' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('ph:handshake') }}
                     Services
                 </twig:MenuItem>
@@ -40,7 +40,7 @@
                 <twig:MenuItem 
                     href="#" 
                     alt="Devis" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.bill' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.bill' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('teenyicons:cost-estimate-outline') }}
                     Devis
                 </twig:MenuItem>
@@ -49,7 +49,7 @@
                 <twig:MenuItem 
                     href="#" 
                     alt="Factures" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.invoice' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.invoice' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('la:file-invoice-dollar') }}
                     Factures
                 </twig:MenuItem>
@@ -58,7 +58,7 @@
                 <twig:MenuItem 
                     href="#" 
                     alt="Paiement" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('solar:hand-money-linear') }}
                     Paiement
                 </twig:MenuItem>
@@ -66,7 +66,7 @@
             <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
                     href="#" alt="Rapports" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {% if not isRegistrationComplete %} pointer-events-none opacity-60 {% endif %}">
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('lets-icons:line-up') }}
                     Rapports
                 </twig:MenuItem>

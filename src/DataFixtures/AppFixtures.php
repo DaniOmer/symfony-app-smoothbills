@@ -10,6 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
 
 class AppFixtures extends Fixture
 {
@@ -73,7 +74,8 @@ class AppFixtures extends Fixture
             $company->setLogo($faker->imageUrl(200, 200, 'business'));
             $company->setSigning($faker->imageUrl(200, 200, 'signature'));
             $company->setLegalForm($legalForms[array_rand($legalForms)]);
-            $company->setAddress($address); // Set the unique address
+            $company->setAddress($address);
+            $company->setUid(Uuid::v7());
             $manager->persist($company);
             $companies[] = $company;
         }
