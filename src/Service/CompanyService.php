@@ -32,6 +32,5 @@ class CompanyService
         $this->entityManager->persist($user);
 
         $this->entityManager->flush();
-        $this->entityManager->flush();
     }
 }

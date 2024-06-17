@@ -6,7 +6,7 @@
             <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
             <div id="customer_info" class="grid grid-cols-2 gap-x-5">
                 {{ form_row(form.denomination, {
-                    label: 'Nom',
+                    label: 'Nom de l\'entreprise',
                 }) }}
                 <div class="grid grid-cols-2 gap-x-5">
                     {{ form_row(form.mail, {
@@ -32,14 +32,36 @@
                         label: 'Code postal',
                     }) }}
                 </div>
-                <div class="grid grid-cols-2 gap-x-5">
-                    {{ form_row(form.logo, {
-                        label: 'Logo',
-                    }) }}
-                    {{ form_row(form.signing, {
-                        label: 'Signature',
-                    }) }}
-                </div>
+                {# <div class="grid grid-cols-2 gap-x-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-20 h-20">
+                            <img 
+                                src="{{ company.signing }}"
+                                alt="Logo de {{ company.denomination }}"
+                                class="object-cover w-full h-full rounded-full" 
+                            />
+                        </div>
+                        <div class="flex-1">
+                            {{ form_row(form.signing, {
+                                label: 'Signature',
+                            }) }}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-20 h-20">
+                            <img 
+                                src="{{ company.logo }}" 
+                                alt="Logo de {{ company.denomination }}"
+                                class="object-cover w-full h-full rounded-full"
+                            />
+                        </div>
+                        <div class="flex-1">
+                            {{ form_row(form.logo, {
+                                label: 'Logo',
+                            }) }}
+                        </div>
+                    </div>
+                </div> #}
                 <div class="grid grid-cols-2 gap-x-5">
                     {{ form_row(form.address.city, {
                         label: 'Ville',
