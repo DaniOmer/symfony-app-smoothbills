@@ -40,12 +40,30 @@
         } %}
     </head>
     <body>
-        <div class="flex bg-background">
-            {% include "partials/Sidebar.html.twig" %}
-            <main class="flex-1 ml-[40px] mr-[33px]">
-                {% include "partials/DashboardHeader.html.twig" %}
-                {% block body %}{% endblock %}
-            </main>
+        <div class="relative">
+            {% if not isRegistrationComplete and app.current_route != 'dashboard.settings.company' %}
+                <div class="absolute top-0 left-0 right-0 z-10">
+                    <twig:Banner>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                            <p class="text-sm">
+                                Renseignez les informations de votre entreprise pour profiter de nos services.
+                            </p>
+                            <a href="{{ path('dashboard.settings.company') }}" 
+                                class="flex gap-1 items-center rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-tertiary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-secondary">
+                                Compléter
+                                {{ ux_icon('material-symbols:line-end-arrow') }}
+                            </a>
+                        </div>
+                    </twig:Banner>
+                </div>
+            {% endif %}
+            <div class="flex bg-background relative">
+                {% include "partials/Sidebar.html.twig" %}
+                <main class="flex-1 ml-[40px] mr-[33px]">
+                    {% include "partials/DashboardHeader.html.twig" %}
+                    {% block body %}{% endblock %}
+                </main>
+            </div>
         </div>
     </body>
 </html>

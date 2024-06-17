@@ -27,18 +27,20 @@ class UserRegistrationSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $routeName = $request->attributes->get('_route');
-
-        if (in_array($routeName, ['site.complete_registration']) || str_starts_with($routeName, 'site.')) {
-            return;
-        }
-
         $isRegistrationComplete = $this->registrationChecker->isRegistrationComplete();
         $this->twig->addGlobal('isRegistrationComplete', $isRegistrationComplete);
 
-        if (!$isRegistrationComplete) {
-            $url = $this->router->generate('site.complete_registration');
-            $event->setController(fn () => new RedirectResponse($url));
-        }
+        // if (in_array($routeName, ['dashboard.home']) || str_starts_with($routeName, 'site.') || str_starts_with($routeName, 'dashboard.settings.')) {
+        //     return;
+        // }
+
+        // Cette redirection est un peu tricky et provoque des bugs.
+        // La debug bar est désactivé
+        // Faudra essayé de comprendre pourquoi mais c'est lié aux redirections hors controller
+        // if (!$isRegistrationComplete) {
+        //     $url = $this->router->generate('dashboard.settings.company.create');
+        //     $event->setController(fn () => new RedirectResponse($url));
+        // }
     }
 
     public static function getSubscribedEvents(): array

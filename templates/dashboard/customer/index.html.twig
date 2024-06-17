@@ -2,26 +2,35 @@
 
 {% block title %}{{ 'customer.index_title'|trans }}{% endblock %}
 
-{% set actions = [
-    {'route': 'dashboard.customer.show', 'label': 'crud.show'|trans},
-    {'route': 'dashboard.customer.edit', 'label': 'crud.edit'|trans},
-    {'route': 'dashboard.customer.delete', 'label': 'crud.delete'|trans}
-]
-%}
-
 {% block body %}
     <section>
         <header class="w-full flex justify-between mb-[40px]">
             <h1 class="text-title font-title font-semibold">{{ 'customer.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
-                <twig:MenuItem href="{{ path('dashboard.customer.new') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                     <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
+                <a 
+                    href="{{ path('dashboard.customer.new') }}" 
+                    class="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75"
+                >
+                    <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
                     {{ 'crud.upload'|trans }}
-                </twig:MenuItem>
-                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.customer.new') }}">{{ 'crud.create_new'|trans }}</a>
+                </a>
+                <a
+                    href="{{ path('dashboard.customer.new') }}"
+                    class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
+                >
+                    {{ 'crud.create_new'|trans }}
+                </a>
             </div>
         </header>
 
-        {{ component('table', { customers: customers, headers: headers, rows: rows, title: 'customer.table_title'|trans, actions: actions }) }}
+        {{ component('table', {
+            customers: customers,
+            headers: headers,
+            rows: rows,
+            title: 'customer.table_title'|trans,
+            actions: actions,
+            deleteFormTemplate: deleteFormTemplate,
+            deleteRoute: deleteRoute,
+        }) }}
     </section>
 {% endblock %}
