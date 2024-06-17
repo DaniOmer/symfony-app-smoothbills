@@ -44,6 +44,7 @@ class CompanyController extends AbstractController
 
             $userRegistrationChecker->updateRegistrationCache($user->getId());
             
+            $this->addFlash('success', 'Les informations de votre entreprise ont bien été enregistré');
             return $this->redirectToRoute('dashboard.settings.company', [], Response::HTTP_SEE_OTHER);
         }
 
