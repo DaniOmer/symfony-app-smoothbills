@@ -28,6 +28,8 @@ crud:
     create_new: "Créer un nouveau"
     upload: "Importer"
     download: "Exporter"
+    export: "Exporter"
+    export_all: "Tout exporter"
 
 customer:
     title: "Clients"

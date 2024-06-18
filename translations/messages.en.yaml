@@ -27,6 +27,8 @@ crud:
     create_new: "Create new"
     upload: "Upload"
     download: "Download"
+    export: "Export"
+    export_all: "Export all"
 
 customer:
     title: "Clients"

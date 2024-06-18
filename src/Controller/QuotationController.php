@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/dashboard/quotation')]
@@ -139,5 +140,58 @@ class QuotationController extends AbstractController
         }
 
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
+    public function exportQuotation(Quotation $quotation): Response
+    {
+        $response = new StreamedResponse(function() use ($quotation) {
+            $handle = fopen('php://output', 'w+');
+
+            fputcsv($handle, ['Nom', 'Status', 'Client', 'Envoyé le'], ';');
+
+            fputcsv($handle, [
+                $quotation->getUid(),
+                $quotation->getQuotationStatus()->getName(),
+                $quotation->getCustomer()->getName(),
+                $quotation->getDate()->format('Y-m-d H:i:s')
+            ], ';');
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="quotation_'.$quotation->getUid().'.csv"');
+
+        return $response;
+    }
+
+    #[Route('/export/all', name: 'dashboard.quotation.export_all', methods: ['GET'])]
+    public function exportAllQuotations(QuotationRepository $quotationRepository): Response
+    {
+        $quotations = $quotationRepository->findAll();
+
+        $response = new StreamedResponse(function() use ($quotations) {
+            $handle = fopen('php://output', 'w+');
+
+            fputcsv($handle, ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'], ';');
+
+            foreach ($quotations as $quotation) {
+                fputcsv($handle, [
+                    $quotation->getId(),
+                    $quotation->getUid(),
+                    $quotation->getQuotationStatus()->getName(),
+                    $quotation->getCustomer()->getName(),
+                    $quotation->getDate()->format('Y-m-d H:i:s')
+                ], ';');
+            }
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="all_quotations.csv"');
+
+        return $response;
     }
 }

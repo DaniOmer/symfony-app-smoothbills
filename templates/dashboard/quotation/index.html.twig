@@ -5,7 +5,8 @@
 {% set actions = [
     {'route': 'dashboard.quotation.show', 'label': 'crud.show'|trans},
     {'route': 'dashboard.quotation.edit', 'label': 'crud.edit'|trans},
-    {'route': 'dashboard.quotation.delete', 'label': 'crud.delete'|trans}
+    {'route': 'dashboard.quotation.delete', 'label': 'crud.delete'|trans},
+    {'route': 'dashboard.quotation.export', 'label': 'crud.export'|trans}
 ]
 %}
 
@@ -25,6 +26,7 @@
                     {{ 'crud.upload'|trans }}
                 </twig:MenuItem>
                 <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
+                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.export_all') }}">{{ 'crud.export_all'|trans }}</a>
             </div>
         </header>
         <div class="flex justify-between items-center gap-4">
