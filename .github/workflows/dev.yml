@@ -25,9 +25,8 @@ jobs:
             git fetch --all &&
             git reset --hard origin/dev &&
             git pull origin dev &&
-            docker compose build &&
-            docker compose up --pull always -d --wait &&
-            docker compose exec php composer install &&
+            sudo docker compose -f compose.yaml -f compose.prod.yaml up -d --wait &&
+            sudo docker compose exec php composer install &&
             npm install &&
             npm run watch
           '
