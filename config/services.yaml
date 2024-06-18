@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     admin_email: "no-reply@smoothbill.fr"
+    aws_s3_bucket_name: "smoothbill-dev-eu-west-3"
 
 services:
     # default configuration for services in *this* file
@@ -26,14 +27,14 @@ services:
 
     App\Service\UserRegistrationChecker:
         arguments:
-            $cache: '@cache.app'
+            $cache: "@cache.app"
             $userRepository: '@App\Repository\UserRepository'
-            $security: '@security.helper'
+            $security: "@security.helper"
 
     App\EventSubscriber\UserRegistrationSubscriber:
         arguments:
             $registrationChecker: '@App\Service\UserRegistrationChecker'
-            $router: '@router'
-            $twig: '@twig'
+            $router: "@router"
+            $twig: "@twig"
         tags:
-            - { name: 'kernel.event_subscriber' }
+            - { name: "kernel.event_subscriber" }

@@ -5,11 +5,16 @@ namespace App\Entity;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,13 +32,11 @@ class Customer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\ManyToOne(inversedBy: 'customers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne(inversedBy: 'customers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $created_by = null;
+    #[ORM\ManyToOne]
+    private ?User $owner = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -48,6 +51,7 @@ class Customer
     public function __construct()
     {
         $this->quotations = new ArrayCollection();
+        $this->UuidConstruct();
     }
 
     public function getId(): ?int
@@ -115,14 +119,14 @@ class Customer
         return $this;
     }
 
-    public function getCreatedBy(): ?User
+    public function getOwner(): ?User
     {
-        return $this->created_by;
+        return $this->owner;
     }
 
-    public function setCreatedBy(?User $created_by): static
+    public function setOwner(?User $owner): static
     {
-        $this->created_by = $created_by;
+        $this->owner = $owner;
 
         return $this;
     }

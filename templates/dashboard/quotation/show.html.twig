@@ -28,7 +28,7 @@
 
     <a href="{{ path('dashboard.quotation.index') }}">{{ 'crud.back_to_list'|trans }}</a>
 
-    <a href="{{ path('dashboard.quotation.edit', {'id': quotation.id}) }}">{{ 'crud.edit'|trans }}</a>
+    <a href="{{ path('dashboard.quotation.edit', {'uid': quotation.uid}) }}">{{ 'crud.edit'|trans }}</a>
 
     {{ include('dashboard/quotation/_delete_form.html.twig') }}
 {% endblock %}

@@ -2,14 +2,6 @@
 
 {% block title %}{{ 'quotation.index_title'|trans }}{% endblock %}
 
-{% set actions = [
-    {'route': 'dashboard.quotation.show', 'label': 'crud.show'|trans},
-    {'route': 'dashboard.quotation.edit', 'label': 'crud.edit'|trans},
-    {'route': 'dashboard.quotation.delete', 'label': 'crud.delete'|trans},
-    {'route': 'dashboard.quotation.export', 'label': 'crud.export'|trans}
-]
-%}
-
 {% set statusColors = {
     'Accepté': 'bg-green-100 text-green-800',
     'Refusé': 'bg-red-100 text-red-800',
@@ -35,6 +27,6 @@
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
         </div>
 
-        {{ component('table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, pagination: quotations, statusColors: statusColors }) }}
+        {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, pagination: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
     </section>
 {% endblock %}

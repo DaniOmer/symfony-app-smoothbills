@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Address;
 use App\Entity\Customer;
 use App\Form\CustomerType;
-use App\Repository\CustomerRepository;
+use App\Service\CustomerService;
+use App\Service\UserRegistrationChecker;
+use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,52 +17,60 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/dashboard/customer')]
 class CustomerController extends AbstractController
 {
-    #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
-    public function index(CustomerRepository $customerRepository, Request $request): Response
-    {
-        $page = $request->query->getInt('page', 1);
-        $paginateCustumers = $customerRepository->paginateCustomers($page);
-        
-        $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
-        $rows = [];
+    use ProfileCompletionTrait;
 
-        foreach ($paginateCustumers as $customer) {
-            $rows[] = [
-                'name' => $customer->getName(),
-                'mail' => $customer->getMail(),
-                'phone' => $customer->getPhone(),
-                'type' => $customer->getType(),
-                'id' => $customer->getId(),
-            ];
+    private $customerService;
+    private $userRegistrationChecker;
+
+    public function __construct(CustomerService $customerService, UserRegistrationChecker $userRegistrationChecker)
+    {
+        $this->customerService = $customerService;
+        $this->userRegistrationChecker = $userRegistrationChecker;
+    }
+
+    #[Route('/', name: 'dashboard.customer.index', methods: ['GET'])]
+    public function index(Request $request): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
         }
 
-        return $this->render('dashboard/customer/index.html.twig', [
+        $user = $this->getUser();
+        $page = $request->query->getInt('page', 1);
+        $customers = $this->customerService->getPaginatedCustomers($user, $page);
+
+        $headers = ['Nom', 'Adresse mail', 'Téléphone', 'Type'];
+        $rows = $this->customerService->getCustomersRows($user, $page);
+
+        $config = [
             'headers' => $headers,
             'rows' => $rows,
-            'customers' => $paginateCustumers,
-        ]);
+            'actions' => [
+                ['label' => 'Modifier', 'route' => 'dashboard.customer.edit'],
+            ],
+            'deleteFormTemplate' => 'dashboard/customer/_delete_form.html.twig',
+            'deleteRoute' => 'dashboard.customer.delete',
+            'customers' => $customers,
+        ];
+
+        return $this->render('dashboard/customer/index.html.twig', $config);
     }
 
     #[Route('/new', name: 'dashboard.customer.new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        $user = $this->getUser();
         $customer = new Customer();
         $address = new Address();
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $address->setZipcode($form->get('address')->getData()->getZipcode());
-            $address->setCity($form->get('address')->getData()->getCity());
-            $address->setCountry($form->get('address')->getData()->getCountry());
-            $address->setAddress($form->get('address')->getData()->getAddress());
-            $entityManager->persist($address);
-
-            $customer->setCreatedBy($this->getUser());
-            $customer->setCompany($this->getUser()->getCompany());
-            $entityManager->persist($customer);
-            
-            $entityManager->flush();
+            $this->customerService->createCustomer($form, $address, $customer, $user);
 
             return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
         }
@@ -71,29 +81,27 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'dashboard.customer.show', methods: ['GET'])]
-    public function show(Customer $customer): Response
-    {
-        return $this->render('dashboard/customer/show.html.twig', [
-            'customer' => $customer,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'dashboard.customer.edit', methods: ['GET', 'POST'])]
+    #[Route('/{uid}/edit', name: 'dashboard.customer.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+        
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('dashboard/dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dashboard/customer/edit.html.twig', [
-            'customer' => $customer,
             'form' => $form,
+            'customer' => $customer,
+            'deleteRoute' => 'dashboard.customer.delete',
+            'deleteFormTemplate' => 'dashboard/customer/_delete_form.html.twig',
         ]);
     }
 
@@ -105,6 +113,6 @@ class CustomerController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('dashboard/dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
     }
 }

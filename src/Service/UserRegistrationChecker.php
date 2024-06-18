@@ -51,4 +51,17 @@ class UserRegistrationChecker
         $cacheKey = 'user_registration_' . $userId;
         $this->cache->deleteItem($cacheKey);
     }
+
+    public function updateRegistrationCache(int $userId): void
+    {
+        $cacheKey = 'user_registration_' . $userId;
+        $this->cache->deleteItem($cacheKey);
+
+        $isComplete = $this->checkRegistrationInDatabase($userId);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
+        
+        $cacheItem->set($isComplete);
+        $this->cache->save($cacheItem);
+    }
 }

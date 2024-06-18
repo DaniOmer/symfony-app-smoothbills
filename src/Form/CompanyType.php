@@ -6,8 +6,11 @@ use App\Entity\Address;
 use App\Entity\Company;
 use App\Entity\LegalForm;
 use App\Validator\EscapeCharacter;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -50,8 +53,8 @@ class CompanyType extends AbstractType
                         'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
                     ]),
                     new Regex([
-                        'pattern' => '/^\d+$/',
-                        'message' => 'Le SIREN doit être composé uniquement de chiffres.',
+                        'pattern' => '/^\+?[0-9\s\-]+$/',
+                        'message' => 'Le numéro siren n\'est pas valide.',
                     ]),
                 ],
                 'trim' => true,
@@ -69,8 +72,8 @@ class CompanyType extends AbstractType
                         'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
                     ]),
                     new Regex([
-                        'pattern' => '/^\d+$/',
-                        'message' => 'Le SIRET doit être composé uniquement de chiffres.',
+                        'pattern' => '/^\+?[0-9\s\-]+$/',
+                        'message' => 'Le numéro siret n\'est pas valide.',
                     ]),
                 ],
                 'trim' => true,
@@ -81,7 +84,11 @@ class CompanyType extends AbstractType
                         'message' => 'Veuillez saisir un numéro de TVA intracommunautaire valide.',
                     ]),
                     new EscapeCharacter([
-                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
+                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.',
+                    ]),
+                    new Regex([
+                        'pattern' => '/^\+?[0-9\s\-]+$/',
+                        'message' => 'Le numéro de TVA n\'est pas valide.',
                     ]),
                 ],
                 'trim' => true,
@@ -92,7 +99,11 @@ class CompanyType extends AbstractType
                         'message' => 'Veuillez saisir un numéro RCS valide.',
                     ]),
                     new EscapeCharacter([
-                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
+                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.',
+                    ]),
+                    new Regex([
+                        'pattern' => '/^\+?[0-9\s\-]+$/',
+                        'message' => 'Le numéro RCS n\'est pas valide.',
                     ]),
                 ],
                 'trim' => true,
@@ -106,7 +117,7 @@ class CompanyType extends AbstractType
                 ],
                 'trim' => true,
             ])
-            ->add('mail', TextType::class, [
+            ->add('mail', EmailType::class, [
                 'constraints' => [
                     new Email([
                         'message' => 'Veuillez fournir une adresse e-mail valide.',
@@ -115,7 +126,7 @@ class CompanyType extends AbstractType
                 'trim' => true,
             ])
             ->add('creation_date', null, [
-                'widget' => 'single_text'
+                'widget' => 'single_text',
             ])
             ->add('registered_social', TextType::class, [
                 'constraints' => [
@@ -123,59 +134,33 @@ class CompanyType extends AbstractType
                         'message' => 'Veuillez saisir un social enregistré valide.',
                     ]),
                     new EscapeCharacter([
-                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
+                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.',
+                    ]),
+                    new Regex([
+                        'pattern' => '/^\+?[0-9\s\-]+$/',
+                        'message' => 'Le capital social n\'est pas valide.',
                     ]),
                 ],
                 'trim' => true,
             ])
-            ->add('sector', TextType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez saisir un secteur valide.',
-                    ]),
-                    new EscapeCharacter([
-                        'message' => 'Le champ ne peut pas contenir de caractères spéciaux.'
-                    ]),
+            ->add('sector', ChoiceType::class, [
+                'choices'  => [
+                    'Technologie' => 'Technology',
+                    'Finance' => 'Finance',
+                    'Education' => 'Education',
+                    'Transport' => 'Transportation',
+                    'Santé' => 'Healthcare',
+                    'Autre' => 'Other',
                 ],
                 'trim' => true,
             ])
-            ->add('logo', FileType::class, [
-                'label' => 'Upload Logo',
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '1024k',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid image (JPEG or PNG)',
-                    ])
-                ],
-            ])
-            ->add('signing', FileType::class, [
-                'label' => 'Upload Signing',
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '1024k',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                        ],
-                        'mimeTypesMessage' => 'Please upload a valid image (JPEG or PNG)',
-                    ])
-                ],
-            ])
-            ->add('legal_form', LegalFormType::class, [
-                'data_class' => LegalForm::class,
-                'label' => false,
+            ->add('legal_form', EntityType::class, [
+                'class' => LegalForm::class,
+                'choice_label' => 'name',
             ])
             ->add('address', AddressType::class, [
                 'data_class' => Address::class,
-                'label' => false,
+                'label' => false
             ])
         ;
 
@@ -183,7 +168,6 @@ class CompanyType extends AbstractType
             $data = $event->getData();
             $data->setDenomination(ucfirst(strtolower($data->getDenomination())));
             $data->setMail(strtolower($data->getMail()));
-            $data->setSector(strtolower($data->getSector()));
             $event->setData($data);
         });
     }

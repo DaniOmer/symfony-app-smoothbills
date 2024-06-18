@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Customer;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -22,10 +23,14 @@ class CustomerRepository extends ServiceEntityRepository
         $this->paginator = $paginate;
     }
 
-    public function paginateCustomers(int $page): PaginationInterface
+    public function paginateCustomersByCompany(User $user, int $page): PaginationInterface
     {
         return $this->paginator->paginate(
-            $this->createQueryBuilder('r'),
+            $this->createQueryBuilder('c')
+                ->andWhere('c.company = :company')
+                ->setParameter('company', $user->getCompany())
+                ->orderBy('c.id', 'ASC')
+                ->getQuery(),
             $page,
             5
         );

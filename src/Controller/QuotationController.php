@@ -44,6 +44,7 @@ class QuotationController extends AbstractController
 
             $rows[] = [
                 'id' => $quotation->getId(),
+                'uid' => $quotation->getUid(),
                 'name' => $quotationEntity->getUid(),
                 'status' => $quotation->getQuotationStatus()->getName(),
                 'client' => $quotation->getCustomer()->getName(),
@@ -57,6 +58,13 @@ class QuotationController extends AbstractController
             'rows' => $rows,
             'quotations' => $paginateQuotations,
             'totalInvoices' => $totalInvoices,
+            'actions' => [
+                ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
+                ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'],
+                ['route' => 'dashboard.quotation.export', 'label' => 'Exporter'],
+            ],
+            'deleteFormTemplate' => 'dashboard/quotation/_delete_form.html.twig',
+            'deleteRoute' => 'dashboard.quotation.delete',
         ]);
     }
 
@@ -105,7 +113,7 @@ class QuotationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'dashboard.quotation.show', methods: ['GET'])]
+    #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
     public function show(Quotation $quotation): Response
     {
         return $this->render('dashboard/quotation/show.html.twig', [
@@ -113,7 +121,7 @@ class QuotationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'dashboard.quotation.edit', methods: ['GET', 'POST'])]
+    #[Route('/{uid}/edit', name: 'dashboard.quotation.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Quotation $quotation, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(QuotationType::class, $quotation);
@@ -128,6 +136,8 @@ class QuotationController extends AbstractController
         return $this->render('dashboard/quotation/edit.html.twig', [
             'quotation' => $quotation,
             'form' => $form,
+            'deleteFormTemplate' => 'dashboard/quotation/_delete_form.html.twig',
+            'deleteRoute' => 'dashboard.quotation.delete',
         ]);
     }
 
@@ -142,7 +152,7 @@ class QuotationController extends AbstractController
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
+    #[Route('/{uid}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
     public function exportQuotation(Quotation $quotation): Response
     {
         $response = new StreamedResponse(function() use ($quotation) {

@@ -9,12 +9,10 @@ use App\Security\EmailVerifier;
 use App\Security\Role;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -118,8 +116,8 @@ class RegistrationController extends AbstractController
     {
         $token = $request->query->get('token');
         $sessionToken = $session->get('verification_token');
-
-        if ($token !== $sessionToken) {
+        
+        if (!$token || !$sessionToken || $token !== $sessionToken) {
             return $this->redirectToRoute('site.login');
         }
 

@@ -1,0 +1,54 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-3">
+            <div class="grid grid-cols-2 gap-x-5 py-4 border-b">
+                <div class="mb-3">
+                    <h2 class="font-semibold mb-2">Logo de votre entreprise</h2>
+                    <p class="text-sm">Personnalisez vos devis et factures en ajoutant le logo de votre entreprise.</p>
+                </div>
+                <div class="flex-1">{{ form_row(form.companyLogo) }}</div>
+            </div>
+
+            <div class="py-4 border-b">
+                <div class="mb-3">
+                    <h2 class="font-semibold mb-2">Couleurs</h2>
+                    <p class="text-sm">Personnalisez vos devis et factures en choisissant des couleurs personalisées.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-x-5" />
+                    <div class="flex items-center gap-10">
+                        <span class="font-medium text-primary text-sm">Couleur d'arrière plan</span>
+                        {{ form_widget(form.backgroundColor, {'attr': {'class': 'h-10 w-20 bg-transparent focus:border-transparent outline-transparent focus:outline-transparent focus:ring-0'}}) }}
+                    </div>
+                    <div class="flex items-center gap-10">
+                        <span class="font-medium text-primary text-sm">Couleur du titre</span>
+                        {{ form_widget(form.titleColor, {'attr': {'class': 'h-10 w-20 bg-transparent focus:border-transparent outline-transparent focus:outline-transparent focus:ring-0'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-4">
+                <div class="mb-3">
+                    <h2 class="font-semibold mb-2">Police de texte</h2>
+                    <p class="text-sm">Personnalisez vos devis et factures en choisissant des couleurs personalisées.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.titleFont, {
+                        label: 'Police du titre',
+                    }) }}
+                    {{ form_row(form.contentFont, {
+                        label: 'Police du texte',
+                    }) }}
+                </div>
+            </div>
+
+        </article>
+    {{ form_widget(form) }}
+    <button 
+        class="btn mt-4 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+    >
+        Valider
+    </button>
+{{ form_end(form) }}
+</section>
