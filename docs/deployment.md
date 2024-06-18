@@ -26,7 +26,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-Vérifiez que Docker est bien installé en exécutant :
+Vérifier que Docker est bien installé en exécutant :
 
 ```bash
 docker --version
@@ -34,7 +34,7 @@ docker --version
 
 ### 2. Cloner le Projet Symfony
 
-Clonez le projet ou le mettre à jour avec le repository Git.
+Cloner le projet ou le mettre à jour avec le repository Git.
 
 ```bash
 git clone <url_du_repository>
