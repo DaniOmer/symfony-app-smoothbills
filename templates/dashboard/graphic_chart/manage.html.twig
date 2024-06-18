@@ -1,0 +1,18 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Entreprise{% endblock %}
+
+{% block body %}
+<div class="bg-white drop-shadow-md p-10 rounded-md my-auto">
+    {% for message in app.flashes('success') %}
+            <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
+                {{ message }}
+            </div>
+    {% endfor %}
+    <div class="border-b pb-5">
+        <h1 class="text-subtitle font-title font-semibold">Charte graphique</h1>
+        <p class="text-sm">Personnalisez vos devis et factures.</p>
+    </div>
+    {{ include('dashboard/graphic_chart/_form.html.twig') }}
+</div>
+{% endblock %}

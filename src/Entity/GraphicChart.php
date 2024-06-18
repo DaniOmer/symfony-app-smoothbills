@@ -19,16 +19,21 @@ class GraphicChart
     private ?string $companyLogo = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $signing = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $backgroundColor = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $titleColor = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    private ?string $titleFont = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Font $titleFont = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    private ?string $contentFont = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Font $contentFont = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class)]
     #[ORM\JoinColumn(name: "company_id", referencedColumnName: "id", nullable: false)]
@@ -47,6 +52,18 @@ class GraphicChart
     public function setCompanyLogo(?string $companyLogo): static
     {
         $this->companyLogo = $companyLogo;
+        return $this;
+    }
+
+    public function getSigning(): ?string
+    {
+        return $this->signing;
+    }
+
+    public function setSigning(?string $signing): static
+    {
+        $this->signing = $signing;
+
         return $this;
     }
 
@@ -72,25 +89,27 @@ class GraphicChart
         return $this;
     }
 
-    public function getTitleFont(): ?string
+    public function getTitleFont(): ?Font
     {
         return $this->titleFont;
     }
 
-    public function setTitleFont(?string $titleFont): static
+    public function setTitleFont(?Font $titleFont): static
     {
         $this->titleFont = $titleFont;
+
         return $this;
     }
 
-    public function getContentFont(): ?string
+    public function getContentFont(): ?Font
     {
         return $this->contentFont;
     }
 
-    public function setContentFont(?string $contentFont): static
+    public function setContentFont(?Font $contentFont): static
     {
         $this->contentFont = $contentFont;
+
         return $this;
     }
 
