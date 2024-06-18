@@ -26,7 +26,7 @@
                         {% endif %}
                     {% endfor %}
                     <div data-controller="actions" class="relative text-center">
-                        <button class="actions-button" data-action="click->actions#showModal" data-customer-id="{{ row.id }}">
+                        <button class="actions-button" data-action="click->actions#showModal">
                             {{ ux_icon('charm:menu-kebab') }}
                         </button>
                         <div id="actions-modal" class="modal w-60 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
@@ -53,6 +53,6 @@
         </div>
     </div>
     <div class="w-full flex justify-center mt-6 mb-3">
-        {{ knp_pagination_render(customers)}}
+        {# {{ knp_pagination_render(customers)}} #}
     </div>
 </section>

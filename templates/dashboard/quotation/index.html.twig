@@ -1,0 +1,27 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'quotation.index_title'|trans }}{% endblock %}
+
+{% set actions = [
+    {'route': 'dashboard.quotation.show', 'label': 'crud.show'|trans},
+    {'route': 'dashboard.quotation.edit', 'label': 'crud.edit'|trans},
+    {'route': 'dashboard.quotation.delete', 'label': 'crud.delete'|trans}
+]
+%}
+
+{% block body %}
+    <section>
+        <header class="w-full flex justify-between mb-[40px]">
+            <h1 class="text-title font-title font-semibold">{{ 'quotation.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <twig:MenuItem href="{{ path('dashboard.quotation.new') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
+                    {{ 'crud.upload'|trans }}
+                </twig:MenuItem>
+                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
+            </div>
+        </header>
+
+        {{ component('table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions }) }}
+    </section>
+{% endblock %}

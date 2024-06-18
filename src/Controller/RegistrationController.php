@@ -4,13 +4,16 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\Role;
+use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,7 +22,12 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+
+    public function __construct(
+        private UserService $userService, 
+        private UserRepository $userRepository,
+        private EmailVerifier $emailVerifier
+        )
     {
     }
 
@@ -46,17 +54,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation(
-                'site.verify_email',
-                $user,
-                (new TemplatedEmail())
-                    ->from(new Address('no-reply@login.smoothbill.com', 'Smoothbill'))
-                    ->to($user->getEmail())
-                    ->subject('Validez votre adresse email')
-                    ->htmlTemplate('site/registration/confirmation_email.html.twig')
-            );
-
+            $this->userService->sendVerificationEmail($user);
             return $this->redirectToRoute('site.register.success');
         }
 
@@ -70,28 +68,62 @@ class RegistrationController extends AbstractController
     {
         $referer = $request->headers->get('referer');
         if (!$referer || strpos($referer, $this->generateUrl('site.register')) === false) {
-            return $this->redirectToRoute('site.register');
+            return $this->redirectToRoute('site.login');
         }
 
         return $this->render('site/registration/success.html.twig');
     }
 
     #[Route('/verify/email', name: 'site.verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, SessionInterface $session): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $userUid = $request->query->get('id');
+        $expire = $request->query->get('expires');
+        $token = bin2hex(random_bytes(32));
+        $user = $this->userRepository->findOneBy(['uid' => $userUid]);
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
-            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
-            return $this->redirectToRoute('site.register');
+            $this->emailVerifier->verify($request, $user, $expire);
+            $this->userService->sendAccountValidationConfirmation($user);
+            return $this->redirectToRoute('site.login');
+
+        } catch (\LogicException $exception) {
+
+            if ($exception->getMessage() === 'Le lien de vérification a expiré.') {
+                $this->userService->resendVerificationEmail($user);
+                $token = $session->get('verification_token');
+                return $this->redirectToRoute('site.resend.verification.email', ['token' => $token]);
+
+            } elseif($exception->getMessage() === 'Votre compte a déjà été vérifié.'){
+                $this->addFlash('verify_email_error', $exception->getMessage());
+                return $this->redirectToRoute('site.login');
+
+            }else{
+                $this->addFlash('verify_email_error', $exception->getMessage());
+                return $this->redirectToRoute('site.register');
+            }
+
+        } catch (VerifyEmailExceptionInterface $exception) {
+
+            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+            return $this->redirectToRoute('site.login');
+
+        }
+    }
+
+
+    #[Route('/resend/verification/email', name: 'site.resend.verification.email')]
+    public function resendVerificationEmail(Request $request, SessionInterface $session): Response
+    {
+        $token = $request->query->get('token');
+        $sessionToken = $session->get('verification_token');
+
+        if ($token !== $sessionToken) {
+            return $this->redirectToRoute('site.login');
         }
 
-        $this->addFlash('success', 'Votre adresse mail a été vérifié avec succès.');
-        return $this->redirectToRoute('dashboard.home');
+        return $this->render('site/registration/resend_verification.html.twig');
     }
 
     #[Route('/complete/registration', name: 'site.complete_registration')]

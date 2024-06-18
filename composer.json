@@ -30,6 +30,7 @@
         "symfony/http-client": "6.4.*",
         "symfony/intl": "6.4.*",
         "symfony/mailer": "6.4.*",
+        "symfony/mailjet-mailer": "6.4.*",
         "symfony/mime": "6.4.*",
         "symfony/monolog-bundle": "^3.0",
         "symfony/notifier": "6.4.*",
@@ -44,6 +45,7 @@
         "symfony/string": "6.4.*",
         "symfony/translation": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
+        "symfony/uid": "6.4.*",
         "symfony/ux-icons": "^2.17",
         "symfony/ux-live-component": "^2.17",
         "symfony/ux-toggle-password": "^2.17",
@@ -54,7 +56,9 @@
         "symfony/webpack-encore-bundle": "^2.1",
         "symfony/yaml": "6.4.*",
         "symfonycasts/verify-email-bundle": "^1.17",
+        "twig/cssinliner-extra": "^3.10",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/inky-extra": "^3.10",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {

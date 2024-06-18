@@ -1,0 +1,128 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
+            <div id="quotation_info" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.date, {
+                    label: 'Date',
+                }) }}
+                {{ form_row(form.type, {
+                    label: 'Type',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Status</h1>
+            <div id="quotation_status" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.quotation_status.name, {
+                    label: 'Nom',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations entreprises</h1>
+            <div id="company" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.company.denomination, {
+                    label: 'Dénomination',
+                }) }}
+                {{ form_row(form.company.siren, {
+                    label: 'Siren',
+                }) }}
+                {{ form_row(form.company.siret, {
+                    label: 'Siret',
+                }) }}
+                {{ form_row(form.company.tva_number, {
+                    label: 'Numéro de TVA intracommunautaire',
+                }) }}
+                {{ form_row(form.company.rcs_number, {
+                    label: 'Numéro RCS',
+                }) }}
+                {{ form_row(form.company.phone_number, {
+                    label: 'Numéro de téléphone',
+                }) }}
+                {{ form_row(form.company.mail, {
+                    label: 'Mail',
+                }) }}
+                {{ form_row(form.company.creation_date, {
+                    label: 'Date de création',
+                }) }}
+                {{ form_row(form.company.registered_social, {
+                    label: 'Travailleur social',
+                }) }}
+                {{ form_row(form.company.sector, {
+                    label: 'Secteur',
+                }) }}
+                {{ form_row(form.company.logo, {
+                    label: 'Logo',
+                }) }}
+                {{ form_row(form.company.signing, {
+                    label: 'Signature',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Statut légal</h1>
+            <div id="company_legal_form" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.company.legal_form.name, {
+                    label: 'Nom',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Coordonnées entreprise</h1>
+            <div id="company_address" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.company.address.zipcode, {
+                    label: 'Code postal',
+                }) }}
+                {{ form_row(form.company.address.city, {
+                    label: 'Ville',
+                }) }}
+                {{ form_row(form.company.address.country, {
+                    label: 'Pays',
+                }) }}
+                {{ form_row(form.company.address.address, {
+                    label: 'Adresse',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations client</h1>
+            <div id="customer" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.customer.name, {
+                    label: 'Nom',
+                }) }}
+                {{ form_row(form.customer.mail, {
+                    label: 'Mail',
+                }) }}
+                {{ form_row(form.customer.phone, {
+                    label: 'Téléphone',
+                }) }}
+                {{ form_row(form.customer.type, {
+                    label: 'Type',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Coordonnées client</h1>
+            <div id="customer_address" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.customer.address.zipcode, {
+                    label: 'Code postal',
+                }) }}
+                {{ form_row(form.customer.address.city, {
+                    label: 'Ville',
+                }) }}
+                {{ form_row(form.customer.address.country, {
+                    label: 'Pays',
+                }) }}
+                {{ form_row(form.customer.address.address, {
+                    label: 'Adresse',
+                }) }}
+            </div>
+        </article>
+        <button class="btn mt-4 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+            {{ button_label|default('Save') }}
+        </button>
+    {{ form_end(form) }}
+</section>

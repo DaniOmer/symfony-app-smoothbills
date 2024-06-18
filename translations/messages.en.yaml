@@ -34,3 +34,24 @@ customer:
     table_title: "All customers"
     new: "Add new Customer"
     name: "Customer"
+
+error:
+    not_found: "The page requested is not found. We suggest you to go back home."
+    general: "An error has occurred. Please try again later."
+
+site:
+    home: "Home"
+
+dashboard:
+    home:
+        title: "General"
+
+quotation:
+    title: "Quotations"
+    edit_quotation: "Edit Quotation"
+    table_title: "All quotations"
+    new: "Add new Quotation"
+    name: "Quotation"
+    invoice_total: "Total quotations"
+    invoice_accepted: "Accepted quotations"
+    invoice_rejected: "Rejected quotations"

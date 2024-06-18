@@ -68,9 +68,16 @@ class Company
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
 
+    /**
+     * @var Collection<int, Quotation>
+     */
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Quotation::class)]
+    private Collection $quotations;
+
     public function __construct()
     {
         $this->customers = new ArrayCollection();
+        $this->quotations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -272,6 +279,36 @@ class Company
     public function setAddress(Address $address): static
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Quotation>
+     */
+    public function getQuotations(): Collection
+    {
+        return $this->quotations;
+    }
+
+    public function addQuotation(Quotation $quotation): static
+    {
+        if (!$this->quotations->contains($quotation)) {
+            $this->quotations->add($quotation);
+            $quotation->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuotation(Quotation $quotation): static
+    {
+        if ($this->quotations->removeElement($quotation)) {
+            // set the owning side to null (unless already changed)
+            if ($quotation->getCompany() === $this) {
+                $quotation->setCompany(null);
+            }
+        }
 
         return $this;
     }
