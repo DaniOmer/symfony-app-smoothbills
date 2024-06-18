@@ -13,6 +13,18 @@ module.exports = {
         secondary: "rgba(var(--secondary-color))",
         tertiary: "rgba(var(--tertiary-color))",
         background: "rgba(var(--background-color))",
+        green: {
+          '100': '#C9E4CA',
+          '800': '#43A047',
+        },
+        red: {
+          '100': '#F0C9C9',
+          '800': '#F44336',
+        },
+        yellow: {
+          '100': '#F4DDBB',
+          '800': '#FF9800',
+        },
       },
       fontFamily: {
         title: ["var(--title-font)", "Arial", "sans-serif"],

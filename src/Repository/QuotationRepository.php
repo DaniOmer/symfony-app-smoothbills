@@ -39,6 +39,14 @@ class QuotationRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function countTotalQuotations(): int
+    {
+        return (int) $this->createQueryBuilder('q')
+            ->select('COUNT(q.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function countQuotationsByStatus(string $statusName, int $companyId): int
     {
         return (int) $this->createQueryBuilder('q')

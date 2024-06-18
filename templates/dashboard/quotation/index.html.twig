@@ -9,6 +9,12 @@
 ]
 %}
 
+{% set statusColors = {
+    'Accepté': 'bg-green-100 text-green-800',
+    'Refusé': 'bg-red-100 text-red-800',
+    'En attente': 'bg-yellow-100 text-yellow-800'
+} %}
+
 {% block body %}
     <section>
         <header class="w-full flex justify-between mb-[40px]">
@@ -22,11 +28,11 @@
             </div>
         </header>
         <div class="flex justify-between items-center gap-4">
-            <twig:KpiCard kpi_name="{{ 'quotation.invoice_total'|trans }}" kpi_value="{{ statusCounts['total'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_total'|trans }}" kpi_value="{{ totalInvoices }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_accepted'|trans }}" kpi_value="{{ statusCounts['accepted'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
         </div>
 
-        {{ component('table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions }) }}
+        {{ component('table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, pagination: quotations, statusColors: statusColors }) }}
     </section>
 {% endblock %}

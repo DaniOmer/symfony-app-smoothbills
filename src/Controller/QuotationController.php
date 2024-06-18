@@ -31,8 +31,9 @@ class QuotationController extends AbstractController
         }
         $companyId = $company->getId();
 
+        $totalInvoices = $quotationRepository->countTotalQuotations();
+
         $statusCounts = [
-            'total' => $quotationRepository->countQuotationsByStatus('total', $companyId),
             'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
             'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
         ];
@@ -54,6 +55,7 @@ class QuotationController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'quotations' => $paginateQuotations,
+            'totalInvoices' => $totalInvoices,
         ]);
     }
 
