@@ -2,10 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Address;
-use App\Entity\Company;
-use App\Entity\Customer;
-use App\Entity\LegalForm;
 use App\Entity\Quotation;
 use App\Entity\QuotationStatus;
 use App\Form\QuotationType;
@@ -25,20 +21,36 @@ class QuotationController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $paginateQuotations = $quotationRepository->paginateQuotations($page);
 
-        $headers = ['Nom', 'Prix', 'Status', 'Vendeur', 'Envoyé le'];
+        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
         $rows = [];
 
+        $user = $this->getUser();
+        $company = $user->getCompany();
+        if (!$company) {
+            throw $this->createNotFoundException('No company associated with this user.');
+        }
+        $companyId = $company->getId();
+
+        $statusCounts = [
+            'total' => $quotationRepository->countQuotationsByStatus('total', $companyId),
+            'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
+            'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
+        ];
+
         foreach ($paginateQuotations as $quotation) {
+            $quotationEntity = $quotationRepository->findQuotationEntityById($quotation->getId());
+
             $rows[] = [
-                'name' => $quotation->getQuotationHasServices()->getService()->getName(),
-                'price' => $quotation->getQuotationHasServices()->getPriceWithoutTax(),
-                'status' => $quotation->getType(),
-                'vendor' => $quotation->getQuotationHasServices()->getService()->getCompany(),
-                'date' => $quotation->getDate(),
+                'id' => $quotation->getId(),
+                'name' => $quotationEntity->getUid(),
+                'status' => $quotation->getQuotationStatus()->getName(),
+                'client' => $quotation->getCustomer()->getName(),
+                'date' => $quotation->getDate()->format('Y-m-d H:i:s'),
             ];
         }
 
         return $this->render('dashboard/quotation/index.html.twig', [
+            'statusCounts' => $statusCounts,
             'headers' => $headers,
             'rows' => $rows,
             'quotations' => $paginateQuotations,
@@ -49,20 +61,18 @@ class QuotationController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $quotation = new Quotation();
-        $quotationStatus = new QuotationStatus;
-        $company = new Company();
-        $legalForm = new LegalForm();
-        $companyAddress = new Address();
-        $customer = new Customer();
-        $customerAddress = new Address();
+        $quotationStatus = new QuotationStatus();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
+        $user = $this->getUser();
+        $company = $user->getCompany();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $quotationStatus->setName($form->get('quotation_status')->getData()->getName());
             $entityManager->persist($quotationStatus);
 
-            $companyData = $form->get('company')->getData();
+            $user = $this->getUser();
+            $companyData = $user->getCompany();
             $company->setDenomination($companyData->getDenomination());
             $company->setSiren($companyData->getSiren());
             $company->setSiret($companyData->getSiret());
@@ -75,46 +85,12 @@ class QuotationController extends AbstractController
             $company->setSector($companyData->getSector());
             $company->setLogo($companyData->getLogo());
             $company->setSigning($companyData->getSigning());
-            
-            $legalFormData = $companyData->getLegalForm();
-            $legalForm->setName($legalFormData->getName());
-            $entityManager->persist($legalForm);
 
-            $company->setLegalForm($legalForm);
-
-            $companyAddressData = $form->get('company')->get('address')->getData();
-            $companyAddress->setZipcode($companyAddressData->getZipcode());
-            $companyAddress->setCity($companyAddressData->getCity());
-            $companyAddress->setCountry($companyAddressData->getCountry());
-            $companyAddress->setAddress($companyAddressData->getAddress());
-            $entityManager->persist($companyAddress);
-
-            $company->setAddress($companyAddress);
             $entityManager->persist($company);
-
-            $customerData = $form->get('customer')->getData();
-            $customer->setName($customerData->getName());
-            $customer->setMail($customerData->getMail());
-            $customer->setPhone($customerData->getPhone());
-            $customer->setType($customerData->getType());
-            $customer->setCompany($company);
-            $customer->setCreatedBy($this->getUser());
-
-            $customerAddressData = $customerData->getAddress();
-            $customerAddress->setZipcode($customerAddressData->getZipcode());
-            $customerAddress->setCity($customerAddressData->getCity());
-            $customerAddress->setCountry($customerAddressData->getCountry());
-            $customerAddress->setAddress($customerAddressData->getAddress());
-            $entityManager->persist($customerAddress);
-
-            $customer->setAddress($customerAddress);
-            $entityManager->persist($customer);
 
             $quotation->setQuotationStatus($quotationStatus);
             $quotation->setCompany($company);
-            $quotation->setCustomer($customer);
             $entityManager->persist($quotation);
-
             $entityManager->flush();
 
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
@@ -143,7 +119,7 @@ class QuotationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('dashboard/dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dashboard/quotation/edit.html.twig', [
@@ -160,6 +136,6 @@ class QuotationController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('dashboard/dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
     }
 }

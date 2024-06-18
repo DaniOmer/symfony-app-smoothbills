@@ -21,6 +21,11 @@
                 <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
             </div>
         </header>
+        <div class="flex justify-between items-center gap-4">
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_total'|trans }}" kpi_value="{{ statusCounts['total'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_accepted'|trans }}" kpi_value="{{ statusCounts['accepted'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
+        </div>
 
         {{ component('table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions }) }}
     </section>

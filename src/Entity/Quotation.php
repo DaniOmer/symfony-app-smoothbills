@@ -3,14 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\QuotationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Trait\UuidTypeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QuotationRepository::class)]
 class Quotation
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,15 +22,6 @@ class Quotation
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
-
-    #[ORM\Column(length: 45)]
-    private ?string $uuid = null;
-
-    /**
-     * @var Collection<int, QuotationHasService>
-     */
-    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class)]
-    private Collection $quotationHasServices;
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -45,7 +37,7 @@ class Quotation
 
     public function __construct()
     {
-        $this->quotationHasServices = new ArrayCollection();
+        self::UuidConstruct();
     }
 
     public function getId(): ?int
@@ -73,48 +65,6 @@ class Quotation
     public function setType(string $type): static
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(string $uuid): static
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, QuotationHasService>
-     */
-    public function getQuotationHasServices(): Collection
-    {
-        return $this->quotationHasServices;
-    }
-
-    public function addQuotationHasService(QuotationHasService $quotationHasService): static
-    {
-        if (!$this->quotationHasServices->contains($quotationHasService)) {
-            $this->quotationHasServices->add($quotationHasService);
-            $quotationHasService->setQuotation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeQuotationHasService(QuotationHasService $quotationHasService): static
-    {
-        if ($this->quotationHasServices->removeElement($quotationHasService)) {
-            // set the owning side to null (unless already changed)
-            if ($quotationHasService->getQuotation() === $this) {
-                $quotationHasService->setQuotation(null);
-            }
-        }
 
         return $this;
     }

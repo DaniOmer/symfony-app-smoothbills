@@ -28,11 +28,11 @@ class QuotationHasService
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Quotation $quotation = null;
-
-    #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Quotation $quotation = null;
 
     public function getId(): ?int
     {
@@ -87,18 +87,6 @@ class QuotationHasService
         return $this;
     }
 
-    public function getQuotation(): ?Quotation
-    {
-        return $this->quotation;
-    }
-
-    public function setQuotation(?Quotation $quotation): static
-    {
-        $this->quotation = $quotation;
-
-        return $this;
-    }
-
     public function getService(): ?Service
     {
         return $this->service;
@@ -107,6 +95,18 @@ class QuotationHasService
     public function setService(?Service $service): static
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    public function getQuotation(): ?Quotation
+    {
+        return $this->quotation;
+    }
+
+    public function setQuotation(?Quotation $quotation): static
+    {
+        $this->quotation = $quotation;
 
         return $this;
     }

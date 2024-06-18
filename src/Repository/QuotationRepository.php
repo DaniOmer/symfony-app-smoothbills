@@ -30,6 +30,28 @@ class QuotationRepository extends ServiceEntityRepository
         );
     }
 
+    public function findQuotationEntityById($id)
+    {
+        return $this->createQueryBuilder('q')
+            ->andWhere('q.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function countQuotationsByStatus(string $statusName, int $companyId): int
+    {
+        return (int) $this->createQueryBuilder('q')
+            ->select('COUNT(q.id)')
+            ->innerJoin('q.quotation_status', 's')
+            ->where('s.name = :statusName')
+            ->andWhere('q.company = :companyId')
+            ->setParameter('statusName', $statusName)
+            ->setParameter('companyId', $companyId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Quotation[] Returns an array of Quotation objects
     //     */
