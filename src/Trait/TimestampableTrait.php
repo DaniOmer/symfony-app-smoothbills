@@ -16,12 +16,12 @@ trait TimestampableTrait
     #[ORM\Column(name: 'updated_at', type: Types::DATETIME_MUTABLE)]
     private $updated_at;
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
 
