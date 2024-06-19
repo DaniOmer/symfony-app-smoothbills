@@ -10,6 +10,10 @@
 
 {% block body %}
     <section>
+        {% for flash_success in app.flashes('success') %}
+            <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+
         <header class="w-full flex justify-between mb-[40px]">
             <h1 class="text-title font-title font-semibold">{{ 'quotation.title'|trans }}</h1>
             <div class="flex gap-4 items-center">

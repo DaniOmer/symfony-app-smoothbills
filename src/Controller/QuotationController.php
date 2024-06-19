@@ -6,6 +6,10 @@ use App\Entity\Quotation;
 use App\Entity\QuotationStatus;
 use App\Form\QuotationType;
 use App\Repository\QuotationRepository;
+use App\Service\CsvExporter;
+use App\Service\QuotationService;
+use App\Service\UserRegistrationChecker;
+use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,20 +20,35 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/dashboard/quotation')]
 class QuotationController extends AbstractController
 {
+    use ProfileCompletionTrait;
+
+    private $quotationService;
+    private $userRegistrationChecker;
+    private $csvExporter;
+
+    public function __construct(QuotationService $quotationService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
+    {
+        $this->quotationService = $quotationService;
+        $this->userRegistrationChecker = $userRegistrationChecker;
+        $this->csvExporter = $csvExporter;
+    }
+
     #[Route('/', name: 'dashboard.quotation.index', methods: ['GET'])]
     public function index(QuotationRepository $quotationRepository, Request $request): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         $page = $request->query->getInt('page', 1);
-        $paginateQuotations = $quotationRepository->paginateQuotations($page);
+        $paginateQuotations = $this->quotationService->getPaginatedQuotations($page);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
-        $rows = [];
+        $rows = $this->quotationService->getQuotationsRows($page);
 
         $user = $this->getUser();
         $company = $user->getCompany();
-        if (!$company) {
-            throw $this->createNotFoundException('No company associated with this user.');
-        }
+
         $companyId = $company->getId();
 
         $totalInvoices = $quotationRepository->countTotalQuotations();
@@ -39,20 +58,7 @@ class QuotationController extends AbstractController
             'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
         ];
 
-        foreach ($paginateQuotations as $quotation) {
-            $quotationEntity = $quotationRepository->findQuotationEntityById($quotation->getId());
-
-            $rows[] = [
-                'id' => $quotation->getId(),
-                'uid' => $quotation->getUid(),
-                'name' => $quotationEntity->getUid(),
-                'status' => $quotation->getQuotationStatus()->getName(),
-                'client' => $quotation->getCustomer()->getName(),
-                'date' => $quotation->getDate()->format('Y-m-d H:i:s'),
-            ];
-        }
-
-        return $this->render('dashboard/quotation/index.html.twig', [
+        $config = [
             'statusCounts' => $statusCounts,
             'headers' => $headers,
             'rows' => $rows,
@@ -65,12 +71,18 @@ class QuotationController extends AbstractController
             ],
             'deleteFormTemplate' => 'dashboard/quotation/_delete_form.html.twig',
             'deleteRoute' => 'dashboard.quotation.delete',
-        ]);
+        ];
+
+        return $this->render('dashboard/quotation/index.html.twig', $config);
     }
 
     #[Route('/new', name: 'dashboard.quotation.new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         $quotation = new Quotation();
         $quotationStatus = new QuotationStatus();
         $form = $this->createForm(QuotationType::class, $quotation);
@@ -83,26 +95,13 @@ class QuotationController extends AbstractController
             $entityManager->persist($quotationStatus);
 
             $user = $this->getUser();
-            $companyData = $user->getCompany();
-            $company->setDenomination($companyData->getDenomination());
-            $company->setSiren($companyData->getSiren());
-            $company->setSiret($companyData->getSiret());
-            $company->setTvaNumber($companyData->getTvaNumber());
-            $company->setRcsNumber($companyData->getRcsNumber());
-            $company->setPhoneNumber($companyData->getPhoneNumber());
-            $company->setMail($companyData->getMail());
-            $company->setCreationDate($companyData->getCreationDate());
-            $company->setRegisteredSocial($companyData->getRegisteredSocial());
-            $company->setSector($companyData->getSector());
-            $company->setLogo($companyData->getLogo());
-            $company->setSigning($companyData->getSigning());
-
-            $entityManager->persist($company);
 
             $quotation->setQuotationStatus($quotationStatus);
             $quotation->setCompany($company);
             $entityManager->persist($quotation);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Le devis a été créé avec succès.');
 
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
@@ -116,6 +115,10 @@ class QuotationController extends AbstractController
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
     public function show(Quotation $quotation): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         return $this->render('dashboard/quotation/show.html.twig', [
             'quotation' => $quotation,
         ]);
@@ -124,6 +127,10 @@ class QuotationController extends AbstractController
     #[Route('/{uid}/edit', name: 'dashboard.quotation.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Quotation $quotation, EntityManagerInterface $entityManager): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
 
@@ -155,53 +162,32 @@ class QuotationController extends AbstractController
     #[Route('/{uid}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
     public function exportQuotation(Quotation $quotation): Response
     {
-        $response = new StreamedResponse(function() use ($quotation) {
-            $handle = fopen('php://output', 'w+');
+        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
+        $data = [[
+            $quotation->getUid(),
+            $quotation->getQuotationStatus()->getName(),
+            $quotation->getCustomer()->getName(),
+            $quotation->getDate()->format('Y-m-d H:i:s')
+        ]];
 
-            fputcsv($handle, ['Nom', 'Status', 'Client', 'Envoyé le'], ';');
-
-            fputcsv($handle, [
-                $quotation->getUid(),
-                $quotation->getQuotationStatus()->getName(),
-                $quotation->getCustomer()->getName(),
-                $quotation->getDate()->format('Y-m-d H:i:s')
-            ], ';');
-
-            fclose($handle);
-        });
-
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="quotation_'.$quotation->getUid().'.csv"');
-
-        return $response;
+        return $this->csvExporter->export($data, $headers, 'quotation_' . $quotation->getUid());
     }
 
     #[Route('/export/all', name: 'dashboard.quotation.export_all', methods: ['GET'])]
     public function exportAllQuotations(QuotationRepository $quotationRepository): Response
     {
         $quotations = $quotationRepository->findAll();
+        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
+        $dataExtractor = function(Quotation $quotation) {
+            return [
+                $quotation->getId(),
+                $quotation->getUid(),
+                $quotation->getQuotationStatus()->getName(),
+                $quotation->getCustomer()->getName(),
+                $quotation->getDate()->format('Y-m-d H:i:s')
+            ];
+        };
 
-        $response = new StreamedResponse(function() use ($quotations) {
-            $handle = fopen('php://output', 'w+');
-
-            fputcsv($handle, ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'], ';');
-
-            foreach ($quotations as $quotation) {
-                fputcsv($handle, [
-                    $quotation->getId(),
-                    $quotation->getUid(),
-                    $quotation->getQuotationStatus()->getName(),
-                    $quotation->getCustomer()->getName(),
-                    $quotation->getDate()->format('Y-m-d H:i:s')
-                ], ';');
-            }
-
-            fclose($handle);
-        });
-
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="all_quotations.csv"');
-
-        return $response;
+        return $this->csvExporter->exportEntities($quotations, $headers, $dataExtractor, 'all_quotations');
     }
 }
