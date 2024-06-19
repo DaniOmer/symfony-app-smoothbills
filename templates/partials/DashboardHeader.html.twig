@@ -25,7 +25,7 @@
                 <div class="flex justify-center items-center gap-1">
                     <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
                         {% if app.user.avatar is not none %}
-                            <img src="{{ url(app.user.avatar) }}" alt="avatar" class="" />
+                            <img src="{{ app.user.avatar }}" alt="avatar" class="w-full h-full object-cover rounded-full" />
                         {% else %}
                             {{ app.user.firstName|slice(0, 1) }}{{ app.user.lastName|slice(0, 1) }}
                         {% endif %}
