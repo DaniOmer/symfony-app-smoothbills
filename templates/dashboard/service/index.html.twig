@@ -1,0 +1,44 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'service.index_title'|trans }}{% endblock %}
+
+{% set statusColors = {
+    'Actif': 'bg-green-100 text-green-800',
+    'Inactif': 'bg-red-100 text-red-800',
+    'En attente': 'bg-yellow-100 text-yellow-800'
+} %}
+
+{% block body %}
+    <section>
+        <header class="w-full flex justify-between mb-[40px]">
+            <h1 class="text-title font-title font-semibold">{{ 'service.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <a 
+                    href="{{ path('dashboard.service.new') }}" 
+                    class="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75"
+                >
+                    <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
+                    {{ 'crud.upload'|trans }}
+                </a>
+                <a
+                    href="{{ path('dashboard.service.new') }}"
+                    class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
+                >
+                    {{ 'crud.create_new'|trans }}
+                </a>
+            </div>
+        </header>
+
+        {{ component('table', {
+            services: services,
+            headers: headers,
+            rows: rows,
+            title: 'service.table_title'|trans,
+            actions: actions,
+            deleteFormTemplate: deleteFormTemplate,
+            deleteRoute: deleteRoute,
+            statusColors: statusColors,
+             
+        }) }}
+    </section>
+{% endblock %}

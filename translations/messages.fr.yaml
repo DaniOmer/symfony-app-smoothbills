@@ -36,6 +36,13 @@ customer:
     new: "Ajouter un client"
     name: "Client"
 
+service:
+    title: "Services"
+    edit_title: "Modifier le service"
+    table_title: "Tous les services"
+    new: "Ajouter un service"
+    name: "Service"
+
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
     general: "Une erreur s'est produite. Veuillez réessayer plus tard."
