@@ -40,7 +40,7 @@
                         <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
                     </div>
                     <nav id="actions-list" class="flex flex-col">
-                        <twig:MenuItem href="#" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Profil</twig:MenuItem>
+                        <twig:MenuItem href="{{ path('dashboard.settings.user.profile' )}}" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Profil</twig:MenuItem>
                         <twig:MenuItem href="#" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Settings</twig:MenuItem>
                         <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Se déconnecter</twig:MenuItem>
                     </nav>
