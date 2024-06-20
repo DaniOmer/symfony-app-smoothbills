@@ -25,6 +25,7 @@ module.exports = {
           '100': '#F4DDBB',
           '800': '#FF9800',
         },
+        backgroundIcon: '#FBF6F6'
       },
       fontFamily: {
         title: ["var(--title-font)", "Arial", "sans-serif"],
