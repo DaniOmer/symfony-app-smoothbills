@@ -21,7 +21,7 @@
                     --sidebar-position: "{{ theme.getSidebarPosition() }}";
                     --title-font-size: 24px;
                     --subtitle-font-size: 18px;
-                    --content-font-size: 12px;
+                    --content-font-size: 14px;
                 }
             </style>
             
@@ -58,10 +58,10 @@
                 </div>
             {% endif %}
             {% include "partials/DashboardHeader.html.twig" %}
-            <div class="flex h-[calc(100vh_-_60px)] flex-1 bg-background relative">
+            <div class="flex h-[calc(100vh_-_60px)] flex-1 bg-background relative text-content">
                 {% include "partials/Sidebar.html.twig" %}
                 <main class="box-border flex basis-full flex-col">
-                    <div class="p-6 overflow-auto">
+                    <div class="px-6 py-8 overflow-auto h-full">
                         {% block body %}{% endblock %}
                     </div>
                 </main>

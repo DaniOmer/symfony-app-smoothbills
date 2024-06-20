@@ -3,13 +3,13 @@
 <section>
     {{ form_start(form) }}
         <header class="mb-3 pb-3 border-b">
-            <h2 class="font-semibold mb-2">Profil</h2>
-            <p class="text-sm">Modifier votre profil et vos informations personnelles.</p>
+            <h2 class="font-semibold mb-2 text-title">Mon profil</h2>
+            <p>Modifier votre profil et vos informations personnelles</p>
         </header>
         <article class="mb-3">
             <div class="grid grid-cols-2 py-4 border-b">
                 <div class="mb-3">
-                    <h2 class="font-semibold mb-2">Nom</h2>
+                    <h2 class="font-medium mb-2 text-subtitle">Nom</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-x-5">
                     {{ form_row(form.first_name, {
@@ -22,7 +22,7 @@
             </div>
             <div class="grid grid-cols-2 py-4 border-b">
                 <div class="mb-3">
-                    <h2 class="font-semibold mb-2">Adresse mail</h2>
+                    <h2 class="font-medium mb-2 text-subtitle">Adresse mail</h2>
                 </div>
                 <div>
                     {{ form_row(form.email) }}
@@ -30,17 +30,17 @@
             </div>
             <div class="grid grid-cols-2 py-4 border-b">
                 <div class="mb-3">
-                    <h2 class="font-semibold mb-2">Mot de passe</h2>
+                    <h2 class="font-medium mb-2 text-subtitle">Mot de passe</h2>
                 </div>
                 <div class="flex justify-end">
-                    <a href='#' class="block w-full md:w-1/2 text-center bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                    <a href='#' class="w-full flex justify-center items-center md:w-1/2 bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
                         Changer de mot de passe
                     </a>
                 </div>
             </div>
             <div class="grid grid-cols-2 py-4 border-b">
                 <div class="mb-3">
-                    <h2 class="font-semibold mb-2">Photo de profil</h2>
+                    <h2 class="font-medium mb-2 text-subtitle">Photo de profil</h2>
                     <p class="text-sm">Cette photo apparaittra sur votre profil</p>
                 </div>
                 <div>
@@ -49,7 +49,7 @@
             </div>
             <div class="grid grid-cols-2 py-4">
                 <div class="mb-3">
-                    <h2 class="font-semibold mb-2">Poste</h2>
+                    <h2 class="font-medium mb-2 text-subtitle">Poste</h2>
                 </div>
                 <div>
                     {{ form_row(form.job_title) }}
