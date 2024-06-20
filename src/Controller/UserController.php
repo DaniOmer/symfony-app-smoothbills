@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\UserRegistrationChecker;
+use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,13 +16,27 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/dashboard/settings/user')]
 class UserController extends AbstractController
 {
-    // #[Route('/manage', name: 'dashboard.settings.user.manage', methods: ['GET'])]
-    // public function index(UserRepository $userRepository): Response
-    // {
-    //     return $this->render('user/index.html.twig', [
-    //         'users' => $userRepository->findAll(),
-    //     ]);
-    // }
+    use ProfileCompletionTrait;
+    private $userRegistrationChecker;
+
+    public function __construct(UserRegistrationChecker $userRegistrationChecker)
+    {
+        $this->userRegistrationChecker = $userRegistrationChecker;
+    }
+
+    #[Route('/manage', name: 'dashboard.settings.user.manage', methods: ['GET'])]
+    public function index(UserRepository $userRepository): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé : Cette page est réservée aux administrateurs.');
+        
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+        
+        return $this->render('user/index.html.twig', [
+            'users' => $userRepository->findAll(),
+        ]);
+    }
 
     #[Route('/profile', name: 'dashboard.settings.user.profile', methods: ['GET', 'POST'])]
     public function updateProfile(Request $request, EntityManagerInterface $entityManager): Response
