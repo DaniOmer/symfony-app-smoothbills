@@ -38,3 +38,6 @@ services:
             $twig: "@twig"
         tags:
             - { name: "kernel.event_subscriber" }
+    
+    App\Service\CsvExporter:
+        public: true

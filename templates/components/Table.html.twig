@@ -21,8 +21,9 @@
                             {% for key, value in row %}
                                 {% if key != 'uid' and key != 'id' %}
                                     <div class="{{ rowClasses }} table-cell whitespace-nowrap">
-                                        {% if statusColors is defined and key == 'status' and value in statusColors %}
-                                            <span class="px-2 py-1 rounded-sm bg-[{{ statusColors[value] }}]">{{ value }}</span>
+                                        {% if statusColors is defined and key == 'status' %}
+                                            {% set classes = statusColors[value] %}
+                                            <span class="px-2 py-1 rounded-sm {{ classes }}">{{ value }}</span>
                                         {% else %}
                                             {{ value|raw }}
                                         {% endif %}
@@ -66,7 +67,9 @@
         </div>
     {% endif %}
 
-    <div class="w-full flex justify-center mt-6 mb-3">
-        {{ knp_pagination_render(customers) }}
-    </div>
+    {% if paginatedData is defined %}
+        <div class="w-full flex justify-center mt-6 mb-3">
+            {{ knp_pagination_render(paginatedData) }}
+        </div>
+    {% endif %}
 </section>

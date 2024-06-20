@@ -28,6 +28,8 @@ crud:
     create_new: "Créer un nouveau"
     upload: "Importer"
     download: "Exporter"
+    export: "Exporter"
+    export_all: "Tout exporter"
 
 customer:
     title: "Clients"
@@ -46,3 +48,13 @@ site:
 general:
     home:
         title: "Général"
+
+quotation:
+    title: "Devis"
+    edit_quotation: "Modifier le devis"
+    table_title: "Tous les devis"
+    new: "Ajouter un devis"
+    name: "Devis"
+    invoice_total: "Total de devis"
+    invoice_accepted: "Devis acceptés"
+    invoice_rejected: "Devis rejetés"
