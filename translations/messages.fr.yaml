@@ -40,7 +40,21 @@ customer:
 
 table:
     not_data: "Aucune donnée disponible dans le tableau"
-    
+
+button:
+    save: "Enregistrer"
+    cancel: "Annuler"
+    close: "Fermer"
+    delete: "Supprimer"
+    edit: "Modifier"
+    show: "Afficher"
+    create: "Créer"
+    update: "Mettre à jour"
+    back: "Retour"
+    upload: "Importer"
+    download: "Exporter"
+    export: "Exporter"
+    export_all: "Tout exporter"
 
 service:
     title: "Services"
@@ -48,6 +62,10 @@ service:
     table_title: "Tous les services"
     new: "Ajouter un service"
     name: "Service"
+    uid: "UID"
+    price: "Prix"
+    description: "Description"
+    estimatedDuration: "Durée estimée"
 
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."

@@ -2,12 +2,6 @@
 
 {% block title %}{{ 'service.index_title'|trans }}{% endblock %}
 
-{% set statusColors = {
-    'Actif': 'bg-green-100 text-green-800',
-    'Inactif': 'bg-red-100 text-red-800',
-    'En attente': 'bg-yellow-100 text-yellow-800'
-} %}
-
 {% block body %}
     <section>
         {% for flash_success in app.flashes('success') %}

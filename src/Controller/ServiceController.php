@@ -37,6 +37,12 @@ class ServiceController extends AbstractController
             return $redirectResponse;
         }
 
+        $statusColors = [
+            'Actif' => 'bg-green-100 text-green-800',
+            'Inactif' => 'bg-red-100 text-red-800',
+            'En attente' => 'bg-yellow-100 text-yellow-800',
+        ];
+
         $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
         $services = $this->serviceService->getPaginatedServices($user, $page);
@@ -66,6 +72,7 @@ class ServiceController extends AbstractController
             ],
             'deleteFormTemplate' => 'dashboard/service/_delete_form.html.twig',
             'deleteRoute' => 'dashboard.service.delete',
+            'statusColors' => $statusColors,
         ];
 
         return $this->render('dashboard/service/index.html.twig', $config);
