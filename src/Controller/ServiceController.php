@@ -7,6 +7,8 @@ use App\Form\ServiceType;
 use App\Service\ServiceService;
 use App\Service\UserRegistrationChecker;
 use App\Trait\ProfileCompletionTrait;
+use App\Repository\ServiceRepository;
+use App\Service\CsvExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,15 +21,17 @@ class ServiceController extends AbstractController
     use ProfileCompletionTrait;
     private $serviceService;
     private $userRegistrationChecker;
+    private $csvExporter;
 
-    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker)
+    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
     {
         $this->serviceService = $serviceService;
         $this->userRegistrationChecker = $userRegistrationChecker;
+        $this->csvExporter = $csvExporter;
     }
 
     #[Route('/', name: 'dashboard.service.index', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(ServiceRepository $serviceRepository, Request $request): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
@@ -37,24 +41,35 @@ class ServiceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $services = $this->serviceService->getPaginatedServices($user, $page);
 
-        $headers = ['Nom', 'Description', 'Prix', 'Durée estimée', 'Statut'];
+        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut'];
         $rows = $this->serviceService->getServicesRows($user, $page);
 
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+
+        $totalServices = $serviceRepository->countTotalServices();
+
+        $statusCounts = [
+            'active' => $serviceRepository->countServicesByStatus('Actif', $companyId),
+            'inactive' => $serviceRepository->countServicesByStatus('Inactif', $companyId),
+        ];
+
         $config = [
+            'statusCounts' => $statusCounts,
             'headers' => $headers,
             'rows' => $rows,
+            'services' => $services,
+            'totalServices' => $totalServices,
             'actions' => [
-                ['label' => 'Modifier', 'route' => 'dashboard.service.edit'],
+                ['route' => 'dashboard.service.show', 'label' => 'Afficher'],
+                ['route' => 'dashboard.service.edit', 'label' => 'Modifier'],
             ],
             'deleteFormTemplate' => 'dashboard/service/_delete_form.html.twig',
             'deleteRoute' => 'dashboard.service.delete',
-            'services' => $services,
         ];
 
         return $this->render('dashboard/service/index.html.twig', $config);
     }
-
-
 
     #[Route('/new', name: 'dashboard.service.new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -70,7 +85,7 @@ class ServiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->serviceService->createService($form, $service, $user);
-
+            $this->addFlash('success', 'Le service a été créé avec succès.');
             return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -80,7 +95,19 @@ class ServiceController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'dashboard.service.edit', methods: ['GET', 'POST'])]
+    #[Route('/{uid}', name: 'dashboard.service.show', methods: ['GET'])]
+    public function show(Service $service): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        return $this->render('dashboard/service/show.html.twig', [
+            'service' => $service,
+        ]);
+    }
+
+    #[Route('/{uid}/edit', name: 'dashboard.service.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Service $service, EntityManagerInterface $entityManager): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
@@ -92,7 +119,7 @@ class ServiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $this->addFlash('success', 'Le service a été modifié avec succès.');
             return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -113,5 +140,24 @@ class ServiceController extends AbstractController
         }
 
         return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/export/all', name: 'dashboard.service.export_all', methods: ['GET'])]
+    public function exportAllServices(ServiceRepository $serviceRepository): Response
+    {
+        $services = $serviceRepository->findAll();
+        $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
+        $dataExtractor = function (Service $service) {
+            return [
+                $service->getId(),
+                $service->getName(),
+                $service->getPrice(),
+                $service->getEstimatedDuration(),
+                $service->getServiceStatus()->getName(),
+                $service->getDescription(),
+            ];
+        };
+
+        return $this->csvExporter->exportEntities($services, $headers, $dataExtractor, 'all_services');
     }
 }

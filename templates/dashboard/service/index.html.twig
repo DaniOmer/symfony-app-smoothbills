@@ -10,35 +10,24 @@
 
 {% block body %}
     <section>
+        {% for flash_success in app.flashes('success') %}
+            <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+
         <header class="w-full flex justify-between mb-[40px]">
             <h1 class="text-title font-title font-semibold">{{ 'service.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
-                <a 
-                    href="{{ path('dashboard.service.new') }}" 
-                    class="flex justify-center items-center gap-3 px-4 py-3 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75"
-                >
-                    <span class="text-2xl">{{ ux_icon('tabler:cloud-upload') }}</span>
-                    {{ 'crud.upload'|trans }}
-                </a>
+
                 <a
                     href="{{ path('dashboard.service.new') }}"
                     class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
                 >
                     {{ 'crud.create_new'|trans }}
                 </a>
+                <a class="block px-4 py-3 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.service.export_all') }}">{{ 'crud.export_all'|trans }}</a>
             </div>
         </header>
 
-        {{ component('table', {
-            services: services,
-            headers: headers,
-            rows: rows,
-            title: 'service.table_title'|trans,
-            actions: actions,
-            deleteFormTemplate: deleteFormTemplate,
-            deleteRoute: deleteRoute,
-            statusColors: statusColors,
-             
-        }) }}
+        {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors, }) }}
     </section>
 {% endblock %}

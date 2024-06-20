@@ -32,8 +32,8 @@ class ServiceService
         foreach ($this->getPaginatedServices($user, $page) as $service) {
             $rows[] = [
                 'id' => $service->getId(),
+                'uid' => $service->getUid(),
                 'name' => $service->getName(),
-                'description' => $service->getDescription(),
                 'price' => $service->getPrice(),
                 'estimated_duration' => $service->getEstimatedDuration(),
                 'status' => $service->getServiceStatus()->getName(),

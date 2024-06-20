@@ -34,4 +34,34 @@ class ServiceRepository extends ServiceEntityRepository
             5
         );
     }
+
+    public function countTotalServices(): int
+    {
+        return (int) $this->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countServicesByStatus(string $status, int $companyId): int
+    {
+        return (int) $this->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->join('s.service_status', 'ss')
+            ->where('ss.name = :status')
+            ->andWhere('s.company = :companyId')
+            ->setParameter('status', $status)
+            ->setParameter('companyId', $companyId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findByUid($uid): ?Service
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.uid = :uid')
+            ->setParameter('uid', $uid)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

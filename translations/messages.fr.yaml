@@ -38,6 +38,10 @@ customer:
     new: "Ajouter un client"
     name: "Client"
 
+table:
+    not_data: "Aucune donnée disponible dans le tableau"
+    
+
 service:
     title: "Services"
     edit_title: "Modifier le service"

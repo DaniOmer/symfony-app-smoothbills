@@ -1,13 +1,13 @@
+{# templates/dashboard/service/edit.html.twig #}
 {% extends 'base/base_dashboard.html.twig' %}
 
 {% block title %}Service - Edition{% endblock %}
 
 {% block body %}
     <div class="bg-white drop-shadow-md p-10 rounded-md">
-
-        {{ include('dashboard/service/_form.html.twig', {'button_label': 'crud.update'|trans }) }}
+        {{ include('dashboard/service/_form.html.twig', {'form': form}) }}
         <a href="{{ path('dashboard.service.index') }}">{{ 'crud.back_to_list'|trans }}</a>
 
-        {{ include('dashboard/service/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': service}) }}
+        {{ include(deleteFormTemplate, { 'service': service }) }}
     </div>
 {% endblock %}

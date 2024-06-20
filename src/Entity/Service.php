@@ -7,10 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Trait\UuidTypeTrait;
+
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -44,6 +49,7 @@ class Service
 
     public function __construct()
     {
+        self::UuidConstruct();
         $this->quotationHasServices = new ArrayCollection();
     }
 
