@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ServiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -33,6 +35,17 @@ class Service
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?ServiceStatus $service_status = null;
+
+    /**
+     * @var Collection<int, QuotationHasService>
+     */
+    #[ORM\OneToMany(mappedBy: 'service', targetEntity: QuotationHasService::class)]
+    private Collection $quotationHasServices;
+
+    public function __construct()
+    {
+        $this->quotationHasServices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,6 +120,36 @@ class Service
     public function setServiceStatus(?ServiceStatus $service_status): static
     {
         $this->service_status = $service_status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuotationHasService>
+     */
+    public function getQuotationHasServices(): Collection
+    {
+        return $this->quotationHasServices;
+    }
+
+    public function addQuotationHasService(QuotationHasService $quotationHasService): static
+    {
+        if (!$this->quotationHasServices->contains($quotationHasService)) {
+            $this->quotationHasServices->add($quotationHasService);
+            $quotationHasService->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuotationHasService(QuotationHasService $quotationHasService): static
+    {
+        if ($this->quotationHasServices->removeElement($quotationHasService)) {
+            // set the owning side to null (unless already changed)
+            if ($quotationHasService->getService() === $this) {
+                $quotationHasService->setService(null);
+            }
+        }
 
         return $this;
     }
