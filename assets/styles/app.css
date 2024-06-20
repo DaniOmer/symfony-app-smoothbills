@@ -14,5 +14,11 @@
     --content-font: "Poppins";
     --title-font-size: 36px;
     --subtitle-font-size: 26px;
-    --content-font-size: 14px;
+    --content-font-size: 16px;
+    --green-status-bg-color: 201, 228, 202;
+    --red-status-bg-color: 240, 201, 201;
+    --yellow-status-bg-color: 244, 221, 187;
+    --green-status-text-color: 67, 160, 71;
+    --red-status-text-color: 244, 67, 54;
+    --yellow-status-text-color: 255, 152, 0;
 }
