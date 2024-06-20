@@ -1,0 +1,11 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'quotation.new'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="bg-white drop-shadow-md p-10 rounded-md">
+        {{ include('dashboard/quotation/_form.html.twig') }}
+    
+        <a href="{{ path('dashboard.quotation.index') }}">{{ 'crud.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

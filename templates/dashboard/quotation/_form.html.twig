@@ -1,0 +1,36 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
+            <div id="quotation_info" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.date, {
+                    label: 'Date',
+                }) }}
+                {{ form_row(form.type, {
+                    label: 'Type',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Status</h1>
+            <div id="quotation_status" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.quotation_status, {
+                    label: 'Nom',
+                }) }}
+            </div>
+        </article>
+        <article>
+            <h1 class="text-subtitle font-title font-semibold mb-3">Clients</h1>
+            <div id="customer" class="grid grid-cols-2 gap-x-5">
+                {{ form_row(form.customer, {
+                    label: 'Nom',
+                }) }}
+            </div>
+        </article>
+        <button class="btn mt-4 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+            {{ button_label|default('Save') }}
+        </button>
+    {{ form_end(form) }}
+</section>

@@ -10,18 +10,20 @@
                 {% endfor %}
                 <div class="{{ rowClasses }} table-cell text-center">Actions</div>
             </div>
-        </div>
-        <div class="table-row-group overflow-x-hidden">
-            {% for row in rows %}
-                <div class="table-row">
-                    {% for key, value in row %}
-                        {% if key != 'id' %}
-                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">
-                                {% if statusColors is defined and key == 'status' %}
-                                    {% set classes = statusColors[value] %}
-                                    <span class="px-2 py-1 rounded-sm {{ classes }}">{{ value }}</span>
-                                {% else %}
-                                    {{ value|raw }}
+            {% if rows|length != 0 %}
+                <div class="table-row-group overflow-x-hidden">
+                    {% for row in rows %}
+                        <div class="table-row">
+                            {% for key, value in row %}
+                                {% if key != 'uid' and key != 'id' %}
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                                        {% if statusColors is defined and key == 'status' %}
+                                            {% set classes = statusColors[value] %}
+                                            <span class="px-2 py-1 rounded-sm {{ classes }}">{{ value }}</span>
+                                        {% else %}
+                                            {{ value|raw }}
+                                        {% endif %}
+                                    </div>   
                                 {% endif %}
                             </div>   
                         {% endif %}
@@ -58,4 +60,10 @@
             {{ knp_pagination_render(pagination) }}
         </div>
     {% endif %}
+    {% if pagination is defined %}
+        <div class="w-full flex justify-center mt-6 mb-3">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {% endif %}
 </section>
+
