@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\QuotationRepository;
+use App\Trait\TimestampableTrait;
 use App\Trait\UuidTypeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,14 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Quotation
 {
     use UuidTypeTrait { __construct as private UuidConstruct;}
+    use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
@@ -35,6 +34,9 @@ class Quotation
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $sending_date = null;
+
     public function __construct()
     {
         self::UuidConstruct();
@@ -43,18 +45,6 @@ class Quotation
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-
-        return $this;
     }
 
     public function getType(): ?string
@@ -101,6 +91,18 @@ class Quotation
     public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getSendingDate(): ?\DateTimeInterface
+    {
+        return $this->sending_date;
+    }
+
+    public function setSendingDate(?\DateTimeInterface $sending_date): static
+    {
+        $this->sending_date = $sending_date;
 
         return $this;
     }
