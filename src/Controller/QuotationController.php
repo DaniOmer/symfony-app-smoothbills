@@ -84,7 +84,6 @@ class QuotationController extends AbstractController
         }
 
         $quotation = new Quotation();
-        $quotationStatus = new QuotationStatus();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
         $user = $this->getUser();
@@ -98,12 +97,7 @@ class QuotationController extends AbstractController
                 $quotation->setSendingDate(null);
             }
 
-            $quotationStatus->setName($form->get('quotation_status')->getData()->getName());
-            $entityManager->persist($quotationStatus);
-
-            $user = $this->getUser();
-
-            $quotation->setQuotationStatus($quotationStatus);
+            $user = $this->getUser();            
             $quotation->setCompany($company);
             $entityManager->persist($quotation);
             $entityManager->flush();
@@ -183,20 +177,8 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/export/all', name: 'dashboard.quotation.export_all', methods: ['GET'])]
-    public function exportAllQuotations(QuotationRepository $quotationRepository): Response
+    public function exportAllQuotations(): Response
     {
-        $quotations = $quotationRepository->findAll();
-        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
-        $dataExtractor = function(Quotation $quotation) {
-            return [
-                $quotation->getId(),
-                $quotation->getUid(),
-                $quotation->getQuotationStatus()->getName(),
-                $quotation->getCustomer()->getName(),
-                $quotation->getSendingDate()->format('Y-m-d H:i:s')
-            ];
-        };
-
-        return $this->csvExporter->exportEntities($quotations, $headers, $dataExtractor, 'all_quotations');
+        return $this->quotationService->exportAllQuotations();
     }
 }

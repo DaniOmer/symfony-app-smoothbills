@@ -41,7 +41,3 @@ services:
     
     App\Service\CsvExporter:
         public: true
-    
-    App\Service\QuotationService:
-        arguments:
-            $adminEmail: '%admin_email%'

@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Repository\QuotationRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
@@ -17,7 +19,7 @@ class QuotationService
     private $adminEmail;
     private $csvExporter;
 
-    public function __construct(QuotationRepository $quotationRepository, MailerInterface $mailer, string $adminEmail, CsvExporter $csvExporter)
+    public function __construct(QuotationRepository $quotationRepository, MailerInterface $mailer, #[Autowire('%admin_email%')] string $adminEmail, CsvExporter $csvExporter)
     {
         $this->quotationRepository = $quotationRepository;
         $this->mailer = $mailer;
@@ -66,5 +68,22 @@ class QuotationService
             ->attach($quotationCsvData, 'quotation.csv', 'text/csv');
 
         $this->mailer->send($email);
+    }
+
+    public function exportAllQuotations(): Response
+    {
+        $quotations = $this->quotationRepository->findAll();
+        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
+        $dataExtractor = function(Quotation $quotation) {
+            return [
+                $quotation->getId(),
+                $quotation->getUid(),
+                $quotation->getQuotationStatus()->getName(),
+                $quotation->getCustomer()->getName(),
+                $quotation->getSendingDate() ? $quotation->getSendingDate()->format('Y-m-d H:i:s') : '',
+            ];
+        };
+
+        return $this->csvExporter->exportEntities($quotations, $headers, $dataExtractor, 'all_quotations');
     }
 }
