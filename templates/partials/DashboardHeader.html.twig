@@ -1,8 +1,12 @@
-<header class="">
-   <div class="py-4 flex justify-between items-center" >
-        <form class="flex gap-2 relative">
-            <input type="text" class="px-1 py-2 border rounded-full bg-transparent w-80"/>
-            <button class="absolute border-none right-3 bottom-1/2 translate-y-1/2">{{ ux_icon('teenyicons:search-outline') }}</button>
+<header class="flex w-full h-[60px] items-center justify-between border-b px-6 py-2">
+    <a href={{ path('site.home') }} class="flex items-center gap-4 text-xl">
+        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+        <h1 class="font-bold">SMOOTHBILL</h1>
+    </a>
+    <div class="flex gap-40 items-center" >
+        <form class="relative">
+            <input type="text" placeholder="Rechercher une section" class="px-2 py-1 border rounded-full bg-transparent w-64 text-xs"/>
+            <button class="absolute border-none right-3 bottom-1/2 translate-y-1/2 text-sm">{{ ux_icon('teenyicons:search-outline') }}</button>
         </form>
         <div class="flex justify-center items-center gap-5">
             {{ ux_icon('clarity:notification-outline-badged') }}
@@ -11,7 +15,8 @@
                 <option value="en">EN</option>
             </select>
         </div>
-
+    </div>
+    <div class="flex justify-center items-center">
         <div data-controller="actions" class="relative text-center">
             <button class="actions-button flex justify-between items-center gap-4 border-l-2 pl-5" data-action="click->actions#showModal">
                 <div class="text-sm">
@@ -23,9 +28,9 @@
                     </span>
                 </div>
                 <div class="flex justify-center items-center gap-1">
-                    <div class="w-16 h-16 rounded-full bg-white p-2 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center">
                         {% if app.user.avatar is not none %}
-                            <img src="{{ url(app.user.avatar) }}" alt="avatar" class="" />
+                            <img src="{{ app.user.avatar }}" alt="avatar" class="w-full h-full object-cover rounded-full" />
                         {% else %}
                             {{ app.user.firstName|slice(0, 1) }}{{ app.user.lastName|slice(0, 1) }}
                         {% endif %}
@@ -34,15 +39,17 @@
                 </div>
             </button>
 
-            <div class="modal w-60 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
+            <div class="modal absolute top-[120%] right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
                 <div class="actions-content">
                     <div class="close text-right p-2 text-3xl font-bold flex justify-end" data-action="click->actions#closeModal">
                         <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
                     </div>
-                    <nav id="actions-list" class="flex flex-col">
-                        <twig:MenuItem href="#" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Profil</twig:MenuItem>
-                        <twig:MenuItem href="#" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Settings</twig:MenuItem>
-                        <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="border-b hover:bg-primary/10 hover:border-primary px-4 py-2">Se déconnecter</twig:MenuItem>
+                    <nav id="actions-list" class="flex flex-col text-[12px] shadow-md drop-shadow-md">
+                        <span class="block px-6 py-2 border-b">{{ app.user.email }}</span>
+                        <span class="block px-6 py-2 border-b">Freemium</span>
+                        <twig:MenuItem href="{{ path('dashboard.settings.user.profile' )}}" additionalClasses="hover:bg-primary/10 px-6 py-2">Profil</twig:MenuItem>
+                        <twig:MenuItem href="#" additionalClasses="hover:bg-primary/10 px-6 py-2">Settings</twig:MenuItem>
+                        <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="hover:bg-primary/10 p-2">Se déconnecter</twig:MenuItem>
                     </nav>
                 </div>
             </div>
