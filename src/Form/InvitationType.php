@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Invitation;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,6 +25,14 @@ class InvitationType extends AbstractType
                 new NotBlank([
                     'message' => 'Veuillez saisir un email valide.',
                 ]),
+            ],
+            'trim' => true,
+        ])
+        ->add('role', ChoiceType::class, [
+            'label' => false,
+            'choices'  => [
+                'Editeur' => 'ROLE_EDITOR',
+                'Comptable' => 'ROLE_ACCOUNTANT',
             ],
             'trim' => true,
         ])

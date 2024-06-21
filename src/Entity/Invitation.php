@@ -30,6 +30,9 @@ class Invitation
     #[ORM\Column]
     private ?\DateTimeImmutable $expireAt = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $role = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,6 +94,18 @@ class Invitation
     public function setExpireAt(\DateTimeImmutable $expireAt): static
     {
         $this->expireAt = $expireAt;
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): static
+    {
+        $this->role = $role;
 
         return $this;
     }
