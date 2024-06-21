@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Quotation;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CsvExporter
@@ -30,5 +31,29 @@ class CsvExporter
     {
         $data = array_map($dataExtractor, $entities);
         return $this->export($data, $headers, $fileName);
+    }
+
+    public function exportQuotation(Quotation $quotation): string
+    {
+        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
+        $data = [
+            [
+                $quotation->getUid(),
+                $quotation->getQuotationStatus()->getName(),
+                $quotation->getCustomer()->getName(),
+                $quotation->getSendingDate()->format('Y-m-d H:i:s')
+            ]
+        ];
+
+        $output = fopen('php://temp', 'r+');
+        fputcsv($output, $headers);
+        foreach ($data as $row) {
+            fputcsv($output, $row);
+        }
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return $csv;
     }
 }

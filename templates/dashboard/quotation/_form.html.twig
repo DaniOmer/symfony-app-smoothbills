@@ -5,11 +5,8 @@
         <article class="mb-5">
             <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
             <div id="quotation_info" class="grid grid-cols-2 gap-x-5">
-                {{ form_row(form.date, {
-                    label: 'Date',
-                }) }}
                 {{ form_row(form.type, {
-                    label: 'Type',
+                    label: 'Type de paiement',
                 }) }}
             </div>
         </article>
@@ -18,6 +15,9 @@
             <div id="quotation_status" class="grid grid-cols-2 gap-x-5">
                 {{ form_row(form.quotation_status, {
                     label: 'Nom',
+                }) }}
+                {{ form_row(form.sendOption, {
+                    label: 'Option d\'envoi',
                 }) }}
             </div>
         </article>

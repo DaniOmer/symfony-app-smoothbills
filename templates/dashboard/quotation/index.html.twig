@@ -31,6 +31,6 @@
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="skill-icons:billing-icon"></twig:KpiCard>
         </div>
 
-        {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, pagination: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
+        {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, paginatedData: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
     </section>
 {% endblock %}

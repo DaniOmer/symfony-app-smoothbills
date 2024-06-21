@@ -7,7 +7,7 @@ use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\Role;
-use App\Service\UserService;
+use App\Service\RegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ class RegistrationController extends AbstractController
 {
 
     public function __construct(
-        private UserService $userService, 
+        private RegistrationService $registrationService, 
         private UserRepository $userRepository,
         private EmailVerifier $emailVerifier
         )
@@ -52,7 +52,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->userService->sendVerificationEmail($user);
+            $this->registrationService->sendVerificationEmail($user);
             return $this->redirectToRoute('site.register.success');
         }
 
@@ -83,13 +83,13 @@ class RegistrationController extends AbstractController
         try {
 
             $this->emailVerifier->verify($request, $user, $expire);
-            $this->userService->sendAccountValidationConfirmation($user);
+            $this->registrationService->sendAccountValidationConfirmation($user);
             return $this->redirectToRoute('site.login');
 
         } catch (\LogicException $exception) {
 
             if ($exception->getMessage() === 'Le lien de vérification a expiré.') {
-                $this->userService->resendVerificationEmail($user);
+                $this->registrationService->resendVerificationEmail($user);
                 $token = $session->get('verification_token');
                 return $this->redirectToRoute('site.resend.verification.email', ['token' => $token]);
 
@@ -122,16 +122,5 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('site/registration/resend_verification.html.twig');
-    }
-
-    #[Route('/complete/registration', name: 'site.complete_registration')]
-    public function completeRegistration(Request $request): Response
-    {
-        $user = $this->getUser();
-        if ($user->isRegistrationComplete()) {
-            return $this->redirectToRoute('dashboard.home');
-        }
-
-        return $this->render('site/registration/complete_registration.html.twig');
     }
 }

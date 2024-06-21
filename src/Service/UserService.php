@@ -2,54 +2,52 @@
 
 namespace App\Service;
 
-use App\Security\EmailVerifier;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Mime\Address;
+use App\Entity\User;
+use App\Repository\UserRepository;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 
 class UserService
 {
+    private $userRepository;
 
-    public function __construct(
-        private EmailVerifier $emailVerifier, 
-        #[Autowire('%admin_email%')] private $adminEmail, 
-        private MailerService $mailerService,)
+    public function __construct(UserRepository $userRepository)
     {
+        $this->userRepository = $userRepository;
+    }
+    
+    public function getPaginatedUsers(User $user, $page): PaginationInterface
+    {
+        $paginateUsers = $this->userRepository->paginateUsersByOwner($user, $page);
+
+        return $paginateUsers;
     }
 
-    public function sendVerificationEmail(object $user): void
+    public function getUsersRows(User $user, $page): Array
     {
-        $this->emailVerifier->sendEmailConfirmation(
-            'site.verify_email', 
-            $user,
-            (new TemplatedEmail())
-                ->from(new Address($this->adminEmail, 'Smoothbill'))
-                ->to($user->getEmail())
-                ->subject('Bienvenue chez Smoothbill !')
-                ->htmlTemplate('site/registration/mail/verification_email.html.twig')
-            );
-    }
+        $rows = [];
 
-    public function resendVerificationEmail(object $user): void
-    {
-        $this->emailVerifier->sendEmailConfirmation(
-            'site.verify_email', 
-            $user,
-            (new TemplatedEmail())
-                ->from(new Address($this->adminEmail, 'Smoothbill'))
-                ->to($user->getEmail())
-                ->subject('Nouveau lien de vérification')
-                ->htmlTemplate('site/registration/mail/verification_email.html.twig')
-            );
-    }
+        $roles = $user->getRoles();
 
-    public function sendAccountValidationConfirmation(object $user): void
-    {
-        $this->mailerService->sendWelcomeEmail(
-            $user, 
-            'site/registration/mail/confirmation_email.html.twig',
-            ['user' => $user,], 
-            'Votre compte a été validé !', 
-        );
+        if (in_array('ROLE_ADMIN', $roles, true)) {
+            $userRole = 'Admin';
+        } elseif (in_array('ROLE_EDITOR', $roles, true)) {
+            $userRole = 'Editeur';
+        } elseif (in_array('ROLE_ACCOUNTANT', $roles, true)) {
+            $userRole = 'Comptable';
+        }
+
+        foreach ($this->getPaginatedUsers($user, $page) as $user) {
+            $rows[] = [
+                'name' => $user->getFirstName()." ".$user->getLastName(),
+                'mail' => $user->getEmail(),
+                'role' => $userRole,
+                'jobTitle' => $user->getJobTitle(),
+                'createdAt' => $user->getCreatedAt()->format('Y-m-d'),
+                'uid' => $user->getUid(),
+                'id' => $user->getId(),
+            ];
+        }
+
+        return $rows;
     }
 }
