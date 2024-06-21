@@ -6,6 +6,9 @@ use App\Entity\User;
 use App\Entity\Company;
 use App\Entity\Address;
 use App\Entity\LegalForm;
+use App\Entity\Service;
+use App\Entity\ServiceStatus;
+use App\Entity\InvoiceStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -24,7 +27,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create('fr_FR');
-        
+
         $industries = [
             'Technology',
             'Healthcare',
@@ -45,6 +48,26 @@ class AppFixtures extends Fixture
             $legalForm->setName($faker->companySuffix);
             $manager->persist($legalForm);
             $legalForms[] = $legalForm;
+        }
+
+        // Create Service Statuses
+        $serviceStatusesNames = ['Actif', 'Inactif', 'En attente'];
+        $serviceStatuses = [];
+        foreach ($serviceStatusesNames as $statusName) {
+            $status = new ServiceStatus();
+            $status->setName($statusName);
+            $manager->persist($status);
+            $serviceStatuses[] = $status;
+        }
+
+        // Create Invoice Statuses
+        $invoiceStatusesNames = ['Paid', 'Unpaid', 'Overdue', 'Cancelled'];
+        $invoiceStatuses = [];
+        foreach ($invoiceStatusesNames as $statusName) {
+            $status = new InvoiceStatus();
+            $status->setName($statusName);
+            $manager->persist($status);
+            $invoiceStatuses[] = $status;
         }
 
         // Create Companies with unique addresses
@@ -78,6 +101,20 @@ class AppFixtures extends Fixture
             $company->setUid(Uuid::v7());
             $manager->persist($company);
             $companies[] = $company;
+        }
+
+        // Create Services
+        foreach ($companies as $company) {
+            for ($i = 0; $i < 10; $i++) {
+                $service = new Service();
+                $service->setName($faker->word);
+                $service->setDescription($faker->sentence);
+                $service->setPrice($faker->randomFloat(2, 10, 1000));
+                $service->setEstimatedDuration($faker->numberBetween(1, 8) . ' hours');
+                $service->setCompany($company);
+                $service->setServiceStatus($serviceStatuses[array_rand($serviceStatuses)]);
+                $manager->persist($service);
+            }
         }
 
         $manager->flush();

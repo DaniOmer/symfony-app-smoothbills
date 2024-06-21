@@ -1,0 +1,9 @@
+{# templates/dashboard/service/_delete_form.html.twig #}
+<form method="post" action="{{ path('dashboard.service.delete', {'id': entity.id}) }}" onsubmit="return confirm(`{{ 'crud.delete_confirmation'|trans }}`);">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
+    <button
+        class="w-full px-4 py-2"
+    >
+        {{ 'crud.delete'|trans }}
+    </button>
+</form>
