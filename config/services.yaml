@@ -6,6 +6,7 @@
 parameters:
     admin_email: "no-reply@smoothbill.fr"
     aws_s3_bucket_name: "smoothbill-dev-eu-west-3"
+    jwt_secret_key: "%env(JWT_SECRET_KEY)%"
 
 services:
     # default configuration for services in *this* file
@@ -38,6 +39,6 @@ services:
             $twig: "@twig"
         tags:
             - { name: "kernel.event_subscriber" }
-    
+
     App\Service\CsvExporter:
         public: true
