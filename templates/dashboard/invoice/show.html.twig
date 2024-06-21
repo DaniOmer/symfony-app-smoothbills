@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<title>Invoice</title>
+
+{% block body %}
+    <h1>Invoice</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ invoice.id }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ invoice.date ? invoice.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Uuid</th>
+                <td>{{ invoice.uuid }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_invoice_index') }}">back to list</a>
+
+    <a href="{{ path('app_invoice_edit', {'id': invoice.id}) }}">edit</a>
+
+    {{ include('invoice/_delete_form.html.twig') }}
+{% endblock %}

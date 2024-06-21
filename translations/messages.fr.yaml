@@ -88,3 +88,14 @@ quotation:
     invoice_accepted: "Devis acceptés"
     invoice_rejected: "Devis rejetés"
     details: "Services"
+
+invoice: 
+    title: "Factures"
+    table_title: "Toutes les factures"
+    invoice_paid: "Factures payées"
+    invoice_unpaid: "Factures impayées"
+    invoice_pending: "Factures en attente"
+    status:
+        paid: "Payée"
+        unpaid: "Non payée"
+        pending: "En attente"
