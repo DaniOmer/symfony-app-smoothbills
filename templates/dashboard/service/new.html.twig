@@ -1,0 +1,10 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'service.new_title'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="bg-white drop-shadow-md p-10 rounded-md">
+        {{ include('dashboard/service/_form.html.twig') }}
+        <a href="{{ path('dashboard.service.index') }}">{{ 'crud.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}
