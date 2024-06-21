@@ -115,7 +115,8 @@ class UserController extends AbstractController
             }
 
             $token = $jWTService->createToken(['email' => $email, 'companyId' => $companyId], 86400);
-            $inviteUrl = $this->generateUrl('site.register.by.invitation', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+            $encodedToken = base64_encode($token);
+            $inviteUrl = $this->generateUrl('site.register.by.invitation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $this->userService->createInvitation($user, $company, $invitation, $inviteUrl, $email, $token);
             

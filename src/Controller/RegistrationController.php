@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Company;
+use App\Entity\Invitation;
 use App\Entity\User;
+use App\Form\CompleteRegistrationFormType;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\Role;
+use App\Service\JWTService;
 use App\Service\RegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +28,8 @@ class RegistrationController extends AbstractController
     public function __construct(
         private RegistrationService $registrationService, 
         private UserRepository $userRepository,
-        private EmailVerifier $emailVerifier
+        private EmailVerifier $emailVerifier,
+        private EntityManagerInterface $entityManager
         )
     {
     }
@@ -124,9 +129,51 @@ class RegistrationController extends AbstractController
         return $this->render('site/registration/resend_verification.html.twig');
     }
 
-    #[Route('/register/by/invitation', name: 'site.register.by.invitation')]
-    public function registerWithToken($token, Request $request): Response
+    #[Route('/register/by/invitation/{token}', name: 'site.register.by.invitation')]
+    public function registerWithToken($token, Request $request, JWTService $jWTService, UserPasswordHasherInterface $userPasswordHasher,): Response
     {
-        return $this->render('site/login/login.html.twig');
+        $decodedToken = base64_decode($token);
+        $jwtData = $jWTService->parseToken($decodedToken);
+
+        if (!$jwtData || !isset($jwtData['email']) || !isset($jwtData['companyId'])) {
+            throw $this->createNotFoundException('Invalid or missing JWT data');
+        }
+
+        $invitation = $this->entityManager->getRepository(Invitation::class)->findOneBy(['token' => $decodedToken]);
+
+        if (!$invitation || $invitation->getExpireAt() < new \DateTime()) {
+            throw $this->createNotFoundException('Invitation not found or expired');
+        }
+
+        $form = $this->createForm(CompleteRegistrationFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = new User();
+            $user->setEmail($invitation->getEmail());
+            $user->setFirstName($form->get('firstName')->getData());
+            $user->setLastName($form->get('lastName')->getData());
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+            $user->setRoles([$invitation->getRole()]);
+
+            $company = $this->entityManager->getRepository(Company::class)->find($jwtData['companyId']);
+            $user->setCompany($company);
+
+            $this->entityManager->persist($user);
+            $this->entityManager->remove($invitation);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('site.login');
+        }
+
+        return $this->render('site/registration/complete_registration.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }
