@@ -23,15 +23,27 @@ export default class extends Controller {
     const formData = new FormData(this.formTarget);
     try {
       const response = await axios.post(this.formTarget.action, formData);
-      //   this.messageTarget.textContent = "Invitation envoyée avec succès!";
-      //   this.messageTarget.classList.remove("hidden");
-      //   this.messageTarget.classList.add("text-green-600");
-      this.closeModal();
+      if (response.status === 200 && response.data.success) {
+        this.showMessage(response.data.success, "text-green-600");
+        setTimeout(() => this.closeModal(), 3000);
+      } else if (response.data.error) {
+        this.showMessage(response.data.error, "text-red-600");
+      }
     } catch (error) {
-      this.messageTarget.textContent =
-        "Cette adresse mail n'est pas disponible.";
-      this.messageTarget.classList.remove("hidden");
-      this.messageTarget.classList.add("text-red-600");
+      if (error.response && error.response.data && error.response.data.error) {
+        this.showMessage(error.response.data.error, "text-red-600");
+      } else {
+        this.showMessage(
+          "Une erreur s'est produite. Veuillez réessayer.",
+          "text-red-600"
+        );
+      }
     }
+  }
+
+  showMessage(message, className) {
+    this.messageTarget.textContent = message;
+    this.messageTarget.classList.remove("hidden");
+    this.messageTarget.classList.add(className);
   }
 }

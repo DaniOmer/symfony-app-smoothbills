@@ -6,19 +6,16 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use App\Form\InvitationType;
 use App\Form\UserType;
+use App\Repository\InvitationRepository;
 use App\Repository\UserRepository;
 use App\Service\JWTService;
 use App\Service\UserRegistrationChecker;
 use App\Service\UserService;
 use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -29,12 +26,14 @@ class UserController extends AbstractController
     private $userRepository;
     private $userService;
     private $userRegistrationChecker;
+    private $invitationRepository;
 
-    public function __construct(UserRegistrationChecker $userRegistrationChecker, UserRepository $userRepository, UserService $userService)
+    public function __construct(UserRegistrationChecker $userRegistrationChecker, UserRepository $userRepository, UserService $userService, InvitationRepository $invitationRepository)
     {
         $this->userRepository = $userRepository;
         $this->userService = $userService;
         $this->userRegistrationChecker = $userRegistrationChecker;
+        $this->invitationRepository = $invitationRepository;
     }
 
     #[Route('/manage', name: 'dashboard.settings.user.manage', methods: ['GET'])]
@@ -92,7 +91,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['GET', 'POST'])]
-    public function addUserByInvitation(Request $request, EntityManagerInterface $entityManager, JWTService $jWTService, MailerInterface $mailer, ParameterBagInterface $params): Response
+    public function addUserByInvitation(Request $request, JWTService $jWTService): Response
     {
         $invitation = new Invitation();
         $form = $this->createForm(InvitationType::class, $invitation);
@@ -105,41 +104,22 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
 
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            $existingUser = $this->userRepository->findOneBy(['email' => $email]);
             if ($existingUser) {
-                return new Response('Cette adresse mail n\'est pas disponible.', Response::HTTP_CONFLICT);
+                return $this->json(['error' => 'Cette adresse mail n\'est pas disponible.'], Response::HTTP_CONFLICT);
             }
 
-            $existingInvitation = $entityManager->getRepository(Invitation::class)->findOneBy(['email' => $email]);
+            $existingInvitation = $this->invitationRepository->findOneBy(['email' => $email]);
             if ($existingInvitation) {
-                return new Response('Une invitation a déjà été envoyé à cet utilisateur.', Response::HTTP_CONFLICT);
+                return $this->json(['error' => 'Une invitation a déjà été envoyée à cet utilisateur.'], Response::HTTP_CONFLICT);
             }
 
             $token = $jWTService->createToken(['email' => $email, 'companyId' => $companyId], 86400);
-
-            $invitation->setToken($token);
-            $invitation->setExpireAt(new \DateTimeImmutable('+1 day'));
-            $invitation->setCompany($company);
-            $invitation->setOwner($user);
-
-            $entityManager->persist($invitation);
-            $entityManager->flush();
-
             $inviteUrl = $this->generateUrl('site.register.by.invitation', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $emailMessage = (new TemplatedEmail())
-                ->from(new Address($params->get('admin_email'), 'Smoothbill'))
-                ->to($email)
-                ->subject($user->getEmail().' vous invite à collaborer sur Smoothbill')
-                ->htmlTemplate('/dashboard/user/mail/invitation_email.html.twig')
-                ->context([
-                    'user' => $user,
-                    'inivteUrl' => $inviteUrl
-                ]);
-
-            $mailer->send($emailMessage);
-
-            return $this->redirectToRoute('dashboard.settings.user.manage', [], Response::HTTP_SEE_OTHER);
+            $this->userService->createInvitation($user, $company, $invitation, $inviteUrl, $email, $token);
+            
+            return $this->json(['success' => 'Invitation envoyée avec succès!'], Response::HTTP_OK);
         }
 
         return $this->render('dashboard/user/invite.html.twig', [

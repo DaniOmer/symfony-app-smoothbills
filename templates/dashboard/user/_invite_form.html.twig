@@ -20,15 +20,15 @@
                 <div class="p-6">
                     <div>
                         <div>
-                            <h3 class="text-subtitle leading-6 font-medium text-secondary mb-6" id="modal-title">
+                            <h3 class="text-subtitle leading-6 font-medium text-secondary mb-4" id="modal-title">
                                 Inviter un utilisateur
                             </h3>
+                            <span data-invite-target="message" class="mb-2 text-sm hidden"></span>
                             <div class="mt-2">
                                 <form data-invite-target="form" action="{{ path('dashboard.settings.user.invite') }}" method="post" data-action="submit->invite#submitForm">
                                     {{ form_start(form) }}
                                         <div class="flex flex-col gap-3">
                                             <h3>Email</h3>
-                                            <span data-invite-target="message" class="alert text-sm hidden"></span>
                                             {{ form_row(form.email) }}
                                         </div>
                                         
