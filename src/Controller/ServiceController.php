@@ -53,7 +53,7 @@ class ServiceController extends AbstractController
         $company = $user->getCompany();
         $companyId = $company->getId();
 
-        $totalServices = $serviceRepository->countTotalServices();
+        $totalServices = $serviceRepository->countTotalServicesByCompany($user);
 
         $statusCounts = [
             'active' => $serviceRepository->countServicesByStatus('Actif', $companyId),
