@@ -14,7 +14,7 @@ final class Version20240621194012 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Adding role field to invitation table.';
     }
 
     public function up(Schema $schema): void

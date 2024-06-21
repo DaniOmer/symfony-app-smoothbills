@@ -169,6 +169,9 @@ class RegistrationController extends AbstractController
             $this->entityManager->remove($invitation);
             $this->entityManager->flush();
 
+            $this->addFlash('success', 'Votre compte a été crée avec succès.');
+            $this->registrationService->sendAccountValidationConfirmation($user);
+            
             return $this->redirectToRoute('site.login');
         }
 

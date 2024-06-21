@@ -14,7 +14,7 @@ final class Version20240621152635 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Adding token and expire_at fields to invitation table.';
     }
 
     public function up(Schema $schema): void
