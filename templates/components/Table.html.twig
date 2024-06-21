@@ -49,7 +49,9 @@
                                                     {{ action.label }}
                                                 </a>
                                             {% endfor %}
-                                            {{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                            <div class="hover:bg-primary/10 w-full rounded-b-md">
+                                                {{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                            </div>
                                         </nav>
                                     </div>
                                 </div>
