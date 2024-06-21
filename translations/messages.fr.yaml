@@ -87,3 +87,4 @@ quotation:
     invoice_total: "Total de devis"
     invoice_accepted: "Devis acceptés"
     invoice_rejected: "Devis rejetés"
+    details: "Services"
