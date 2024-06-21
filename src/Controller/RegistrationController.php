@@ -123,4 +123,10 @@ class RegistrationController extends AbstractController
 
         return $this->render('site/registration/resend_verification.html.twig');
     }
+
+    #[Route('/register/by/invitation', name: 'site.register.by.invitation')]
+    public function registerWithToken($token, Request $request): Response
+    {
+        return $this->render('site/login/login.html.twig');
+    }
 }

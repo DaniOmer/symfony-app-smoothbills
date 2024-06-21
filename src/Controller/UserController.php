@@ -2,17 +2,25 @@
 
 namespace App\Controller;
 
+use App\Entity\Invitation;
 use App\Entity\User;
+use App\Form\InvitationType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\JWTService;
 use App\Service\UserRegistrationChecker;
 use App\Service\UserService;
 use App\Trait\ProfileCompletionTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/dashboard/settings/user')]
 class UserController extends AbstractController
@@ -38,6 +46,10 @@ class UserController extends AbstractController
             return $redirectResponse;
         }
 
+        $invitation = new Invitation();
+        $form = $this->createForm(InvitationType::class, $invitation);
+        $form->handleRequest($request);
+
         $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
         $paginatedUsers = $this->userService->getPaginatedUsers($user, $page);
@@ -52,6 +64,7 @@ class UserController extends AbstractController
             'deleteRoute' => 'dashboard.customer.delete',
             'deleteFormTemplate' => 'dashboard/user/_delete_form.html.twig',
             'actions' => [],
+            'form' => $form,
         ];
         
         return $this->render('dashboard/user/index.html.twig', $config);
@@ -78,26 +91,62 @@ class UserController extends AbstractController
         ]);
     }
 
-    // #[Route('/invitation', name: 'dashboard.settings.user.invitation', methods: ['GET', 'POST'])]
-    // public function addUser(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     $user = new User();
-    //     $form = $this->createForm(UserType::class, $user);
-    //     $form->handleRequest($request);
+    #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['GET', 'POST'])]
+    public function addUserByInvitation(Request $request, EntityManagerInterface $entityManager, JWTService $jWTService, MailerInterface $mailer, ParameterBagInterface $params): Response
+    {
+        $invitation = new Invitation();
+        $form = $this->createForm(InvitationType::class, $invitation);
+        $form->handleRequest($request);
+        
+        $user = $this->getUser();
+        $company = $user->getCompany();
+        $companyId = $company->getId();
 
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->persist($user);
-    //         $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->get('email')->getData();
 
-    //         $this->addFlash('success', 'L\'utilisateur a bien été créer');
-    //         return $this->redirectToRoute('dashboard.settings.user.invitation', [], Response::HTTP_SEE_OTHER);
-    //     }
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if ($existingUser) {
+                return new Response('Cette adresse mail n\'est pas disponible.', Response::HTTP_CONFLICT);
+            }
 
-    //     return $this->render('user/new.html.twig', [
-    //         'user' => $user,
-    //         'form' => $form,
-    //     ]);
-    // }
+            $existingInvitation = $entityManager->getRepository(Invitation::class)->findOneBy(['email' => $email]);
+            if ($existingInvitation) {
+                return new Response('Une invitation a déjà été envoyé à cet utilisateur.', Response::HTTP_CONFLICT);
+            }
+
+            $token = $jWTService->createToken(['email' => $email, 'companyId' => $companyId], 86400);
+
+            $invitation->setToken($token);
+            $invitation->setExpireAt(new \DateTimeImmutable('+1 day'));
+            $invitation->setCompany($company);
+            $invitation->setOwner($user);
+
+            $entityManager->persist($invitation);
+            $entityManager->flush();
+
+            $inviteUrl = $this->generateUrl('site.register.by.invitation', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $emailMessage = (new TemplatedEmail())
+                ->from(new Address($params->get('admin_email'), 'Smoothbill'))
+                ->to($email)
+                ->subject($user->getEmail().' vous invite à collaborer sur Smoothbill')
+                ->htmlTemplate('/dashboard/user/mail/invitation_email.html.twig')
+                ->context([
+                    'user' => $user,
+                    'inivteUrl' => $inviteUrl
+                ]);
+
+            $mailer->send($emailMessage);
+
+            return $this->redirectToRoute('dashboard.settings.user.manage', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('dashboard/user/invite.html.twig', [
+            'invitation' => $invitation,
+            'form' => $form,
+        ]);
+    }
 
 
     #[Route('/{id}', name: 'dashboard.settings.user.delete', methods: ['POST'])]
