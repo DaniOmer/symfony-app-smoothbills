@@ -35,21 +35,59 @@ class CsvExporter
 
     public function exportQuotation(Quotation $quotation): string
     {
-        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
-        $data = [
+        $headersQuotation = ['Nom', 'Total HT', 'Total TTC', 'Status', 'Client', 'Envoyé le'];
+        
+        $totalPriceWithoutTax = 0;
+        $totalPriceWithTax = 0;
+
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $quantity = $quotationHasService->getQuantity();
+            $priceWithoutTax = $quotationHasService->getPriceWithoutTax();
+            $priceWithTax = $quotationHasService->getPriceWithTax();
+
+            $totalPriceWithoutTax += $priceWithoutTax * $quantity;
+            $totalPriceWithTax += $priceWithTax * $quantity;
+        }
+
+        $dataQuotation = [
             [
                 $quotation->getUid(),
+                $totalPriceWithoutTax,
+                $totalPriceWithTax,
                 $quotation->getQuotationStatus()->getName(),
                 $quotation->getCustomer()->getName(),
-                $quotation->getSendingDate()->format('Y-m-d H:i:s')
+                $quotation->getSendingDate()->format('Y-m-d H:i:s'),
             ]
         ];
 
+        $headersDetails = ['Nom du service', 'Prix HT', 'Prix TTC', 'Quantité', 'Proposé par', 'Date'];
+
+        $quotationDetails = [];
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $quotationDetails[] = [
+                $quotationHasService->getService()->getName(),
+                $quotationHasService->getPriceWithoutTax(),
+                $quotationHasService->getPriceWithTax(),
+                $quotationHasService->getQuantity(),
+                $quotationHasService->getService()->getCompany()->getDenomination(),
+                $quotationHasService->getDate()->format('Y-m-d H:i:s'),
+            ];
+        }
+
         $output = fopen('php://temp', 'r+');
-        fputcsv($output, $headers);
-        foreach ($data as $row) {
+        
+        fputcsv($output, $headersQuotation);
+        foreach ($dataQuotation as $row) {
             fputcsv($output, $row);
         }
+
+        fputcsv($output, []);
+        
+        fputcsv($output, $headersDetails);
+        foreach ($quotationDetails as $detail) {
+            fputcsv($output, $detail);
+        }
+
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);

@@ -22,6 +22,43 @@
         </tbody>
     </table>
 
+    <h2>{{ 'quotation.details'|trans }}</h2>
+    <table class="table">
+        {% if quotationDetails is not empty %}
+            <thead>
+                <tr>
+                    <th>Nom du service</th>
+                    <th>Prix HT</th>
+                    <th>Prix TTC</th>
+                    <th>Quantité</th>
+                    <th>Proposé par</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+        {% endif %}
+        <tbody>
+            {% if quotationDetails is empty %}
+                <tr>
+                    <td colspan="5">Aucun service</td>
+                </tr>
+            {% else %}
+                {% for detail in quotationDetails %}
+                    <tr>
+                        <td>{{ detail.serviceName }}</td>
+                        <td>{{ detail.priceWithoutTax }}€</td>
+                        <td>{{ detail.priceWithTax }}€</td>
+                        <td>{{ detail.quantity }}€</td>
+                        <td>{{ detail.company }}</td>
+                        <td>{{ detail.date ? detail.date|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    <h3>{{ 'Total HT'|trans }}: {{ totalPriceWithoutTax }}€</h3>
+    <h3>{{ 'Total TTC'|trans }}: {{ totalPriceWithTax }}€</h3>
+
     <a href="{{ path('dashboard.quotation.index') }}">{{ 'crud.back_to_list'|trans }}</a>
 
     <a href="{{ path('dashboard.quotation.edit', {'uid': quotation.uid}) }}">{{ 'crud.edit'|trans }}</a>

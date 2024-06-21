@@ -119,14 +119,19 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
-    public function show(Quotation $quotation): Response
+    public function show(Quotation $quotation, QuotationRepository $quotationRepository): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
+        $quotationDetails = $quotationRepository->getQuotationDetails($quotation);
+
         return $this->render('dashboard/quotation/show.html.twig', [
             'quotation' => $quotation,
+            'quotationDetails' => $quotationDetails['quotationDetails'],
+            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
+            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
         ]);
     }
 

@@ -57,3 +57,4 @@ quotation:
     invoice_total: "Total quotations"
     invoice_accepted: "Accepted quotations"
     invoice_rejected: "Rejected quotations"
+    details: "Services"
