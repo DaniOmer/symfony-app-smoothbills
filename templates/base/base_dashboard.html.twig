@@ -62,7 +62,9 @@
                 {% include "partials/Sidebar.html.twig" %}
                 <main class="box-border flex basis-full flex-col">
                     <div class="px-6 py-8 overflow-auto h-full">
-                        {% block body %}{% endblock %}
+                        <div class="max-w-[1132px] mx-auto">
+                            {% block body %}{% endblock %}
+                        </div>
                     </div>
                 </main>
             </div>

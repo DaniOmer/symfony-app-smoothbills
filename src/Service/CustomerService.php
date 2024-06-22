@@ -58,7 +58,5 @@ class CustomerService
         $this->entityManager->persist($customer);
             
         $this->entityManager->flush();
-
-        $this->entityManager->flush();
     }
 }

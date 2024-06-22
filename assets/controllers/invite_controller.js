@@ -25,7 +25,10 @@ export default class extends Controller {
       const response = await axios.post(this.formTarget.action, formData);
       if (response.status === 200 && response.data.success) {
         this.showMessage(response.data.success, "text-green-600");
-        setTimeout(() => this.closeModal(), 3000);
+        setTimeout(() => {
+          this.closeModal();
+          window.location.reload();
+        }, 3000);
       } else if (response.data.error) {
         this.showMessage(response.data.error, "text-red-600");
       }

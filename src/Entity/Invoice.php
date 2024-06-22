@@ -47,7 +47,7 @@ class Invoice
         return $this->invoiceStatus;
     }
 
-    public function setInvoiceStatus(?InvoiceStatus $invoiceStatus): self
+    public function setInvoiceStatus(?InvoiceStatus $invoiceStatus): static
     {
         $this->invoiceStatus = $invoiceStatus;
         return $this;
@@ -58,7 +58,7 @@ class Invoice
         return $this->company;
     }
 
-    public function setCompany(?Company $company): self
+    public function setCompany(?Company $company): static
     {
         $this->company = $company;
         return $this;
@@ -69,7 +69,7 @@ class Invoice
         return $this->quotation;
     }
 
-    public function setQuotation(?Quotation $quotation): self
+    public function setQuotation(?Quotation $quotation): static
     {
         $this->quotation = $quotation;
         return $this;

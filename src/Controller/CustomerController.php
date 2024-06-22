@@ -72,6 +72,7 @@ class CustomerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->customerService->createCustomer($form, $address, $customer, $user);
 
+            $this->addFlash('success', 'Le client a été créé avec succès.');
             return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
         }
 
