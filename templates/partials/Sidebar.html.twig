@@ -36,7 +36,7 @@
                 <twig:MenuItem 
                     href="{{ path('dashboard.quotation.index') }}" 
                     alt="Devis" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.bill' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.quotation' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('teenyicons:cost-estimate-outline') }}
                     Devis
                 </twig:MenuItem>

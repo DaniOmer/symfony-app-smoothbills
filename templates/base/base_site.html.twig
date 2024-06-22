@@ -21,7 +21,7 @@
 	<body class="bg-background min-h-screen font-content text-content">
        
         {% set current_route = app.request.attributes.get('_route') %}
-        {% if current_route not in ['site.register', 'site.login'] %}
+        {% if current_route not in ['site.register', 'site.login', 'site.register.by.invitation'] %}
              {% include 'partials/Header.html.twig' %}
          {% endif %}
        

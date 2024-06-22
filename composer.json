@@ -16,6 +16,7 @@
         "fakerphp/faker": "^1.23",
         "gedmo/doctrine-extensions": "^3.15",
         "knplabs/knp-paginator-bundle": "^6.4",
+        "lcobucci/jwt": "^5.3",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.25",
         "runtime/frankenphp-symfony": "^0.2.0",

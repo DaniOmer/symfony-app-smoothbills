@@ -70,7 +70,7 @@ class ServiceType extends AbstractType
 
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
             $service = $event->getData();
-            $service->setName(ucfirst($service->getName()));
+            $service->setName(ucfirst(strtolower($service->getName())));
             $event->setData($service);
         });
     }

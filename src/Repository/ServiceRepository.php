@@ -35,10 +35,12 @@ class ServiceRepository extends ServiceEntityRepository
         );
     }
 
-    public function countTotalServices(): int
+    public function countTotalServicesByCompany(User $user): int
     {
         return (int) $this->createQueryBuilder('s')
             ->select('count(s.id)')
+            ->andWhere('s.company = :company')
+            ->setParameter('company', $user->getCompany())
             ->getQuery()
             ->getSingleScalarResult();
     }
