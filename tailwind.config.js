@@ -25,7 +25,6 @@ module.exports = {
           '100': 'rgba(var(--yellow-status-bg-color))',
           '800': 'rgba(var(--yellow-status-text-color))',
         },
-        backgroundIcon: '#FBF6F6'
       },
       fontFamily: {
         title: ["var(--title-font)", "Arial", "sans-serif"],
