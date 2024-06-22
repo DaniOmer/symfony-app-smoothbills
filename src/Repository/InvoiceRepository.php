@@ -3,23 +3,26 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\User;
+use App\Repository\InvoiceStatusRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface; 
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-
-use App\Entity\User;
 
 class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
-   
+    private EntityManagerInterface $entityManager; 
+    private InvoiceStatusRepository $invoiceStatusRepository;
 
-    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, )
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager, InvoiceStatusRepository $invoiceStatusRepository)
     {
         parent::__construct($registry, Invoice::class);
         $this->paginator = $paginator;
-       
+        $this->entityManager = $entityManager;
+        $this->invoiceStatusRepository = $invoiceStatusRepository;
     }
 
     public function getLastInvoiceNumber(): int
@@ -52,19 +55,31 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function getAllInvoiceStatusNames(): array
+    {
+        $invoiceStatuses = $this->invoiceStatusRepository->findAll();
+
+        $statusNames = [];
+
+        foreach ($invoiceStatuses as $status) {
+            $statusNames[$status->getName()] = $status->getName();
+        }
+
+        return $statusNames;
+    }
+
     public function paginateInvoicesByCompagny(User $user, int $page): PaginationInterface
     {
         return $this->paginator->paginate(
             $this->createQueryBuilder('q')
-            ->andWhere('q.company = :company')
-            ->setParameter('company', $user->getCompany())
-            ->orderBy('q.id', 'ASC')
-            ->getQuery(),
-        $page,
-        5
+                ->andWhere('q.company = :company')
+                ->setParameter('company', $user->getCompany())
+                ->orderBy('q.id', 'ASC')
+                ->getQuery(),
+            $page,
+            5
         );
     }
-   
 
     public function getInvoiceDetails(Invoice $invoice): ?array
     {
@@ -80,14 +95,13 @@ class InvoiceRepository extends ServiceEntityRepository
         }
 
         return [
-                'id' => $invoice->getId(),
-                'uid' => $quotation->getUid(),
-                'invoice_number' => $invoice->getUid(),
-                'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
-                'amount_ht' => $amountHt,
-                'amount_ttc' => $amountTtc,
-                'client' => $customerName,
+            'id' => $invoice->getId(),
+            'uid' => $quotation->getUid(),
+            'invoice_number' => $invoice->getUid(),
+            'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+            'amount_ht' => $amountHt,
+            'amount_ttc' => $amountTtc,
+            'client' => $customerName,
         ];
-     }
-
+    }
 }

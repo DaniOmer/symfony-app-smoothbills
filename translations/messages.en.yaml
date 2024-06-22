@@ -70,3 +70,4 @@ invoice:
         paid: "Paid"
         unpaid: "Unpaid"
         pending: "Pending"
+        cancelled: "Cancelled"

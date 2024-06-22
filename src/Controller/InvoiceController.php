@@ -34,44 +34,43 @@ class InvoiceController extends AbstractController
         
     }
 
-     #[Route('/', name: 'dashboard.invoice.index', methods: ['GET'])]
-        public function index(Request $request, InvoiceRepository $invoiceRepository): Response
-        {
-            if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
-                return $redirectResponse;
-            }
-            $user = $this->getUser();
-            $company = $user->getCompany();
-            $page = $request->query->getInt('page', 1);
-            $companyId = $company->getId();
-            $paginateInvoices = $this->invoiceService->getPaginatedInvoices($user, $page);
-
-            $headers = ['Numéro Facture','Date Facture','Montant HT','Montant TTC', 'Status', 'Nom du Client'];
-
-            $rows = $this->invoiceService->getInvoicesRows($user, $page);
-
-            $statusCounts = [
-                'paid' => $invoiceRepository->countInvoicesByStatus('paid', $companyId),
-                'unpaid' => $invoiceRepository->countInvoicesByStatus('unpaid', $companyId),
-                'pending' => $invoiceRepository->countInvoicesByStatus('pending', $companyId),
-            ];
-
-            $config = [
-                'statusCounts' => $statusCounts,
-                'headers' => $headers,
-                'rows' => $rows,
-                'invoices' => $paginateInvoices,
-                'actions' => [
-                    ['route' => 'dashboard.invoice.show', 'label' => 'Afficher'],
-                    
-                ]
-            ];
-            
-               
-
-            return $this->render('dashboard/invoice/index.html.twig', $config);
+    #[Route('/', name: 'dashboard.invoice.index', methods: ['GET'])]
+    public function index(Request $request, InvoiceRepository $invoiceRepository): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
         }
 
+        $user = $this->getUser();
+        $company = $user->getCompany();
+        $page = $request->query->getInt('page', 1);
+        $companyId = $company->getId();
+        $paginateInvoices = $this->invoiceService->getPaginatedInvoices($user, $page);
+        $headers = ['Numéro Facture', 'Date Facture', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
+        $rows = $this->invoiceService->getInvoicesRows($user, $page);
+        
+        
+        $statusCounts = [];
+        $allStatusNames = $invoiceRepository->getAllInvoiceStatusNames();
+        
+        foreach ($allStatusNames as $statusName) {
+            $statusCounts[$statusName] = $invoiceRepository->countInvoicesByStatus($statusName, $companyId);
+        }
+        
+        
+
+        $config = [
+            'statusCounts' => $statusCounts,
+            'headers' => $headers,
+            'rows' => $rows,
+            'invoices' => $paginateInvoices,
+            'actions' => [
+                ['route' => 'dashboard.invoice.show', 'label' => 'Afficher'],
+            ]
+        ];
+
+        return $this->render('dashboard/invoice/index.html.twig', $config);
+    }
         
 
         #[Route('/{uid}', name: 'dashboard.invoice.show', methods: ['GET'])]

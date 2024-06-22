@@ -100,3 +100,4 @@ invoice:
         paid: "Payée"
         unpaid: "Non payée"
         pending: "En attente"
+        cancelled: "Annulée"
