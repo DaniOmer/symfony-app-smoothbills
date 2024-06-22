@@ -5,11 +5,16 @@ namespace App\Entity;
 use App\Repository\InvoiceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ORM\Table(name: "invoice")]
 class Invoice
 {
+    use UuidTypeTrait { __construct as private UuidConstruct; }
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -33,6 +38,11 @@ class Invoice
     #[ORM\JoinColumn(nullable: false)]
     private ?Quotation $quotation = null; 
 
+    public function __construct()
+    {
+        $this->UuidConstruct(); 
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -43,7 +53,7 @@ class Invoice
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
         return $this;
@@ -54,7 +64,7 @@ class Invoice
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): static
+    public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
         return $this;
@@ -65,7 +75,7 @@ class Invoice
         return $this->invoiceStatus;
     }
 
-    public function setInvoiceStatus(?InvoiceStatus $invoiceStatus): static
+    public function setInvoiceStatus(?InvoiceStatus $invoiceStatus): self
     {
         $this->invoiceStatus = $invoiceStatus;
         return $this;
@@ -76,7 +86,7 @@ class Invoice
         return $this->company;
     }
 
-    public function setCompany(?Company $company): static
+    public function setCompany(?Company $company): self
     {
         $this->company = $company;
         return $this;
@@ -87,7 +97,7 @@ class Invoice
         return $this->quotation;
     }
 
-    public function setQuotation(?Quotation $quotation): static
+    public function setQuotation(?Quotation $quotation): self
     {
         $this->quotation = $quotation;
         return $this;

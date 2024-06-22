@@ -15,9 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-
-
 #[Route('/dashboard/invoice')]
 class InvoiceController extends AbstractController
 {
@@ -78,22 +75,21 @@ class InvoiceController extends AbstractController
         
 
         #[Route('/{uid}', name: 'dashboard.invoice.show', methods: ['GET'])]
-            public function show(Invoice $invoice,InvoiceRepository $invoiceRepository): Response
-            {
+        public function show(Invoice $invoice,InvoiceRepository $invoiceRepository): Response
+        {
 
-                if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
-                    return $redirectResponse;
-                }
-
-               
-
-                $invoiceDetails = $invoiceRepository->getInvoiceDetails($invoice);
-
-                return $this->render('dashboard/invoice/show.html.twig', [
-                    'invoice' => $invoice,
-
-                ]);
+            if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+                return $redirectResponse;
             }
 
-        
+            $invoiceDetails = $invoiceRepository->getInvoiceDetails($invoice);
+
+            return $this->render('dashboard/invoice/show.html.twig', [
+                'invoice' => $invoiceDetails,
+
+
+            ]);
         }
+
+        
+    }

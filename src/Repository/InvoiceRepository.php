@@ -7,15 +7,19 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Entity\User;
 
 class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
-    public function __construct(ManagerRegistry $registry,  PaginatorInterface $paginate)
+    private TranslatorInterface $translator;
+
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, TranslatorInterface $translator)
     {
         parent::__construct($registry, Invoice::class);
-        $this->paginator = $paginate;
+        $this->paginator = $paginator;
+        $this->translator = $translator;
     }
 
     public function getLastInvoiceNumber(): int
@@ -48,12 +52,42 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function paginateInvoices(int $page): PaginationInterface
+    public function paginateInvoicesByCompagny(User $user, int $page): PaginationInterface
     {
         return $this->paginator->paginate(
-            $this->createQueryBuilder('r'),
-            $page,
-            5
+            $this->createQueryBuilder('q')
+            ->andWhere('q.company = :company')
+            ->setParameter('company', $user->getCompany())
+            ->orderBy('q.id', 'ASC')
+            ->getQuery(),
+        $page,
+        5
         );
     }
+   
+
+    public function getInvoiceDetails(Invoice $invoice): ?array
+    {
+        $quotation = $invoice->getQuotation();
+        $customerName = $quotation->getCustomer()->getName();
+
+        $amountHt = 0;
+        $amountTtc = 0;
+
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
+            $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
+        }
+
+        return [
+                'id' => $invoice->getId(),
+                'uid' => $quotation->getUid(),
+                'invoice_number' => $invoice->getUuid(),
+                'invoice_date' => $invoice->getDate()->format('d-m-Y'),
+                'amount_ht' => $amountHt,
+                'amount_ttc' => $amountTtc,
+                'client' => $customerName,
+        ];
+     }
+
 }

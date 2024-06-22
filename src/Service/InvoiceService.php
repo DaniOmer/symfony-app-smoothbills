@@ -29,7 +29,7 @@ class InvoiceService
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
     {
-        $paginateInvoices = $this->invoiceRepository->paginateInvoices($page);
+        $paginateInvoices = $this->invoiceRepository->paginateInvoicesByCompagny($user, $page);
 
         return $paginateInvoices;
     }
@@ -56,8 +56,8 @@ class InvoiceService
           
             $rows[]= [
                 'id' => $invoice->getId(),
-                'uid' => $quotation->getUid(),
-                'invoice_number' => $invoice->getUuid(),
+                'uid' => $invoice->getUid(),
+                'invoice_number' => $invoice->getUid(),
                 'invoice_date' => $invoice->getDate()->format('d-m-Y'),
                 'amount_ht'=> $amountHt,
                 'amount_ttc' => $amountTtc,
