@@ -131,17 +131,6 @@
             </article>
         </section>
         <section class="pt-5 pb-10 border-b border-tertiary/10">
-            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Sidebar</h2>
-            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                <p class="row-span-1">
-                    La sidebar de Smoothbill regroupe toutes les fonctionnalités essentielles pour une gestion efficace et simplifiée de votre activité. Smoothbill offre à ses utilisateurs la possibilité de personnaliser leur expérience, mais cette section met en avant les options et outils disponibles par défaut pour vous aider à démarrer rapidement. 
-                </p>
-                <div class="flex flex-wrap lg:flex-nowrap lg:justify-center gap-10 col-span-2">
-                    {% include "partials/Sidebar.html.twig" %}
-                </div>
-            </article>
-        </section>
-        <section class="pt-5 pb-10 border-b border-tertiary/10">
             <h2 class="text-subtitle font-subtitle font-semibold mb-5">Indicateurs clés de performance (KPI)</h2>
             <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <p>
@@ -174,6 +163,21 @@
                        Rapport de ventes des services et des produits consomés
                     </twig:SelectableCard>
 
+                </div>
+            </div>
+        </article>
+    </section>
+   <section class="pt-5 pb-10 border-b border-tertiary/10">
+        <h2 class="text-subtitle font-subtitle font-semibold mb-5">Drag and Drop File Upload</h2>
+        <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <p>
+                Utilisez le composant de téléchargement par glisser-déposer pour facilement télécharger des images ou des documents. Glissez vos fichiers directement dans la zone ci-dessous ou cliquez pour sélectionner les fichiers à télécharger.
+            </p>
+            <div class="flex lg:justify-end gap-10 col-span-2">
+                <div class="flex flex-col gap-3">
+                    <twig:DragDropUpload id="custom-drop-area" main_text="Glissez vos fichiers ici ou cliquez pour télécharger" file_types_text="Formats acceptés : SVG, PNG, JPG, GIF (max. 800x400px)">
+                    </twig:DragDropUpload>
+                    <p>Vous pouvez télécharger des fichiers SVG, PNG, JPG ou GIF jusqu'à une taille maximale de 800x400px.</p>
                 </div>
             </div>
         </article>
