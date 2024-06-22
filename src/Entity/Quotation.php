@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\QuotationRepository;
 use App\Trait\TimestampableTrait;
 use App\Trait\UuidTypeTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -37,9 +39,16 @@ class Quotation
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $sending_date = null;
 
+    /**
+     * @var Collection<int, QuotationHasService>
+     */
+    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class)]
+    private Collection $quotationHasServices;
+
     public function __construct()
     {
         self::UuidConstruct();
+        $this->quotationHasServices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,6 +112,36 @@ class Quotation
     public function setSendingDate(?\DateTimeInterface $sending_date): static
     {
         $this->sending_date = $sending_date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuotationHasService>
+     */
+    public function getQuotationHasServices(): Collection
+    {
+        return $this->quotationHasServices;
+    }
+
+    public function addQuotationHasService(QuotationHasService $quotationHasService): static
+    {
+        if (!$this->quotationHasServices->contains($quotationHasService)) {
+            $this->quotationHasServices->add($quotationHasService);
+            $quotationHasService->setQuotation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuotationHasService(QuotationHasService $quotationHasService): static
+    {
+        if ($this->quotationHasServices->removeElement($quotationHasService)) {
+            // set the owning side to null (unless already changed)
+            if ($quotationHasService->getQuotation() === $this) {
+                $quotationHasService->setQuotation(null);
+            }
+        }
 
         return $this;
     }
