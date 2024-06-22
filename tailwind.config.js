@@ -14,16 +14,16 @@ module.exports = {
         tertiary: "rgba(var(--tertiary-color))",
         background: "rgba(var(--background-color))",
         green: {
-          '100': '#C9E4CA',
-          '800': '#43A047',
+          '100': 'rgba(var(--green-status-bg-color))',
+          '800': 'rgba(var(--green-status-text-color))',
         },
         red: {
-          '100': '#F0C9C9',
-          '800': '#F44336',
+          '100': 'rgba(var(--red-status-bg-color))',
+          '800': 'rgba(var(--red-status-text-color))',
         },
         yellow: {
-          '100': '#F4DDBB',
-          '800': '#FF9800',
+          '100': 'rgba(var(--yellow-status-bg-color))',
+          '800': 'rgba(var(--yellow-status-text-color))',
         },
         backgroundIcon: '#FBF6F6'
       },

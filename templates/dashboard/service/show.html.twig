@@ -8,8 +8,8 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ service.id }}</td>
+                <th>Uuid</th>
+                <td>{{ service.uid }}</td>
             </tr>
             <tr>
                 <th>Name</th>
@@ -30,9 +30,10 @@
         </tbody>
     </table>
 
-    <a href="{{ path('dashboard.service.index') }}">{{ 'crud.back_to_list'|trans }}</a>
 
-    <a href="{{ path('dashboard.service.edit', {'uid': service.uid}) }}">{{ 'crud.edit'|trans }}</a>
-
-    {{ include('dashboard/service/_delete_form.html.twig') }}
+    <div class="flex justify-end">
+        <div class="w-fit mt-10 border border-primary rounded-small text-white bg-primary hover:text-black hover:bg-transparent transition ease-in-out delay-75">
+            {{ include('dashboard/service/_delete_form.html.twig', {entity: service}) }}
+        </div>
+    </div>
 {% endblock %}

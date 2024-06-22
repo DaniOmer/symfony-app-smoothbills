@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/dashboard/quotation')]
@@ -40,18 +39,19 @@ class QuotationController extends AbstractController
             return $redirectResponse;
         }
 
+        $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
-        $paginateQuotations = $this->quotationService->getPaginatedQuotations($page);
+        $paginateQuotations = $this->quotationService->getPaginatedQuotations($user, $page);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
-        $rows = $this->quotationService->getQuotationsRows($page);
+        $rows = $this->quotationService->getQuotationsRows($user, $page);
 
         $user = $this->getUser();
         $company = $user->getCompany();
 
         $companyId = $company->getId();
 
-        $totalInvoices = $quotationRepository->countTotalQuotations();
+        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
 
         $statusCounts = [
             'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
@@ -84,22 +84,28 @@ class QuotationController extends AbstractController
         }
 
         $quotation = new Quotation();
-        $quotationStatus = new QuotationStatus();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
         $user = $this->getUser();
         $company = $user->getCompany();
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $quotationStatus->setName($form->get('quotation_status')->getData()->getName());
-            $entityManager->persist($quotationStatus);
+            $sendOption = $form->get('sendOption')->getData();
+            if ($sendOption === 'Maintenant') {
+                $quotation->setSendingDate(new \DateTime());
+            } else {
+                $quotation->setSendingDate(null);
+            }
 
-            $user = $this->getUser();
-
-            $quotation->setQuotationStatus($quotationStatus);
+            $user = $this->getUser();            
             $quotation->setCompany($company);
             $entityManager->persist($quotation);
             $entityManager->flush();
+
+            if ($sendOption === 'Maintenant') {
+                $quotationCsvData = $this->exportQuotation($quotation);
+                $this->quotationService->sendQuotationMail($quotation, $quotationCsvData);
+            }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
 
@@ -162,32 +168,17 @@ class QuotationController extends AbstractController
     #[Route('/{uid}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
     public function exportQuotation(Quotation $quotation): Response
     {
-        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
-        $data = [[
-            $quotation->getUid(),
-            $quotation->getQuotationStatus()->getName(),
-            $quotation->getCustomer()->getName(),
-            $quotation->getDate()->format('Y-m-d H:i:s')
-        ]];
+        $csvData = $this->csvExporter->exportQuotation($quotation);
 
-        return $this->csvExporter->export($data, $headers, 'quotation_' . $quotation->getUid());
+        return new Response($csvData, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="quotation_' . $quotation->getUid() . '.csv"',
+        ]);
     }
 
     #[Route('/export/all', name: 'dashboard.quotation.export_all', methods: ['GET'])]
-    public function exportAllQuotations(QuotationRepository $quotationRepository): Response
+    public function exportAllQuotations(): Response
     {
-        $quotations = $quotationRepository->findAll();
-        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
-        $dataExtractor = function(Quotation $quotation) {
-            return [
-                $quotation->getId(),
-                $quotation->getUid(),
-                $quotation->getQuotationStatus()->getName(),
-                $quotation->getCustomer()->getName(),
-                $quotation->getDate()->format('Y-m-d H:i:s')
-            ];
-        };
-
-        return $this->csvExporter->exportEntities($quotations, $headers, $dataExtractor, 'all_quotations');
+        return $this->quotationService->exportAllQuotations();
     }
 }

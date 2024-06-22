@@ -23,6 +23,9 @@
                 {% for flash_error in app.flashes('verify_email_error') %}
                     <div class="text-red-500 my-1 text-sm" role="alert">{{ flash_error }}</div>
                 {% endfor %}
+                {% for flash_success in app.flashes('success') %}
+                    <div class="text-primary my-1 text-sm" role="success">{{ flash_success }}</div>
+                {% endfor %}
 
                 {% if error %}
                     <div class="text-red-500 mt-1 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</div>

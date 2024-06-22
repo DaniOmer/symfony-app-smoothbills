@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Quotation;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -21,19 +22,25 @@ class QuotationRepository extends ServiceEntityRepository
         $this->paginator = $paginate;
     }
 
-    public function paginateQuotations(int $page): PaginationInterface
+    public function paginateQuotationsByCompany(User $user, int $page): PaginationInterface
     {
         return $this->paginator->paginate(
-            $this->createQueryBuilder('r'),
+            $this->createQueryBuilder('q')
+                ->andWhere('q.company = :company')
+                ->setParameter('company', $user->getCompany())
+                ->orderBy('q.id', 'ASC')
+                ->getQuery(),
             $page,
             5
         );
     }
 
-    public function countTotalQuotations(): int
+    public function countTotalQuotationsByCompany(User $user): int
     {
         return (int) $this->createQueryBuilder('q')
             ->select('COUNT(q.id)')
+            ->andWhere('q.company = :company')
+            ->setParameter('company', $user->getCompany())
             ->getQuery()
             ->getSingleScalarResult();
     }

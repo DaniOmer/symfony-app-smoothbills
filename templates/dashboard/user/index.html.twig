@@ -1,0 +1,27 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Settings - Team{% endblock %}
+
+{% block body %}
+    <section>
+        <article class="w-full flex justify-between mb-5 pb-3 border-b">
+            <div class="">
+                <h2 class="font-semibold mb-2 text-title">Gestion d'équipe</h2>
+                <p>Gerer vos équipes.</p>
+            </div>
+            <div>
+                {{ include('dashboard/user/_invite_form.html.twig') }}
+            </div>
+        </article>
+
+        {{ component('Table', {
+            headers: headers,
+            rows: rows,
+            title: "Tous les membres",
+            actions: actions,
+            paginatedData: users,
+            deleteFormTemplate: deleteFormTemplate,
+            deleteRoute: deleteRoute,
+        }) }}
+    </section>
+{% endblock %}
