@@ -30,7 +30,7 @@ class QuotationHasService
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Quotation $quotation = null;
 
