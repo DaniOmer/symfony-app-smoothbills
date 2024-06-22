@@ -23,6 +23,7 @@ class CustomerType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un nom valide.',
@@ -35,6 +36,7 @@ class CustomerType extends AbstractType
                 'trim' => true,
             ])
             ->add('mail', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new Email([
                         'message' => 'Veuillez fournir une adresse e-mail valide.',
@@ -43,6 +45,7 @@ class CustomerType extends AbstractType
                 'trim' => true,
             ])
             ->add('phone', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new Regex([
                         'pattern' => '/^\+?[0-9\s\-]+$/',
@@ -52,6 +55,7 @@ class CustomerType extends AbstractType
                 'trim' => true,
             ])
             ->add('type', ChoiceType::class, [
+                'label' => false,
                 'choices'  => [
                     'Personne' => 'Personne',
                     'Entreprise' => 'Entreprise',

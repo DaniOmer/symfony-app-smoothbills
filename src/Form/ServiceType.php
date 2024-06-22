@@ -24,6 +24,7 @@ class ServiceType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez saisir un nom valide.']),
                     new Length(['min' => 3]),
@@ -33,8 +34,8 @@ class ServiceType extends AbstractType
                 ],
                 'trim' => true,
             ])
-            ->add('price', MoneyType::class, [
-                'currency' => 'EUR',
+            ->add('price', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez saisir un prix valide.']),
                     new Regex([
@@ -44,6 +45,7 @@ class ServiceType extends AbstractType
                 ],
             ])
             ->add('estimated_duration', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez saisir une durée estimée valide.']),
                     new Length(['min' => 3]),
@@ -54,6 +56,7 @@ class ServiceType extends AbstractType
                 'trim' => true,
             ])
             ->add('description', TextareaType::class, [
+                'label' => false,
                 'constraints' => [
                     new Length(['min' => 10]),
                     new NotBlank(['message' => 'Veuillez saisir une description valide.'])
@@ -62,6 +65,7 @@ class ServiceType extends AbstractType
                 'required' => false,
             ])
             ->add('serviceStatus', EntityType::class, [
+                'label' => false,
                 'class' => ServiceStatus::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir un statut',

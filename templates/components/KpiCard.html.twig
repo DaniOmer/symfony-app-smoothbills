@@ -4,14 +4,12 @@
     <div class="flex items-center h-20 px-3 border-b border-gray-300">
         <div class="bg-backgroundIcon rounded-lg h-12 w-16 flex justify-center items-center p-2.5">
             {% if icon_name %}
-                <div class="w-8 h-8">
-                    {{ ux_icon(icon_name) }}
-                </div>
+                {{ ux_icon(icon_name) }}
             {% endif %}
         </div>
-        <div class="ml-4 mr-auto text-sm font-medium text-gray-500">{{ kpi_name }}</div>
+        <div class="font-medium">{{ kpi_name }}</div>
     </div>
-    <div class="px-8 my-4">
+    <div class="py-2 px-3">
         <p class="text-3xl">{{ kpi_value }}</p>
     </div>
 </div>
