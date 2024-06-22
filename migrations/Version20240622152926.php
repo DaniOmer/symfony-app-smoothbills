@@ -14,7 +14,8 @@ final class Version20240622152926 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Drop unique index uniq_90651744d17f50a6 on invoice table, and drop date and uuid columns from invoice table.';
+
     }
 
     public function up(Schema $schema): void

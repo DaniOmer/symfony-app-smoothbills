@@ -7,19 +7,19 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+
 use App\Entity\User;
 
 class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
-    private TranslatorInterface $translator;
+   
 
-    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, TranslatorInterface $translator)
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, )
     {
         parent::__construct($registry, Invoice::class);
         $this->paginator = $paginator;
-        $this->translator = $translator;
+       
     }
 
     public function getLastInvoiceNumber(): int
@@ -82,8 +82,8 @@ class InvoiceRepository extends ServiceEntityRepository
         return [
                 'id' => $invoice->getId(),
                 'uid' => $quotation->getUid(),
-                'invoice_number' => $invoice->getUuid(),
-                'invoice_date' => $invoice->getDate()->format('d-m-Y'),
+                'invoice_number' => $invoice->getUid(),
+                'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
                 'client' => $customerName,

@@ -58,7 +58,7 @@ class InvoiceService
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
                 'invoice_number' => $invoice->getUid(),
-                'invoice_date' => $invoice->getDate()->format('d-m-Y'),
+                'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
                 'amount_ht'=> $amountHt,
                 'amount_ttc' => $amountTtc,
                 'status' => $this->translator->trans('invoice.status.' . $invoice->getInvoiceStatus()->getName()),

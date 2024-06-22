@@ -65,6 +65,7 @@ invoice:
     invoice_paid: "Paid invoices"
     invoice_unpaid: "Unpaid invoices"
     invoice_pending: "Pending invoices"
+    invoice_details: "Details of the invoice"
     status:
         paid: "Paid"
         unpaid: "Unpaid"

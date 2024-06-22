@@ -1,7 +1,10 @@
-<!DOCTYPE html>
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'invoice.invoice_details'|trans }}{% endblock %}
+
 
 {% block body %}
-        <h1>Invoice</h1>
+        <h1>{{ 'invoice.invoice_details'|trans }}</h1>
 
         <table class="table">
             <tbody>

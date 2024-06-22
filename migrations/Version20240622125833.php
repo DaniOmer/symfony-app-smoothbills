@@ -14,7 +14,8 @@ final class Version20240622125833 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add uid, created_at, and updated_at columns to the invoice table, including creating a unique index for uid.';
+
     }
 
     public function up(Schema $schema): void
