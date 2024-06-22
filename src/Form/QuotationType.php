@@ -32,21 +32,26 @@ class QuotationType extends AbstractType
                     ]),
                 ],
                 'trim' => true,
+                'label' => false,
             ])
             ->add('quotation_status', EntityType::class, [
                 'class' => QuotationStatus::class,
                 'choice_label' => 'name',
+                'label' => false,
             ])
             ->add('customer', EntityType::class, [
                 'class' => Customer::class,
                 'choice_label' => 'name',
+                'label' => false,
             ])
             ->add('sendOption', ChoiceType::class, [
                 'mapped' => false,
+                'label' => false,
                 'choices' => [
                     'Envoyer maintenant' => 'Maintenant',
                     'Envoyer plus tard' => 'Plus tard',
                 ],
+                'expanded' => true,
                 'multiple' => false,
                 'constraints' => [
                     new NotBlank([

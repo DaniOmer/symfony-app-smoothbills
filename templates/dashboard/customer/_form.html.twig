@@ -2,42 +2,58 @@
 
 <section>
     {{ form_start(form) }}
+        <h1 class="text-subtitle font-title font-semibold mb-5">Ajouter un client</h1>
         <article class="mb-5">
-            <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
+            <h1 class="text-base font-title font-semibold mb-3">Informations générales</h1>
             <div id="customer_info" class="grid grid-cols-2 gap-x-5">
-                {{ form_row(form.name, {
-                    label: 'Nom',
-                }) }}
-                {{ form_row(form.mail, {
-                    label: 'Adresse mail',
-                }) }}
-                {{ form_row(form.phone, {
-                    label: 'Téléphone',
-                }) }}
-                {{ form_row(form.type, {
-                    label: 'Type de client',
-                }) }}
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Nom du client</h2>
+                    {{ form_row(form.name) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Adresse mail</h2>
+                    {{ form_row(form.mail) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Téléphone</h2>
+                    {{ form_row(form.phone) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Type de client</h2>
+                    {{ form_row(form.type) }}
+                </div>
             </div>
         </article>
         <article>
-            <h1 class="text-subtitle font-title font-semibold mb-3">Coordonnées</h1>
+            <h1 class="text-base font-title font-semibold mb-3">Coordonnées</h1>
             <div id="customer_address" class="grid grid-cols-2 gap-x-5">
-                {{ form_row(form.address.address, {
-                    label: 'Adresse',
-                }) }}
-                {{ form_row(form.address.zipcode, {
-                    label: 'Code postal',
-                }) }}
-                {{ form_row(form.address.city, {
-                    label: 'Ville',
-                }) }}
-                {{ form_row(form.address.country, {
-                    label: 'Pays',
-                }) }}
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Adresse</h2>
+                    {{ form_row(form.address.address) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Code postal</h2>
+                    {{ form_row(form.address.zipcode) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Ville</h2>
+                    {{ form_row(form.address.city) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Pays</h2>
+                    {{ form_row(form.address.country) }}
+                </div>
             </div>
         </article>
-        <button class="btn mt-4 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
-            {{ button_label|default('Save') }}
-        </button>
+        <div class="flex justify-end gap-5 mt-10">
+            <a 
+                href="{{ path('dashboard.customer.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                Annuler
+            </a>
+            <button class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
     {{ form_end(form) }}
 </section>

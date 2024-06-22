@@ -20,6 +20,7 @@ class AddressType extends AbstractType
     {
         $builder
             ->add('zipcode', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un code postal valide.',
@@ -32,6 +33,7 @@ class AddressType extends AbstractType
                 'trim' => true,
             ])
             ->add('city', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir une ville valide.',
@@ -44,6 +46,7 @@ class AddressType extends AbstractType
                 'trim' => true,
             ])
             ->add('country', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir un pays valide.',
@@ -55,6 +58,7 @@ class AddressType extends AbstractType
                 'trim' => true,
             ])
             ->add('address', TextType::class, [
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez saisir une adresse valide.',
