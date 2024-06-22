@@ -1,0 +1,39 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'service.name'|trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'service.name'|trans }}</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Uuid</th>
+                <td>{{ service.uid }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ service.name }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ service.description }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ service.price }}</td>
+            </tr>
+            <tr>
+                <th>Estimated_duration</th>
+                <td>{{ service.estimatedDuration }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="flex justify-end">
+        <div class="w-fit mt-10 border border-primary rounded-small text-white bg-primary hover:text-black hover:bg-transparent transition ease-in-out delay-75">
+            {{ include('dashboard/service/_delete_form.html.twig', {entity: service}) }}
+        </div>
+    </div>
+{% endblock %}

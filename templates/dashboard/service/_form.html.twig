@@ -1,0 +1,48 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
+            <div id="service_info" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {{ form_row(form.name, {
+                    label: 'Nom',
+                    attr: {
+                        class: 'w-full'
+                    }
+                }) }}
+                {{ form_row(form.price, {
+                    label: 'Prix €',
+                    attr: {
+                        class: 'w-full'
+                    }
+                }) }}
+                {{ form_row(form.estimated_duration, {
+                    label: 'Durée estimée',
+                    attr: {
+                        class: 'w-full'
+                    }
+                }) }}
+                {{ form_row(form.serviceStatus, {
+                    label: 'Statut',
+                    attr: {
+                        class: 'w-full'
+                    }
+                }) }}
+            </div>
+            <div class="mt-5">
+                {{ form_row(form.description, {
+                    label: 'Description',
+                    attr: {
+                        class: 'w-full'
+                    }
+                }) }}
+            </div>
+        </article>
+        <div class="flex justify-end mt-10">
+            <button class="btn bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

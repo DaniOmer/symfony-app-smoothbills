@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Company;
+use App\Entity\Invitation;
 use App\Entity\User;
+use App\Form\CompleteRegistrationFormType;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\Role;
-use App\Service\UserService;
+use App\Service\JWTService;
+use App\Service\RegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +26,10 @@ class RegistrationController extends AbstractController
 {
 
     public function __construct(
-        private UserService $userService, 
+        private RegistrationService $registrationService, 
         private UserRepository $userRepository,
-        private EmailVerifier $emailVerifier
+        private EmailVerifier $emailVerifier,
+        private EntityManagerInterface $entityManager
         )
     {
     }
@@ -52,7 +57,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->userService->sendVerificationEmail($user);
+            $this->registrationService->sendVerificationEmail($user);
             return $this->redirectToRoute('site.register.success');
         }
 
@@ -83,13 +88,13 @@ class RegistrationController extends AbstractController
         try {
 
             $this->emailVerifier->verify($request, $user, $expire);
-            $this->userService->sendAccountValidationConfirmation($user);
+            $this->registrationService->sendAccountValidationConfirmation($user);
             return $this->redirectToRoute('site.login');
 
         } catch (\LogicException $exception) {
 
             if ($exception->getMessage() === 'Le lien de vérification a expiré.') {
-                $this->userService->resendVerificationEmail($user);
+                $this->registrationService->resendVerificationEmail($user);
                 $token = $session->get('verification_token');
                 return $this->redirectToRoute('site.resend.verification.email', ['token' => $token]);
 
@@ -124,14 +129,54 @@ class RegistrationController extends AbstractController
         return $this->render('site/registration/resend_verification.html.twig');
     }
 
-    #[Route('/complete/registration', name: 'site.complete_registration')]
-    public function completeRegistration(Request $request): Response
+    #[Route('/register/by/invitation/{token}', name: 'site.register.by.invitation')]
+    public function registerWithToken($token, Request $request, JWTService $jWTService, UserPasswordHasherInterface $userPasswordHasher,): Response
     {
-        $user = $this->getUser();
-        if ($user->isRegistrationComplete()) {
-            return $this->redirectToRoute('dashboard.home');
+        $decodedToken = base64_decode($token);
+        $jwtData = $jWTService->parseToken($decodedToken);
+
+        if (!$jwtData || !isset($jwtData['email']) || !isset($jwtData['companyId'])) {
+            throw $this->createNotFoundException('Invalid or missing JWT data');
         }
 
-        return $this->render('site/registration/complete_registration.html.twig');
+        $invitation = $this->entityManager->getRepository(Invitation::class)->findOneBy(['token' => $decodedToken]);
+
+        if (!$invitation || $invitation->getExpireAt() < new \DateTime()) {
+            throw $this->createNotFoundException('Invitation not found or expired');
+        }
+
+        $form = $this->createForm(CompleteRegistrationFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = new User();
+            $user->setEmail($invitation->getEmail());
+            $user->setFirstName($form->get('firstName')->getData());
+            $user->setLastName($form->get('lastName')->getData());
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
+            $user->setRoles([$invitation->getRole()]);
+
+            $company = $this->entityManager->getRepository(Company::class)->find($jwtData['companyId']);
+            $user->setCompany($company);
+
+            $this->entityManager->persist($user);
+            $this->entityManager->remove($invitation);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Votre compte a été crée avec succès.');
+            $this->registrationService->sendAccountValidationConfirmation($user);
+            
+            return $this->redirectToRoute('site.login');
+        }
+
+        return $this->render('site/registration/complete_registration.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

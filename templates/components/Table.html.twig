@@ -49,7 +49,9 @@
                                                     {{ action.label }}
                                                 </a>
                                             {% endfor %}
-                                            {{ include('dashboard/customer/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                            <div class="hover:bg-primary/10 w-full rounded-b-md">
+                                                {{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                            </div>
                                         </nav>
                                     </div>
                                 </div>
@@ -63,7 +65,7 @@
     
     {% if rows|length == 0 %}
         <div class="w-full py-10 text-center">
-            Pas de données.
+             {{ 'table.not_data'|trans }}
         </div>
     {% endif %}
 

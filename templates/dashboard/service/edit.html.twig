@@ -1,0 +1,12 @@
+{# templates/dashboard/service/edit.html.twig #}
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Service - Edition{% endblock %}
+
+{% block body %}
+    <div>
+
+        {{ include('dashboard/service/_form.html.twig', {'form': form}) }}
+
+    </div>
+{% endblock %}

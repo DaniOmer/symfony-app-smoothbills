@@ -35,9 +35,6 @@ class Customer
     #[ORM\ManyToOne]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne]
-    private ?User $owner = null;
-
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
@@ -115,18 +112,6 @@ class Customer
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
-
-        return $this;
-    }
-
-    public function getOwner(): ?User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?User $owner): static
-    {
-        $this->owner = $owner;
 
         return $this;
     }

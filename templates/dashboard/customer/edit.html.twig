@@ -6,8 +6,6 @@
     <div class="bg-white drop-shadow-md p-10 rounded-md">
 
         {{ include('dashboard/customer/_form.html.twig', {'button_label': 'crud.update'|trans }) }}
-        <a href="{{ path('dashboard.customer.index') }}">{{ 'crud.back_to_list'|trans }}</a>
-
-        {{ include('dashboard/customer/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': customer}) }}
+        
     </div>
 {% endblock %}
