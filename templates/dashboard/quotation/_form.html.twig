@@ -2,8 +2,10 @@
 
 <section>
     {{ form_start(form) }}
+        <div class="mb-3 text-red-600">
+            {{ form_errors(form) }}
+        </div>
         <article>
-            <div>
                 <h2 class="text-sm font-title mb-1 font-semibold">Nom du client</h2>
                 {{ form_row(form.customer) }}
             </div>
@@ -27,6 +29,24 @@
                     }) }}
                 </div>
             </div>
+            <div>
+                    <div {{ stimulus_controller('form-collection') }}
+                         data-form-collection-index-value="{{ form.quotationHasServices|length > 0 ? form.quotationHasServices|last.vars.name + 1 : 0 }}"
+                         data-form-collection-prototype-value="{{ form_widget(form.quotationHasServices.vars.prototype)|e('html_attr') }}"
+                    >
+                        <ul class="grid grid-cols-3 gap-4" {{ stimulus_target('form-collection', 'collectionContainer') }}>
+                            {% for quotationHasService in form.quotationHasServices %}
+                                <li class="list-none">{{ form_row(quotationHasService) }}</li>
+                            {% endfor %}
+                        </ul>
+                        <span class="hidden">{{ form_row(form.quotationHasServices) }}</span>
+                        <button 
+                        type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}
+                        class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                        Ajouter un service
+                        </button>
+                    </div>
+                </div>
         </article>
         <div class="flex justify-end gap-5 mt-10">
             <a 
