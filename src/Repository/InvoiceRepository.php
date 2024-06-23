@@ -7,14 +7,14 @@ use App\Entity\User;
 use App\Repository\InvoiceStatusRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface; 
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
-    private EntityManagerInterface $entityManager; 
+    private EntityManagerInterface $entityManager;
     private InvoiceStatusRepository $invoiceStatusRepository;
 
     public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager, InvoiceStatusRepository $invoiceStatusRepository)
@@ -28,14 +28,14 @@ class InvoiceRepository extends ServiceEntityRepository
     public function getLastInvoiceNumber(): int
     {
         $lastInvoice = $this->createQueryBuilder('i')
-            ->select('i.uuid')
+            ->select('i.invoice_number')
             ->orderBy('i.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
         if ($lastInvoice) {
-            $lastInvoiceNumber = (int) substr($lastInvoice['uuid'], -4);
+            $lastInvoiceNumber = (int) substr($lastInvoice['invoice_number'], -4);
             return $lastInvoiceNumber + 1;
         }
 
@@ -97,7 +97,7 @@ class InvoiceRepository extends ServiceEntityRepository
         return [
             'id' => $invoice->getId(),
             'uid' => $quotation->getUid(),
-            'invoice_number' => $invoice->getUid(),
+            'invoice_number' => $invoice->getInvoiceNumber(),
             'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
             'amount_ht' => $amountHt,
             'amount_ttc' => $amountTtc,
