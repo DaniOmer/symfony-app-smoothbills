@@ -3,12 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\QuotationHasServiceRepository;
+use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QuotationHasServiceRepository::class)]
 class QuotationHasService
 {
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,9 +22,6 @@ class QuotationHasService
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $price_with_tax = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
     private ?int $quantity = null;
@@ -59,18 +59,6 @@ class QuotationHasService
     public function setPriceWithTax(string $price_with_tax): static
     {
         $this->price_with_tax = $price_with_tax;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
 
         return $this;
     }

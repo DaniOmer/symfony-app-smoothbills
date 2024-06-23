@@ -6,12 +6,13 @@
             {{ form_errors(form) }}
         </div>
         <article>
+            <div>
                 <h2 class="text-sm font-title mb-1 font-semibold">Nom du client</h2>
                 {{ form_row(form.customer) }}
             </div>
         </article>
         <article class="mb-5">
-            <div id="quotation_info">
+            <div>
                 <h2 class="text-sm font-title mb-1 font-semibold">Type de paiement</h2>
                 {{ form_row(form.type) }}
             </div>

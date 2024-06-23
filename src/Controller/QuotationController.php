@@ -90,6 +90,15 @@ class QuotationController extends AbstractController
         $company = $user->getCompany();
 
         if ($form->isSubmitted() && $form->isValid()) {
+            foreach($quotation->getQuotationHasServices() as $quotationHasService) {
+                $tax = 20;
+                $priceWithoutTax = $quotationHasService->getService()->getPrice();
+
+                $quotationHasService->setPriceWithoutTax($priceWithoutTax);
+                $quotationHasService->setPriceWithTax($priceWithoutTax * 20/100);
+                $entityManager->persist($quotationHasService);
+            }
+            
             $sendOption = $form->get('sendOption')->getData();
             if ($sendOption === 'Maintenant') {
                 $quotation->setSendingDate(new \DateTime());
