@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PaymentRepository;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "payment")]
 class Payment
 {
+    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,6 +32,11 @@ class Payment
     #[ORM\ManyToOne(targetEntity: Invoice::class)]
     #[ORM\JoinColumn(name: "invoice_id", referencedColumnName: "id", nullable: false)]
     private ?Invoice $invoice = null;
+
+    public function __construct()
+    {
+        $this->UuidConstruct();
+    }
 
     public function getId(): ?int
     {
