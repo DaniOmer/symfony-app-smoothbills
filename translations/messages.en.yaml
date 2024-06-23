@@ -58,3 +58,7 @@ quotation:
     invoice_accepted: "Accepted quotations"
     invoice_rejected: "Rejected quotations"
     details: "Services"
+
+payment:
+    title: "Payments"
+    table_title: "All payments"

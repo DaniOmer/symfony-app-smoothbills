@@ -88,3 +88,7 @@ quotation:
     invoice_accepted: "Devis acceptés"
     invoice_rejected: "Devis rejetés"
     details: "Services"
+
+payment:
+    title: "Paiements"
+    table_title: "Tous les paiements"

@@ -1,0 +1,21 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'payment.title'|trans }}{% endblock %}
+
+{% set statusColors = {
+    'Payée': 'bg-green-100 text-green-800',
+    'Non payée': 'bg-red-100 text-red-800',
+    'En attente': 'bg-yellow-100 text-yellow-800',
+} %}
+
+{% block body %}
+    <section>
+        <header class="w-full flex justify-between mb-4">
+            <h1 class="text-title font-title font-semibold">{{ 'payment.title'|trans }}</h1>
+        </header>
+    </section>
+
+    <section class="mt-8">
+       {{ component('Table', { payments: payments, headers: headers, rows: rows, title: 'payment.table_title'|trans, actions: actions, paginatedData: payments, statusColors: statusColors, deleteFormTemplate: null, deleteRoute: null}) }}
+    </section>
+{% endblock %}
