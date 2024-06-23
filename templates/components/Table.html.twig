@@ -49,9 +49,9 @@
                                                     {{ action.label }}
                                                 </a>
                                             {% endfor %}
-                                            {% if null != deleteRoute %}
-                                                {{ include('dashboard/customer/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': row}) }}
-                                            {% endif %}
+                                            <div class="hover:bg-primary/10 w-full rounded-b-md">
+                                                {{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                            </div>
                                         </nav>
                                     </div>
                                 </div>
