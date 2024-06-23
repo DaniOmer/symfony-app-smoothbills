@@ -1,7 +1,6 @@
-{# templates/components/top_service.html.twig #}
 {% props header_title = '', header_icon = '', services = [] %}
 
-<section class="flex flex-col px-4 pt-3 pb-6 bg-white rounded-xl border border-solid border-gray-500 border-opacity-30 max-w-[400px]">
+<section class="flex flex-col px-4 pt-3 pb-6 bg-white rounded-xl border border-solid border-gray-500 border-opacity-30 hover:border-primary/40 max-w-[400px] min-h-[200px] group">
     <header class="flex gap-4 mb-4">
         <div class="flex justify-center items-center px-4 py-2 bg-backgroundIcon rounded-xl">
             {% if header_icon %}
@@ -13,15 +12,19 @@
         <h1 class="flex-auto my-auto text-lg leading-7 text-black">{{ header_title }}</h1>
     </header>
     
-    {% for service in services %}
-        <article class="flex flex-col gap-2 px-4 py-2 mt-2 bg-backgroundIcon rounded-lg">
-            <h2 class="text-md font-semibold leading-6 text-black text-center">
-                {{ service.title }}
-            </h2>
-            <div class="flex justify-between text-s font-medium leading-7 text-gray-700">
-                <div>Ventes : {{ service.sales }}</div>
-                <div>Revenus : {{ service.revenue }}</div>
-            </div>
-        </article>
-    {% endfor %}
+    {% if services is empty %}
+        <p class="flex-grow text-center text-gray-500">{{ 'service.not_data'|trans }}</p>
+    {% else %}
+        {% for service in services %}
+            <article class="flex flex-col gap-4 px-4 py-2 mt-2 bg-backgroundIcon border border-solid border-gray-500 border-opacity-30 hover:border-primary/40 rounded-lg">
+                <h2 class="text-md font-semibold leading-6 text-black text-center">
+                    {{ service.title }}
+                </h2>
+                <div class="flex justify-between text-s font-medium leading-7 text-gray-700">
+                    <div>Ventes : {{ service.sales }}</div>
+                    <div>Revenus : {{ service.revenue }}</div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
 </section>

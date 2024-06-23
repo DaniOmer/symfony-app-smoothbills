@@ -29,7 +29,6 @@ class ServiceController extends AbstractController
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
     }
-
     #[Route('/', name: 'dashboard.service.index', methods: ['GET'])]
     public function index(ServiceRepository $serviceRepository, Request $request): Response
     {
@@ -47,7 +46,7 @@ class ServiceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $services = $this->serviceService->getPaginatedServices($user, $page);
 
-        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut'];
+        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut', 'Créé le'];
         $rows = $this->serviceService->getServicesRows($user, $page);
 
         $company = $user->getCompany();
@@ -59,6 +58,24 @@ class ServiceController extends AbstractController
             'active' => $serviceRepository->countServicesByStatus('Actif', $companyId),
             'inactive' => $serviceRepository->countServicesByStatus('Inactif', $companyId),
         ];
+
+        $headersTopTransaction = ['id' => 'ID', 'service' => 'Service', 'date' => 'Date', 'price' => 'Prix'];
+        $topTransactionsData = array_map(function ($transaction) {
+            return [
+                'id' => $transaction['id'],
+                'service' => strlen($transaction['service']) > 20 ? substr($transaction['service'], 0, 20) . '...' : $transaction['service'],
+                'date' => (new \DateTime($transaction['date']))->format('d M'),
+                'price' => number_format($transaction['price'], 2) . '€'
+            ];
+        }, $serviceRepository->getTop3TransactionsByHighestPrice());
+
+        $topServicesData = array_map(function ($service) {
+            return [
+                'title' => $service['title'],
+                'sales' => $service['sales'],
+                'revenue' => number_format($service['revenue'], 2) . '€'
+            ];
+        }, $serviceRepository->getTop3ServicesBySales());
 
         $config = [
             'statusCounts' => $statusCounts,
@@ -73,6 +90,9 @@ class ServiceController extends AbstractController
             'deleteFormTemplate' => 'dashboard/service/_delete_form.html.twig',
             'deleteRoute' => 'dashboard.service.delete',
             'statusColors' => $statusColors,
+            'headersTopTransaction' => $headersTopTransaction,
+            'topTransactionsData' => $topTransactionsData,
+            'topServicesData' => $topServicesData,
         ];
 
         return $this->render('dashboard/service/index.html.twig', $config);

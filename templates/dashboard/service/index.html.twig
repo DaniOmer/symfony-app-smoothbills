@@ -11,17 +11,12 @@
         <header class="w-full flex justify-between">
             <h1 class="text-title font-title font-semibold">{{ 'service.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
-
                 <a
                     href="{{ path('dashboard.service.new') }}"
                     class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
                 >
                     {{ 'crud.create_new'|trans }}
                 </a>
-                <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                    <span class="text-xl">{{ ux_icon('tabler:cloud-upload') }}</span>
-                    {{ 'crud.upload'|trans }}
-                </twig:MenuItem>
                 <twig:MenuItem href="{{ path('dashboard.service.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                     <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
                     {{ 'crud.export_all'|trans }}
@@ -29,6 +24,20 @@
             </div>
         </header>
 
-        {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors, }) }}
+        <div class="flex gap-4 mb-4">
+            <div class="w-1/3 flex flex-col justify-between gap-4">
+                <twig:KpiCard kpi_name="Total Services" kpi_value="{{ totalServices }}" icon_name="mdi:handshake"></twig:KpiCard>
+                <twig:KpiCard kpi_name="Services Actifs" kpi_value="{{ statusCounts.active }}" icon_name="mdi:handshake"></twig:KpiCard>
+            </div>
+            <div class="w-1/3">
+                <twig:TopTransaction header_title="Top Transactions" header_icon="mdi:handshake" transactions="{{ topTransactionsData|raw }}" headersTopTransaction="{{ headersTopTransaction|raw }}"
+                ></twig:TopTransaction>
+            </div>
+            <div class="w-1/3">
+                <twig:TopService header_title="Top Services" header_icon="mdi:handshake" services="{{ topServicesData|raw }}"></twig:TopService>
+            </div>
+        </div>
+
+        {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors }) }}
     </section>
 {% endblock %}

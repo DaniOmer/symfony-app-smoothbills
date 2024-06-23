@@ -66,6 +66,8 @@ service:
     price: "Prix"
     description: "Description"
     estimatedDuration: "Durée estimée"
+    not_data: "Aucune donnée"
+
 
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."

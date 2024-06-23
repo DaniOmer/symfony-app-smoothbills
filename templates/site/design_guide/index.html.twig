@@ -195,17 +195,17 @@
                     </div>
                     <div class="flex flex-col gap-3">
                             {% set transactions = [
-                                {client_id: "#22440", service: "Application mobile...", date: "2023-01-12", price: "15.000€"},
-                                {client_id: "#26004", service: "Site vitrine...", date: "2023-01-10", price: "2.750€"},
-                                {client_id: "#21990", service: "Site vitrine...", date: "2023-01-14", price: "2.750€"}
+                                {id: "#22440", service: "Application mobile...", date: "2023-01-12", price: "15.000€"},
+                                {id: "#26004", service: "Site vitrine...", date: "2023-01-10", price: "2.750€"},
+                                {id: "#21990", service: "Site vitrine...", date: "2023-01-14", price: "2.750€"}
                             ] %}
-                            {% set headers = {
-                                client_id: "ID Client",
+                            {% set headersTopTransaction = {
+                                id: "ID",
                                 service: "Service",
                                 date: "Date",
                                 price: "Prix"
                             } %}
-                            <twig:TopTransaction header_title="Top transaction" header_icon="skill-icons:billing-icon" :transactions="transactions" :headers="headers" />
+                            <twig:TopTransaction header_title="Top transaction" header_icon="skill-icons:billing-icon" :transactions="transactions" :headersTopTransaction="headersTopTransaction" />
                         </div>
                 </div>
             </article>

@@ -1,7 +1,6 @@
-{# templates/components/top_transaction.html.twig #}
-{% props header_title = '', header_icon = '', transactions = [], headers = {} %}
+{% props header_title = '', header_icon = '', transactions = [], headersTopTransaction = {} %}
 
-<section class="flex flex-col p-4 bg-white rounded-xl border border-solid border-gray-300 max-w-[400px]">
+<section class="flex flex-col p-4 bg-white rounded-xl border border-solid border-gray-300 hover:border-primary/40 max-w-[400px] min-h-[200px] group">
     <header class="flex items-center gap-4 mb-4">
         <div class="flex justify-center items-center p-2 bg-backgroundIcon rounded-lg">
             {% if header_icon %}
@@ -13,23 +12,27 @@
         <h2 class="text-lg font-semibold text-black">{{ header_title }}</h2>
     </header>
     
-    <section class="flex flex-col w-full text-xs font-medium leading-7 text-black bg-backgroundIcon p-3 rounded-lg">
-        <div class="flex justify-between">
-            <div>{{ headers.client_id }}</div>
-            <div>{{ headers.service }}</div>
-            <div>{{ headers.date }}</div>
-            <div>{{ headers.price }}</div>
-        </div>
-    </section>
-
-    {% for transaction in transactions %}
-        <section class="flex justify-between p-3 mt-2 text-xs font-medium leading-7 text-black {% if loop.index is even %}bg-backgroundIcon{% else %}bg-white{% endif %} border border-solid border-gray-300 rounded-lg">
-            <div class="flex gap-2.5">
-                <div class="w-20">{{ transaction.client_id }}</div>
-                <div class="flex-1">{{ transaction.service }}</div>
-                <time datetime="{{ transaction.date }}" class="w-24">{{ transaction.date|date('d M') }}</time>
+    {% if transactions is empty %}
+        <p class="flex-grow text-center text-gray-500">{{ 'service.not_data'|trans }}</p>
+    {% else %}
+        <section class="flex flex-col w-full text-xs font-medium leading-7 text-black bg-backgroundIcon p-3 rounded-lg">
+            <div class="flex justify-between">
+                <div>{{ headersTopTransaction.id }}</div>
+                <div>{{ headersTopTransaction.service }}</div>
+                <div>{{ headersTopTransaction.date }}</div>
+                <div>{{ headersTopTransaction.price }}</div>
             </div>
-            <div class="self-start">{{ transaction.price }}</div>
         </section>
-    {% endfor %}
+
+        {% for transaction in transactions %}
+            <section class="flex justify-between p-3 mt-2 text-xs font-medium leading-7 text-black {% if loop.index is even %}bg-backgroundIcon{% else %}bg-white{% endif %} border border-solid border-gray-300 rounded-lg">
+                <div class="flex gap-2.5">
+                    <div class="w-20">{{ transaction.id }}</div>
+                    <div class="flex-1">{{ transaction.service }}</div>
+                    <time datetime="{{ transaction.date }}" class="w-24">{{ transaction.date|date('d M') }}</time>
+                </div>
+                <div class="self-start">{{ transaction.price }}</div>
+            </section>
+        {% endfor %}
+    {% endif %}
 </section>
