@@ -8,6 +8,7 @@ use App\Entity\QuotationStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -21,6 +22,17 @@ class QuotationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('type', TextType::class, [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Le type ne doit pas être vide.',
+                    ]),
+                    new Length([
+                        'max' => 255,
+                        'maxMessage' => 'Le type ne doit pas dépasser {{ limit }} caractères.',
+                    ]),
+                ],
+            ])
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Paiement unique' => 'Unique',
@@ -58,6 +70,14 @@ class QuotationType extends AbstractType
                         'message' => 'Veuillez choisir une option d\'envoi.',
                     ]),
                 ],
+            ])
+            ->add('quotationHasServices', CollectionType::class, [
+                'entry_type' => QuotationHasServiceType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
             ])
         ;
 
