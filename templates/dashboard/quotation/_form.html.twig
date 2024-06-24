@@ -3,7 +3,7 @@
 <section>
     {{ form_start(form) }}
         <div class="mb-3 text-red-600">
-            {{ form_errors(form) }}
+            {{ form_errors(form.quotationHasServices) }}
         </div>
         <article>
             <div>
@@ -37,14 +37,13 @@
                     >
                         <ul class="grid grid-cols-3 gap-4" {{ stimulus_target('form-collection', 'collectionContainer') }}>
                             {% for quotationHasService in form.quotationHasServices %}
-                                <li class="list-none">{{ form_row(quotationHasService) }}</li>
+                                <li class="list-none">{{ form_widget(quotationHasService) }}</li>
                             {% endfor %}
                         </ul>
-                        <span class="hidden">{{ form_row(form.quotationHasServices) }}</span>
                         <button 
-                        type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}
-                        class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                        Ajouter un service
+                            type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}
+                            class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                            Ajouter un service
                         </button>
                     </div>
                 </div>
