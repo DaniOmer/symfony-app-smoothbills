@@ -44,19 +44,20 @@ class QuotationController extends AbstractController
         }
 
         $user = $this->getUser();
-        $company = $user->getCompany();
-        $companyId = $company->getId();
-        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
-
         $page = $request->query->getInt('page', 1);
+
         $paginateQuotations = $this->quotationService->getPaginatedQuotations($user, $page);
+        $totalQuotation = $this->quotationService->getQuotationTotalCount($user);
+        $acceptedQuotation = $this->quotationService->getQuotationAcceptedCount($user);
+        $rejectedQuotation = $this->quotationService->getQuotationRejectedCount($user);
+        $conversionRate = $this->quotationService->getConversionRate($user);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
         $rows = $this->quotationService->getQuotationsRows($user, $page);
 
         $statusCounts = [
-            'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
-            'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
+            'accepted' => $acceptedQuotation,
+            'rejected' => $rejectedQuotation,
         ];
 
         $config = [
@@ -64,7 +65,8 @@ class QuotationController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'quotations' => $paginateQuotations,
-            'totalInvoices' => $totalInvoices,
+            'totalQuotation' => $totalQuotation,
+            'conversionRate' => $conversionRate,
             'actions' => [
                 ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
                 ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'],

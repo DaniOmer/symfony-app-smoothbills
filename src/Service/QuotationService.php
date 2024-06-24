@@ -153,4 +153,38 @@ class QuotationService
         $this->entityManager->flush();
     }
 
+    public function getQuotationTotalCount(User $user): int
+    {
+        return $this->quotationRepository->countTotalQuotationsByCompany($user);
+    }
+
+    public function getQuotationAcceptedCount(User $user): int
+    {
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+
+        return $this->quotationRepository->countQuotationsByStatus('Accepté', $companyId);
+    }
+
+    public function getQuotationRejectedCount(User $user): int
+    {
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+
+        return $this->quotationRepository->countQuotationsByStatus('Refusé', $companyId);;
+    }
+
+    public function getConversionRate(User $user): float
+    {
+        $quotationTotal = $this->getQuotationTotalCount($user);
+        $quotationAccepted = $this->getQuotationAcceptedCount($user);
+        
+        if ($quotationTotal === 0) {
+            return 0.0;
+        }
+        
+        $conversionRate = ($quotationAccepted / $quotationTotal) * 100;
+
+        return round($conversionRate, 2);
+    }
 }
