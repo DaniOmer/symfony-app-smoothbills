@@ -48,6 +48,7 @@ class Quotation
         min: 1,
         minMessage: 'Vous devez ajouter au moins un service.'
     )]
+    #[Assert\Valid()]
     private Collection $quotationHasServices;
 
     public function __construct()

@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class QuotationType extends AbstractType
 {
@@ -55,6 +56,11 @@ class QuotationType extends AbstractType
                 'class' => Customer::class,
                 'choice_label' => 'name',
                 'label' => false,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez choisir un client enregistré.',
+                    ]),
+                ],
             ])
             ->add('sendOption', ChoiceType::class, [
                 'mapped' => false,
@@ -77,7 +83,15 @@ class QuotationType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
+                'label' => false,
                 'prototype' => true,
+                'attr' => ['class' => 'custom-class', 'style' => 'display:none;'],
+                'constraints' => [
+                    new Assert\Count([
+                        'min' => 1,
+                        'minMessage' => 'Vous devez ajouter au moins un service.',
+                    ]),
+                ],
             ])
         ;
 
