@@ -5,24 +5,22 @@ namespace App\Service;
 use App\Entity\Invoice;
 use App\Entity\User;
 use App\Repository\InvoiceRepository;
+use App\Repository\InvoiceStatusRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\Response;
-
-
 
 class InvoiceService
 {
     private $invoiceRepository;
+    private InvoiceStatusRepository $invoiceStatusRepository;
  
     private $csvExporter;
     private $translator;
 
-    public function __construct(InvoiceRepository $invoiceRepository, CsvExporter $csvExporter, TranslatorInterface $translator)
+    public function __construct(InvoiceRepository $invoiceRepository,  InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator)
     {
         $this->invoiceRepository = $invoiceRepository; 
+        $this->invoiceStatusRepository = $invoiceStatusRepository;
         $this->csvExporter = $csvExporter;
         $this->translator = $translator;
     }
@@ -45,7 +43,6 @@ class InvoiceService
             
             $amountHt = 0;
             $amountTtc = 0;
-
             
             foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
                 
@@ -53,7 +50,6 @@ class InvoiceService
                 $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
             }
 
-          
             $rows[]= [
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
@@ -70,10 +66,44 @@ class InvoiceService
 
     }
 
+    public function getInvoiceDetails(Invoice $invoice): ?array
+    {
+        $quotation = $invoice->getQuotation();
+        $customerName = $quotation->getCustomer()->getName();
 
-   
+        $amountHt = 0;
+        $amountTtc = 0;
 
-   
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
+            $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
+        }
+
+        $invoiceDetails = [
+            'id' => $invoice->getId(),
+            'uid' => $quotation->getUid(),
+            'invoice_number' => $invoice->getUid(),
+            'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+            'amount_ht' => $amountHt,
+            'amount_ttc' => $amountTtc,
+            'client' => $customerName,
+        ];
+
+        return $invoiceDetails;
+    }
+
+    public function getAllInvoiceStatusNames(): array
+    {
+        $invoiceStatuses = $this->invoiceStatusRepository->findAll();
+
+        $statusNames = [];
+
+        foreach ($invoiceStatuses as $status) {
+            $statusNames[$status->getName()] = $status->getName();
+        }
+
+        return $statusNames;
+    }
 }
 
 
