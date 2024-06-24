@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Quotation;
-use App\Entity\QuotationStatus;
+use App\Entity\Service;
 use App\Form\QuotationType;
 use App\Repository\QuotationRepository;
 use App\Service\CsvExporter;
@@ -25,8 +26,11 @@ class QuotationController extends AbstractController
     private $userRegistrationChecker;
     private $csvExporter;
 
-    public function __construct(QuotationService $quotationService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
-    {
+    public function __construct(
+        QuotationService $quotationService, 
+        UserRegistrationChecker $userRegistrationChecker,
+        CsvExporter $csvExporter
+    ){
         $this->quotationService = $quotationService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
@@ -89,13 +93,16 @@ class QuotationController extends AbstractController
         $user = $this->getUser();
         $company = $user->getCompany();
 
+        $customer = $entityManager->getRepository(Customer::class)->findOneBy(['company' => $company]);
+        $service = $entityManager->getRepository(Service::class)->findOneBy(['company' => $company]);
+
         if ($form->isSubmitted() && $form->isValid()) {
             foreach($quotation->getQuotationHasServices() as $quotationHasService) {
-                $tax = 20;
+                $tax = 0.2;
                 $priceWithoutTax = $quotationHasService->getService()->getPrice();
 
                 $quotationHasService->setPriceWithoutTax($priceWithoutTax);
-                $quotationHasService->setPriceWithTax($priceWithoutTax * 20/100);
+                $quotationHasService->setPriceWithTax($priceWithoutTax * $tax);
                 $entityManager->persist($quotationHasService);
             }
             
@@ -117,12 +124,13 @@ class QuotationController extends AbstractController
             }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
-
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dashboard/quotation/new.html.twig', [
             'quotation' => $quotation,
+            'customer' => $customer,
+            'service' => $service,
             'form' => $form,
         ]);
     }
