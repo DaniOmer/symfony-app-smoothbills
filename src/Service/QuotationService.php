@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Quotation;
 use App\Entity\User;
 use App\Repository\QuotationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -14,17 +15,27 @@ use Symfony\Component\Mime\Address;
 
 class QuotationService
 {
+    private $entityManager;
     private $quotationRepository;
     private $mailer;
     private $adminEmail;
     private $csvExporter;
+    private $taxtService;
 
-    public function __construct(QuotationRepository $quotationRepository, MailerInterface $mailer, #[Autowire('%admin_email%')] string $adminEmail, CsvExporter $csvExporter)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        QuotationRepository $quotationRepository, 
+        MailerInterface $mailer, 
+        #[Autowire('%admin_email%')] string $adminEmail, 
+        CsvExporter $csvExporter,
+        TaxService $taxService,
+    ){
+        $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
+        $this->taxtService = $taxService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -86,4 +97,60 @@ class QuotationService
 
         return $this->csvExporter->exportEntities($quotations, $headers, $dataExtractor, 'all_quotations');
     }
+
+    public function getQuotationDetails(Quotation $quotation): array
+    {
+        $quotationDetails = [];
+        $totalPriceWithoutTax = 0;
+        $totalPriceWithTax = 0;
+    
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $quantity = $quotationHasService->getQuantity();
+            $priceWithoutTax = $quotationHasService->getPriceWithoutTax();
+            $priceWithTax = $quotationHasService->getPriceWithTax();
+    
+            $quotationDetails[] = [
+                'quotation' => $quotation,
+                'priceWithoutTax' => $priceWithoutTax,
+                'priceWithTax' => $priceWithTax,
+                'date' => $quotationHasService->getCreatedAt(),
+                'quantity' => $quotationHasService->getQuantity(),
+                'serviceName' => $quotationHasService->getService()->getName(),
+                'company' => $quotationHasService->getService()->getCompany()->getDenomination(),
+            ];
+    
+            $totalPriceWithoutTax += $priceWithoutTax * $quantity;
+            $totalPriceWithTax += $priceWithTax * $quantity;
+        }
+    
+        return [
+            'quotationDetails' => $quotationDetails,
+            'totalPriceWithoutTax' => $totalPriceWithoutTax,
+            'totalPriceWithTax' => $totalPriceWithTax,
+        ];
+    }
+
+    public function processQuotation(Quotation $quotation, $form, $company): void
+    {
+        foreach($quotation->getQuotationHasServices() as $quotationHasService) {
+            $priceWithoutTax = $quotationHasService->getService()->getPrice();
+            $priceWithTax = $this->taxtService->applyTva($priceWithoutTax);
+
+            $quotationHasService->setPriceWithoutTax($priceWithoutTax);
+            $quotationHasService->setPriceWithTax($priceWithTax);
+            $this->entityManager->persist($quotationHasService);
+        }
+        
+        $sendOption = $form->get('sendOption')->getData();
+        if ($sendOption === 'Maintenant') {
+            $quotation->setSendingDate(new \DateTime());
+        } else {
+            $quotation->setSendingDate(null);
+        }
+      
+        $quotation->setCompany($company);
+        $this->entityManager->persist($quotation);
+        $this->entityManager->flush();
+    }
+
 }

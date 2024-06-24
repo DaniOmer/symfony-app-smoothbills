@@ -87,6 +87,7 @@ class QuotationController extends AbstractController
         $quotation = new Quotation();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
+
         $user = $this->getUser();
         $company = $user->getCompany();
 
@@ -94,27 +95,9 @@ class QuotationController extends AbstractController
         $service = $entityManager->getRepository(Service::class)->findOneBy(['company' => $company]);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach($quotation->getQuotationHasServices() as $quotationHasService) {
-                $tax = 0.2;
-                $priceWithoutTax = $quotationHasService->getService()->getPrice();
+            $this->quotationService->processQuotation($quotation, $form, $company);
 
-                $quotationHasService->setPriceWithoutTax($priceWithoutTax);
-                $quotationHasService->setPriceWithTax($priceWithoutTax * $tax);
-                $entityManager->persist($quotationHasService);
-            }
-            
             $sendOption = $form->get('sendOption')->getData();
-            if ($sendOption === 'Maintenant') {
-                $quotation->setSendingDate(new \DateTime());
-            } else {
-                $quotation->setSendingDate(null);
-            }
-
-            $user = $this->getUser();            
-            $quotation->setCompany($company);
-            $entityManager->persist($quotation);
-            $entityManager->flush();
-
             if ($sendOption === 'Maintenant') {
                 $quotationCsvData = $this->exportQuotation($quotation);
                 $this->quotationService->sendQuotationMail($quotation, $quotationCsvData);
@@ -133,13 +116,13 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
-    public function show(Quotation $quotation, QuotationRepository $quotationRepository): Response
+    public function show(Quotation $quotation): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
-        $quotationDetails = $quotationRepository->getQuotationDetails($quotation);
+        $quotationDetails = $this->quotationService->getQuotationDetails($quotation);
 
         return $this->render('dashboard/quotation/show.html.twig', [
             'quotation' => $quotation,
