@@ -44,18 +44,15 @@ class QuotationController extends AbstractController
         }
 
         $user = $this->getUser();
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
+
         $page = $request->query->getInt('page', 1);
         $paginateQuotations = $this->quotationService->getPaginatedQuotations($user, $page);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
         $rows = $this->quotationService->getQuotationsRows($user, $page);
-
-        $user = $this->getUser();
-        $company = $user->getCompany();
-
-        $companyId = $company->getId();
-
-        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
 
         $statusCounts = [
             'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
