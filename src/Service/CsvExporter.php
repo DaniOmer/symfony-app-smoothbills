@@ -70,7 +70,7 @@ class CsvExporter
                 $quotationHasService->getPriceWithTax(),
                 $quotationHasService->getQuantity(),
                 $quotationHasService->getService()->getCompany()->getDenomination(),
-                $quotationHasService->getDate()->format('Y-m-d H:i:s'),
+                $quotationHasService->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }
 
