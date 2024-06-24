@@ -21,6 +21,7 @@ class QuotationService
     private $adminEmail;
     private $csvExporter;
     private $taxtService;
+    private $jWTService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -29,6 +30,7 @@ class QuotationService
         #[Autowire('%admin_email%')] string $adminEmail, 
         CsvExporter $csvExporter,
         TaxService $taxService,
+        JWTService $jWTService,
     ){
         $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
@@ -36,6 +38,7 @@ class QuotationService
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
         $this->taxtService = $taxService;
+        $this->jWTService = $jWTService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -63,22 +66,33 @@ class QuotationService
         return $rows;
     }
 
-    public function sendQuotationMail(Quotation $quotation): void
+    public function sendQuotationMail(User $user, Quotation $quotation, $validationUrl): void
     {
+        $company = $user->getCompany();
         $quotationCsvData = $this->csvExporter->exportQuotation($quotation);
 
         $email = (new TemplatedEmail())
-            ->from(new Address($this->adminEmail, 'Smoothbill'))
+            ->from(new Address($this->adminEmail, $company->getDenomination()))
             ->to($quotation->getCustomer()->getMail())
             ->subject('Nouveau devis créé')
-            ->htmlTemplate('site/quotation/mail/export_csv_email.html.twig')
+            ->htmlTemplate('dashboard/quotation/mail/quotation_email.html.twig')
             ->context([
                 'quotation' => $quotation,
-                'customerName' => $quotation->getCustomer()->getName()
+                'company' => $company,
+                'customerName' => $quotation->getCustomer()->getName(),
+                'validationUrl' => $validationUrl,
             ])
             ->attach($quotationCsvData, 'quotation.csv', 'text/csv');
 
         $this->mailer->send($email);
+    }
+
+    public function generateQuotationValidationToken(Quotation $quotation)
+    {
+        $expiry = 30 * 24 * 60 * 60;
+        $quotationUid = $quotation->getUid();
+
+        return $this->jWTService->createToken(['quotation_uid' => $quotationUid], $expiry);
     }
 
     public function exportAllQuotations(): Response
@@ -147,8 +161,9 @@ class QuotationService
         } else {
             $quotation->setSendingDate(null);
         }
-      
+
         $quotation->setCompany($company);
+
         $this->entityManager->persist($quotation);
         $this->entityManager->flush();
     }
@@ -180,9 +195,9 @@ class QuotationService
         $quotationAccepted = $this->getQuotationAcceptedCount($user);
         
         if ($quotationTotal === 0) {
-            return 0.0;
+            return 0.00;
         }
-        
+
         $conversionRate = ($quotationAccepted / $quotationTotal) * 100;
 
         return round($conversionRate, 2);
