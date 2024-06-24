@@ -20,7 +20,7 @@ class QuotationService
     private $mailer;
     private $adminEmail;
     private $csvExporter;
-    private $taxtService;
+    private $taxService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -35,7 +35,7 @@ class QuotationService
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
-        $this->taxtService = $taxService;
+        $this->taxService = $taxService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -134,7 +134,7 @@ class QuotationService
     {
         foreach($quotation->getQuotationHasServices() as $quotationHasService) {
             $priceWithoutTax = $quotationHasService->getService()->getPrice();
-            $priceWithTax = $this->taxtService->applyTva($priceWithoutTax);
+            $priceWithTax = $this->taxService->applyTva($priceWithoutTax);
 
             $quotationHasService->setPriceWithoutTax($priceWithoutTax);
             $quotationHasService->setPriceWithTax($priceWithTax);
