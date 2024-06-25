@@ -1,64 +1,149 @@
-{# templates/site/login/index.html.twig #}
+{# templates/site/home/validation/quotation.html.twig #}
 
 {% extends 'base/base_site.html.twig' %}
 {% set inputClasses = "mb-2 py-2 block w-full border border-tertiary/50 focus:border-primary focus:ring-primary rounded-sm" %}
+{% set rowClasses = "py-3 px-4" %}
 
 {% block title %}Validation de devis{% endblock %}
 
 {% block body %}
-<div class="">
-    <div class='lg:w-1/3 mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
-        <h2 class='w-full bg-white font-semibold text-subtitle text-center py-[18px] shadow-sm mb-5'>Bonjour Omer,</h2>
-        <div>
-            <h3>Voici le détail de votre devis</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nom du service</th>
-                        <th>Prix HT</th>
-                        <th>Prix TTC</th>
-                        <th>Quantité</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for detail in quotationDetails %}
-                        <tr>
-                            <td>{{ detail.serviceName }}</td>
-                            <td>{{ detail.priceWithoutTax }}€</td>
-                            <td>{{ detail.priceWithTax }}€</td>
-                            <td>{{ detail.quantity }}</td>
-                            <td>{{ detail.date ? detail.date|date('Y-m-d H:i:s') : '' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <p>{{ 'Total HT'|trans }}: {{ totalPriceWithoutTax }}€</p>
-            <p>{{ 'Total TTC'|trans }}: {{ totalPriceWithTax }}€</p>
+<section class="lg:w-2/3 mx-auto">
+    <h1 class='w-full bg-background font-semibold text-subtitle mb-5'>Bonjour {{ quotation.customer.name }},</h1>
+
+    <div>
+        <p>Le statut de votre devis est : {{ quotationStatus }}</p>
+        <p>Dernière mise à jour : le {{ quotation.updatedAt|date('d-m-Y') }}</p>
+    </div>
+
+    <article class='p-10 shadow-md flex flex-col gap-6'>
+        <header class="w-full flex justify-between">
+            <div class="flex gap-3 text-subtitle">
+
+                {% if graphicChart and null != graphicChart.logo %}
+                    <div class="w-14 h-14">
+                        <img class="w-full h-full object-cover" src="{{ graphicChart.logo }}" alt="Logo de {{ quotation.company.denomination }}">
+                    </div>
+                {% endif %}
+
+                <span class='block'>{{ quotation.company.denomination }}</span>
+            </div>
+            <p>
+                Devis du 
+                <span class="text-primary text-base">{{ quotation.sendingDate|date('d F Y', 'Europe/Paris') }}</span>
+            </p>
+        </header>
+
+        <div class="flex justify-between">
+            <div>
+                <span class="block">{{ quotation.company.address.address }}</span>
+                <span class="block">{{ quotation.company.address.zipcode }}, {{ quotation.company.address.city }}</span>
+                <span class="block">{{ quotation.company.address.country }}</span>
+                <span class="block">{{ quotation.company.mail }}</span>
+            </div>
+            <div>
+                <span class="block"> N° Siren : {{ quotation.company.siren }}</span>
+                <span class="block"> N° Siret : {{ quotation.company.siret }}</span>
+                <span class="block"> N° TVA UE : {{ quotation.company.tvaNumber }}</span>
+            </div>
         </div>
-        <div class='flex gap-4 items-center mt-10'>
-            <form action="{{ path('site.home.quotation.validation', {'token': token}) }}" method="post">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('accepted_action') }}" >
+
+        <div class="grid grid-cols-4 mt-8">
+            <div>
+                <h3 class="font-semibold">Destinataire</h3>
+                <div>
+                    <span class="block">{{ quotation.customer.name }}</span>
+                    <span class="block">{{ quotation.customer.address.zipcode }}, {{ quotation.customer.address.city }}</span>
+                    <span class="block">{{ quotation.customer.address.country }}</span>
+                    <span class="block">{{ quotation.customer.mail }}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-between">
+                <div>
+                    <span class="block font-semibold">N° de Devis</span>
+                    <span class="block">{{ quotation.uid }}</span>
+                </div>
+                <div>
+                    <span class="block font-semibold">Type de Paiement</span>
+                    <span class="block">{{ quotation.type }}</span>
+                </div>
+            </div>
+
+            <div>
+                <span class="block font-semibold">Date d'émission</span>
+                <span class="block">{{ quotation.sendingDate|date('d F Y', 'Europe/Paris') }}</span>
+            </div>
+
+            <div>
+                <span class="block font-semibold">Validité</span>
+                <span class="block">{{ validityDate|date('d F Y', 'Europe/Paris') }}</span>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <div class="border-y table w-full text-left">
+                <div class="table-header-group bg-tertiary/10">
+                    <div class="table-row font-semibold">
+                        <div class="{{ rowClasses }} table-cell text-left">Désignation</div>
+                        <div class="{{ rowClasses }} table-cell text-left">Prix HT</div>
+                        <div class="{{ rowClasses }} table-cell text-left">Prix TTC</div>
+                        <div class="{{ rowClasses }} table-cell text-left">Quantité</div>
+                    </div>
+                </div>
+
+                <div class="table-row-group overflow-x-hidden">
+                    {% for detail in quotationDetails %}
+                        <div class="table-row">
+                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.serviceName }}</div>
+                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.priceWithoutTax }} €</div>
+                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.priceWithTax }} €</div>
+                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.quantity }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="grid md:grid-cols-4 mt-5">
+                <div class="flex justify-between col-start-4">
+                    <div class="font-semibold">{{ 'Total HT'|trans }}</div>
+                    <div>{{ totalPriceWithoutTax }} €</div>
+                </div>
+                <div class="flex justify-between row-start-2 col-start-4">
+                    <div class="font-semibold">{{ 'Total TTC'|trans }}</div>
+                    <div>{{ totalPriceWithTax }} €</div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    {% if quotationStatus == 'En attente' %}
+        <div class='w-full flex gap-4 items-center justify-end mt-10'>
+            <form action="{{ path('site.home.validation.quotation', {'token': token}) }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('accepted_action') }}">
                 <input type="hidden" name="action" value="accept">
 
-                <twig:Button bg="filled" rounded="sm" type="submit" additionalClasses='w-full rounded-small'>
-                    Accepté
-                </twig:Button>
+                <button type="submit" class='px-4 py-2 text-white border border-primary bg-primary rounded-small hover:bg-transparent hover:text-black transition delay-75 ease-in-out'>
+                    Accepté le devis
+                </button>
             </form>
 
-            <form action="{{ path('site.home.quotation.validation', {'token': token}) }}" method="post">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('rejected_action') }}" >
+            <form action="{{ path('site.home.validation.quotation', {'token': token}) }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('rejected_action') }}">
                 <input type="hidden" name="action" value="reject">
 
                 <button type="submit" class='px-4 py-2 border border-red-500 rounded-small hover:bg-red-500 hover:text-white transition delay-75 ease-in-out'>
-                    Refusé
+                    Refusé le devis
                 </button>
             </form>
         </div>
+    {% endif %}
+    <div class="text-xs text-right mt-3">
+        Si vous avez des questions, n'hésitez pas à nous contacter à
+        <a class="text-primary" href="mailto:{{quotation.company.mail}}">{{ quotation.company.mail }}.</a>
     </div>
+
     <div class='w-fit mx-auto mt-10'>
         <span class='font-semiboled'>&copy; {{ "now"|date('Y') }} Smoothbill -</span>
-        <a href={{ path('site.legal_notice')}} class='text-primary underline'>{{ 'login.legal_notice'|trans }}</a>
+        <a href="{{ path('site.legal_notice') }}" class='text-primary underline'>{{ 'login.legal_notice'|trans }}</a>
     </div>
-</div>
+</section>
 {% endblock %}

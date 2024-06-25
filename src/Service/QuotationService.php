@@ -2,10 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\GraphicChart;
 use App\Entity\Quotation;
 use App\Entity\QuotationStatus;
 use App\Entity\User;
 use App\Repository\QuotationRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -118,6 +120,8 @@ class QuotationService
         $quotationDetails = [];
         $totalPriceWithoutTax = 0;
         $totalPriceWithTax = 0;
+        $company = $quotation->getCompany();
+        $graphicChart = $this->entityManager->getRepository(GraphicChart::class)->findOneBy(['company' => $company]);
     
         foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
             $quantity = $quotationHasService->getQuantity();
@@ -128,12 +132,11 @@ class QuotationService
                 'quotation' => $quotation,
                 'priceWithoutTax' => $priceWithoutTax,
                 'priceWithTax' => $priceWithTax,
-                'date' => $quotationHasService->getCreatedAt(),
                 'quantity' => $quotationHasService->getQuantity(),
                 'serviceName' => $quotationHasService->getService()->getName(),
                 'company' => $quotationHasService->getService()->getCompany()->getDenomination(),
             ];
-    
+            
             $totalPriceWithoutTax += $priceWithoutTax * $quantity;
             $totalPriceWithTax += $priceWithTax * $quantity;
         }
@@ -142,6 +145,7 @@ class QuotationService
             'quotationDetails' => $quotationDetails,
             'totalPriceWithoutTax' => $totalPriceWithoutTax,
             'totalPriceWithTax' => $totalPriceWithTax,
+            'graphicChart' => $graphicChart,
         ];
     }
 
@@ -211,5 +215,10 @@ class QuotationService
         $conversionRate = ($quotationAccepted / $quotationTotal) * 100;
 
         return round($conversionRate, 2);
+    }
+
+    public function getQuotationValidityDate($sendingDate): DateTime
+    {
+        return (clone $sendingDate)->modify('+30 days');
     }
 }

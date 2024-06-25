@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Quotation;
 use App\Service\JWTService;
 use App\Service\QuotationService;
@@ -21,7 +22,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/quotation/validation/{token}', name: 'site.home.quotation.validation', methods: ['GET', 'POST'])]
+    #[Route('/quotation/validation/{token}', name: 'site.home.validation.quotation', methods: ['GET', 'POST'])]
     public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService): Response
     {
         $decodedToken = base64_decode($token);
@@ -34,43 +35,51 @@ class HomeController extends AbstractController
         $uid = $jwtData['quotation_uid'];
         $expiry = $jwtData['exp'];
         $now = new \DateTime();
-
         $quotation = $entityManager->getRepository(Quotation::class)->findOneBy(['uid' => $uid]);
+
         if (!$quotation || $expiry < $now->getTimestamp()) {
             throw $this->createNotFoundException('Devis non trouvé ou expiré !');
         }
-        
-        // dd($quotation->getQuotationStatus()->getName() !== 'En attente');
-        if($quotation->getQuotationStatus()->getName() !== 'En attente'){
-            throw $this->createNotFoundException('Le devis a déjà été validé !');
-        }
 
+        $sendingDate = $quotation->getSendingDate();
+        $validityDate = $quotationService->getQuotationValidityDate($sendingDate);
         $quotationDetails = $quotationService->getQuotationDetails($quotation);
+        $quotationStatus = $quotation->getQuotationStatus()->getName();
+        $config = [
+            'token' => $token,
+            'quotation' => $quotation,
+            'validityDate' => $validityDate,
+            'quotationDetails' => $quotationDetails['quotationDetails'],
+            'quotationStatus' => $quotationStatus,
+            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
+            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
+            'graphicChart' => $quotationDetails['graphicChart'],
+        ];
+
+        if($quotationStatus !== 'En attente'){
+            return $this->render('site/home/validation/quotation.html.twig', $config);
+        }
 
         if($request->isMethod('POST')){
             $action = $request->request->get('action');
             $tokenId = $action === 'accept' ? 'accepted_action' : 'rejected_action';
             $submittedToken = $request->getPayload()->get('_csrf_token');
 
-            
             if (!$this->isCsrfTokenValid($tokenId, $submittedToken)) {
                 throw $this->createAccessDeniedException('Invalid CSRF token');
             }
 
             if($action === 'accept'){
                 $quotationService->validateQuotation($quotation, "Accepté");
+                $this->addFlash('success', 'Votre devis a bien été validé.');
             }elseif($action=== 'reject'){
                 $quotationService->validateQuotation($quotation, "Refusé");
+                $this->addFlash('success', 'Votre devis a bien été rejeté.');
             }
+
+            return $this->redirectToRoute('site.home.validation.quotation', ['token' => $token]);
         }
 
-
-        return $this->render('site/home/validation/quotation.html.twig', [
-            'token' => $token,
-            'quotation' => $quotation,
-            'quotationDetails' => $quotationDetails['quotationDetails'],
-            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
-            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
-        ]);
+        return $this->render('site/home/validation/quotation.html.twig', $config);
     }
 }
