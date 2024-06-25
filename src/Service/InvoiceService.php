@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Invoice;
+use App\Entity\InvoiceStatus;
+use App\Entity\Quotation;
 use App\Entity\User;
 use App\Repository\InvoiceRepository;
 use App\Repository\InvoiceStatusRepository;
@@ -29,17 +31,24 @@ class InvoiceService
         $this->entityManager = $entityManager;
     }
 
-    public function createInvoice(Invoice $invoice): void
+    public function createInvoice(Quotation $quotation): void
     {
         $this->entityManager->beginTransaction();
 
         try {
+            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'pending']);
             $invoiceNumber = $this->generateInvoiceNumber();
+            $company = $quotation->getCompany();
+            $invoice = new Invoice();
 
+            $invoice->setQuotation($quotation);
+            $invoice->setCompany($company);
+            $invoice->setInvoiceStatus($invoiceStatus);
             $invoice->setInvoiceNumber($invoiceNumber);
-            
+
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
+            
             $this->entityManager->commit();
         } catch (Exception |  OptimisticLockException $e) {
             $this->entityManager->rollback();
