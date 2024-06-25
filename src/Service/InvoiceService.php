@@ -15,16 +15,15 @@ use Exception;
 class InvoiceService
 {
     private $invoiceRepository;
-    private InvoiceStatusRepository $invoiceStatusRepository;
- 
+    private $invoiceStatusRepository;
+    private $entityManager;
     private $csvExporter;
     private $translator;
 
-    public function __construct(InvoiceRepository $invoiceRepository,  InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator)
+    public function __construct(InvoiceRepository $invoiceRepository, InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
-        $this->invoiceRepository = $invoiceRepository; 
-        $this->invoiceStatusRepository = $invoiceStatusRepository;
         $this->invoiceRepository = $invoiceRepository;
+        $this->invoiceStatusRepository = $invoiceStatusRepository;
         $this->csvExporter = $csvExporter;
         $this->translator = $translator;
         $this->entityManager = $entityManager;
@@ -35,14 +34,10 @@ class InvoiceService
         $this->entityManager->beginTransaction();
 
         try {
-            $year = date('Y');
-            $month = date('m');
-            $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
-            $lastInvoiceNumber = str_pad((string)$lastInvoiceNumber, 4, '0', STR_PAD_LEFT);
+            $invoiceNumber = $this->generateInvoiceNumber();
 
-            $lastInvoiceNumber = 'FA' . $year . $month . $lastInvoiceNumber;
-            $invoice->setInvoiceNumber($lastInvoiceNumber);
-
+            $invoice->setInvoiceNumber($invoiceNumber);
+            
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
             $this->entityManager->commit();
@@ -50,6 +45,17 @@ class InvoiceService
             $this->entityManager->rollback();
             throw $e;
         }
+    }
+
+    private function generateInvoiceNumber(): string
+    {
+        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
+
+        $year = date('Y');
+        $month = date('m');
+        $nextInvoiceNumber = $lastInvoiceNumber + 1;
+
+        return 'FA' . $year . $month . str_pad((string) $nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
@@ -60,40 +66,36 @@ class InvoiceService
     }
 
 
-    public function getInvoicesRows(User $user, $page): array
+    public function getInvoicesRows(User $user, $page): Array
     {
 
-        $rows = [];
-        foreach ($this->getPaginatedInvoices($user, $page) as $invoice) {
+        $rows=[];
+        foreach ($this->getPaginatedInvoices($user, $page) as $invoice) { 
             $quotation = $invoice->getQuotation();
             $customerName = $quotation->getCustomer()->getName();
-
+            
             $amountHt = 0;
             $amountTtc = 0;
-
+            
             foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-
+                
                 $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
                 $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
             }
 
             $rows[]= [
-
-
-            $rows[] = [
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
-                'invoice_number' => $invoice->getInvoiceNumber(),
+                'invoice_number' => $invoice->getUid(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
-                'amount_ht' => $amountHt,
+                'amount_ht'=> $amountHt,
                 'amount_ttc' => $amountTtc,
                 'status' => $this->translator->trans('invoice.status.' . $invoice->getInvoiceStatus()->getName()),
-                'client' => $customerName,
+                'client' => $customerName ,
             ];
         }
 
         return $rows;
-
     }
 
     public function getInvoiceDetails(Invoice $invoice): ?array
@@ -125,7 +127,6 @@ class InvoiceService
     public function getAllInvoiceStatusNames(): array
     {
         $invoiceStatuses = $this->invoiceStatusRepository->findAll();
-
         $statusNames = [];
 
         foreach ($invoiceStatuses as $status) {
