@@ -7,7 +7,7 @@
 {% block title %}Validation de devis{% endblock %}
 
 {% block body %}
-<section class="lg:w-2/3 mx-auto">
+<section class="lg:w-2/3 mx-auto min-h-screen flex flex-col justify-center">
     <h1 class='w-full bg-background font-semibold text-subtitle mb-5'>Bonjour {{ quotation.customer.name }},</h1>
 
     <div>
@@ -15,105 +15,16 @@
         <p>Dernière mise à jour : le {{ quotation.updatedAt|date('d-m-Y') }}</p>
     </div>
 
-    <article class='p-10 shadow-md flex flex-col gap-6'>
-        <header class="w-full flex justify-between">
-            <div class="flex gap-3 text-subtitle">
-
-                {% if graphicChart and null != graphicChart.logo %}
-                    <div class="w-14 h-14">
-                        <img class="w-full h-full object-cover" src="{{ graphicChart.logo }}" alt="Logo de {{ quotation.company.denomination }}">
-                    </div>
-                {% endif %}
-
-                <span class='block'>{{ quotation.company.denomination }}</span>
-            </div>
-            <p>
-                Devis du 
-                <span class="text-primary text-base">{{ quotation.sendingDate|date('d F Y', 'Europe/Paris') }}</span>
-            </p>
-        </header>
-
-        <div class="flex justify-between">
-            <div>
-                <span class="block">{{ quotation.company.address.address }}</span>
-                <span class="block">{{ quotation.company.address.zipcode }}, {{ quotation.company.address.city }}</span>
-                <span class="block">{{ quotation.company.address.country }}</span>
-                <span class="block">{{ quotation.company.mail }}</span>
-            </div>
-            <div>
-                <span class="block"> N° Siren : {{ quotation.company.siren }}</span>
-                <span class="block"> N° Siret : {{ quotation.company.siret }}</span>
-                <span class="block"> N° TVA UE : {{ quotation.company.tvaNumber }}</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-4 mt-8">
-            <div>
-                <h3 class="font-semibold">Destinataire</h3>
-                <div>
-                    <span class="block">{{ quotation.customer.name }}</span>
-                    <span class="block">{{ quotation.customer.address.zipcode }}, {{ quotation.customer.address.city }}</span>
-                    <span class="block">{{ quotation.customer.address.country }}</span>
-                    <span class="block">{{ quotation.customer.mail }}</span>
-                </div>
-            </div>
-
-            <div class="flex flex-col justify-between">
-                <div>
-                    <span class="block font-semibold">N° de Devis</span>
-                    <span class="block">{{ quotation.uid }}</span>
-                </div>
-                <div>
-                    <span class="block font-semibold">Type de Paiement</span>
-                    <span class="block">{{ quotation.type }}</span>
-                </div>
-            </div>
-
-            <div>
-                <span class="block font-semibold">Date d'émission</span>
-                <span class="block">{{ quotation.sendingDate|date('d F Y', 'Europe/Paris') }}</span>
-            </div>
-
-            <div>
-                <span class="block font-semibold">Validité</span>
-                <span class="block">{{ validityDate|date('d F Y', 'Europe/Paris') }}</span>
-            </div>
-        </div>
-
-        <div class="mt-8">
-            <div class="border-y table w-full text-left">
-                <div class="table-header-group bg-tertiary/10">
-                    <div class="table-row font-semibold">
-                        <div class="{{ rowClasses }} table-cell text-left">Désignation</div>
-                        <div class="{{ rowClasses }} table-cell text-left">Prix HT</div>
-                        <div class="{{ rowClasses }} table-cell text-left">Prix TTC</div>
-                        <div class="{{ rowClasses }} table-cell text-left">Quantité</div>
-                    </div>
-                </div>
-
-                <div class="table-row-group overflow-x-hidden">
-                    {% for detail in quotationDetails %}
-                        <div class="table-row">
-                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.serviceName }}</div>
-                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.priceWithoutTax }} €</div>
-                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.priceWithTax }} €</div>
-                            <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ detail.quantity }}</div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="grid md:grid-cols-4 mt-5">
-                <div class="flex justify-between col-start-4">
-                    <div class="font-semibold">{{ 'Total HT'|trans }}</div>
-                    <div>{{ totalPriceWithoutTax }} €</div>
-                </div>
-                <div class="flex justify-between row-start-2 col-start-4">
-                    <div class="font-semibold">{{ 'Total TTC'|trans }}</div>
-                    <div>{{ totalPriceWithTax }} €</div>
-                </div>
-            </div>
-        </div>
-    </article>
+    <div class="shadow-md">
+        {{ include('partials/quotation_details.html.twig', {
+                'graphicChart': graphicChart, 
+                'quotation': quotation, 
+                'validityDate': validityDate, 
+                'quotationDetails': quotationDetails, 
+                'totalPriceWithoutTax': totalPriceWithoutTax, 
+                'totalPriceWithTax':totalPriceWithTax 
+        }) }}
+    </div>
 
     {% if quotationStatus == 'En attente' %}
         <div class='w-full flex gap-4 items-center justify-end mt-10'>
