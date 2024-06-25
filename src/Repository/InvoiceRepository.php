@@ -6,14 +6,14 @@ use App\Entity\Invoice;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface; 
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 
 class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
-    private EntityManagerInterface $entityManager; 
+    private EntityManagerInterface $entityManager;
 
     public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager)
     {
@@ -25,14 +25,14 @@ class InvoiceRepository extends ServiceEntityRepository
     public function getLastInvoiceNumber(): int
     {
         $lastInvoice = $this->createQueryBuilder('i')
-            ->select('i.uuid')
+            ->select('i.invoice_number')
             ->orderBy('i.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
         if ($lastInvoice) {
-            $lastInvoiceNumber = (int) substr($lastInvoice['uuid'], -4);
+            $lastInvoiceNumber = (int) substr($lastInvoice['invoice_number'], -4);
             return $lastInvoiceNumber + 1;
         }
 
@@ -63,5 +63,29 @@ class InvoiceRepository extends ServiceEntityRepository
             $page,
             5
         );
+    }
+
+    public function getInvoiceDetails(Invoice $invoice): ?array
+    {
+        $quotation = $invoice->getQuotation();
+        $customerName = $quotation->getCustomer()->getName();
+
+        $amountHt = 0;
+        $amountTtc = 0;
+
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
+            $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
+            $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
+        }
+
+        return [
+            'id' => $invoice->getId(),
+            'uid' => $quotation->getUid(),
+            'invoice_number' => $invoice->getInvoiceNumber(),
+            'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+            'amount_ht' => $amountHt,
+            'amount_ttc' => $amountTtc,
+            'client' => $customerName,
+        ];
     }
 }

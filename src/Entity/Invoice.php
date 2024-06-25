@@ -12,13 +12,18 @@ use App\Trait\UuidTypeTrait;
 #[ORM\Table(name: "invoice")]
 class Invoice
 {
-    use UuidTypeTrait { __construct as private UuidConstruct; }
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(type: Types::STRING, length: 14, nullable: false)]
+    private ?string $invoice_number = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,16 +35,27 @@ class Invoice
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Quotation $quotation = null; 
+    private ?Quotation $quotation = null;
 
     public function __construct()
     {
-        $this->UuidConstruct(); 
+        $this->UuidConstruct();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getInvoiceNumber(): ?string
+    {
+        return $this->invoice_number;
+    }
+
+    public function setInvoiceNumber(string $invoice_number): static
+    {
+        $this->invoice_number = $invoice_number;
+        return $this;
     }
 
     public function getInvoiceStatus(): ?InvoiceStatus
