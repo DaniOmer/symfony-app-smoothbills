@@ -1,7 +1,7 @@
 {% props header_title = '', header_icon = '', transactions = [], headersTopTransaction = {} %}
 {% set rowClasses = "py-3 px-4" %}
 
-<section class="flex flex-col bg-white rounded-xl border border-gray-300 hover:border-primary/40 max-w-[400px] min-h-[200px] group overflow-hidden">
+<section class="flex flex-col bg-white rounded-xl border border-gray-300 hover:border-primary/40 max-w-full min-h-[200px] h-full group overflow-hidden relative">
     <header class="flex items-center gap-4 py-2 px-4">
         <div class="flex justify-center items-center p-2 bg-backgroundIcon rounded-lg">
             {% if header_icon %}
@@ -14,7 +14,7 @@
     </header>
     
     {% if transactions is empty %}
-        <p class="flex-grow text-center">{{ 'service.not_data'|trans }}</p>
+        <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{{ 'service.not_data'|trans }}</p>
     {% else %}
     <div>
         <div class="table w-full text-left border">

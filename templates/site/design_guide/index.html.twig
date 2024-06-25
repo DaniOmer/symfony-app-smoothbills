@@ -185,7 +185,7 @@
                     Cette section illustre comment utiliser les composants TopService et TopTransaction pour afficher diverses informations liées aux services et transactions.
                 </p>
                 <div class="flex flex-col gap-10 col-span-1">
-                    <div class="flex flex-col gap-3">
+                    <div class="w-[400px]">
                         {% set services = [
                             {title: "Site vitrine avec wordpress", sales: 20, revenue: "22.000€"},
                             {title: "Application mobile avec React Native", sales: 11, revenue: "15.000€"},
@@ -193,7 +193,7 @@
                         ] %}
                         <twig:TopService header_title="Top Service" header_icon="skill-icons:billing-icon" :services="services" />
                     </div>
-                    <div class="flex flex-col gap-3">
+                    <div class="w-[400px]">
                             {% set transactions = [
                                 {id: "#22440", service: "Application mobile...", date: "2023-01-12", price: "15.000€"},
                                 {id: "#26004", service: "Site vitrine...", date: "2023-01-10", price: "2.750€"},
