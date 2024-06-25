@@ -66,4 +66,28 @@ class ServiceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function getTop3ServicesBySales(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s.name AS title, COUNT(qhs.id) AS sales, SUM(qhs.price_with_tax * qhs.quantity) AS revenue')
+            ->join('s.quotationHasServices', 'qhs')
+            ->groupBy('s.id')
+            ->orderBy('sales', 'DESC')
+            ->setMaxResults(3)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getTop3TransactionsByHighestPrice(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('q.id , s.name AS service, qhs.created_at, qhs.price_with_tax AS price')
+            ->join('s.quotationHasServices', 'qhs')
+            ->join('qhs.quotation', 'q')
+            ->orderBy('qhs.price_with_tax', 'DESC')
+            ->setMaxResults(3)
+            ->getQuery()
+            ->getResult();
+    }
 }

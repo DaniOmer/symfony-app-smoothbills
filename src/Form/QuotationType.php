@@ -23,17 +23,6 @@ class QuotationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('type', TextType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Le type ne doit pas être vide.',
-                    ]),
-                    new Length([
-                        'max' => 255,
-                        'maxMessage' => 'Le type ne doit pas dépasser {{ limit }} caractères.',
-                    ]),
-                ],
-            ])
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Paiement unique' => 'Unique',

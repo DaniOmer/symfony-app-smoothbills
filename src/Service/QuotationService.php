@@ -23,6 +23,7 @@ class QuotationService
     private $mailer;
     private $adminEmail;
     private $csvExporter;
+    private $taxService;
     private $taxtService;
     private $jWTService;
 
@@ -40,6 +41,7 @@ class QuotationService
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
+        $this->taxService = $taxService;
         $this->taxtService = $taxService;
         $this->jWTService = $jWTService;
     }
@@ -153,7 +155,7 @@ class QuotationService
     {
         foreach($quotation->getQuotationHasServices() as $quotationHasService) {
             $priceWithoutTax = $quotationHasService->getService()->getPrice();
-            $priceWithTax = $this->taxtService->applyTva($priceWithoutTax);
+            $priceWithTax = $this->taxService->applyTva($priceWithoutTax);
 
             $quotationHasService->setPriceWithoutTax($priceWithoutTax);
             $quotationHasService->setPriceWithTax($priceWithTax);
