@@ -8,21 +8,52 @@ use App\Repository\InvoiceRepository;
 use App\Repository\InvoiceStatusRepository;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Exception;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
+
+
+
 
 class InvoiceService
 {
     private $invoiceRepository;
-    private InvoiceStatusRepository $invoiceStatusRepository;
- 
+    private $entityManager;
     private $csvExporter;
     private $translator;
+    private $invoiceStatusRepository;
 
-    public function __construct(InvoiceRepository $invoiceRepository,  InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator)
+    public function __construct(InvoiceRepository $invoiceRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager, InvoiceStatusRepository $invoiceStatusRepository)
     {
-        $this->invoiceRepository = $invoiceRepository; 
-        $this->invoiceStatusRepository = $invoiceStatusRepository;
+        $this->invoiceRepository = $invoiceRepository;
         $this->csvExporter = $csvExporter;
         $this->translator = $translator;
+        $this->entityManager = $entityManager;
+        $this->invoiceStatusRepository = $invoiceStatusRepository;
+    }
+
+    public function createInvoice(Invoice $invoice): void
+    {
+        $this->entityManager->beginTransaction();
+
+        try {
+            $year = date('Y');
+            $month = date('m');
+            $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
+            $lastInvoiceNumber = str_pad((string)$lastInvoiceNumber, 4, '0', STR_PAD_LEFT);
+
+            $lastInvoiceNumber = 'FA' . $year . $month . $lastInvoiceNumber;
+            $invoice->setInvoiceNumber($lastInvoiceNumber);
+
+            $this->entityManager->persist($invoice);
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (Exception |  OptimisticLockException $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
@@ -31,39 +62,38 @@ class InvoiceService
 
         return $paginateInvoices;
     }
-   
 
-    public function getInvoicesRows(User $user, $page): Array
+
+    public function getInvoicesRows(User $user, $page): array
     {
 
-        $rows=[];
-        foreach ($this->getPaginatedInvoices($user, $page) as $invoice) { 
+        $rows = [];
+        foreach ($this->getPaginatedInvoices($user, $page) as $invoice) {
             $quotation = $invoice->getQuotation();
             $customerName = $quotation->getCustomer()->getName();
-            
+
             $amountHt = 0;
             $amountTtc = 0;
-            
+
             foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-                
+
                 $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
                 $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
             }
 
-            $rows[]= [
+            $rows[] = [
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
-                'invoice_number' => $invoice->getUid(),
+                'invoice_number' => $invoice->getInvoiceNumber(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
-                'amount_ht'=> $amountHt,
+                'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
                 'status' => $this->translator->trans('invoice.status.' . $invoice->getInvoiceStatus()->getName()),
-                'client' => $customerName ,
+                'client' => $customerName,
             ];
         }
-        
-        return $rows;
 
+        return $rows;
     }
 
     public function getInvoiceDetails(Invoice $invoice): ?array
@@ -105,5 +135,3 @@ class InvoiceService
         return $statusNames;
     }
 }
-
-
