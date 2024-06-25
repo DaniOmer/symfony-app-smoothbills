@@ -2,7 +2,7 @@
 <form method="post" action="{{ path('dashboard.service.delete', {'id': entity.id}) }}" onsubmit="return confirm(`{{ 'crud.delete_confirmation'|trans }}`);">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
     <button
-        class="w-full px-4 py-2"
+      class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75"
     >
         {{ 'crud.delete'|trans }}
     </button>

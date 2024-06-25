@@ -13,17 +13,18 @@ module.exports = {
         secondary: "rgba(var(--secondary-color))",
         tertiary: "rgba(var(--tertiary-color))",
         background: "rgba(var(--background-color))",
+        backgroundIcon: "#FBF6F6",
         green: {
-          '100': 'rgba(var(--green-status-bg-color))',
-          '800': 'rgba(var(--green-status-text-color))',
+          100: "rgba(var(--green-status-bg-color))",
+          800: "rgba(var(--green-status-text-color))",
         },
         red: {
-          '100': 'rgba(var(--red-status-bg-color))',
-          '800': 'rgba(var(--red-status-text-color))',
+          100: "rgba(var(--red-status-bg-color))",
+          800: "rgba(var(--red-status-text-color))",
         },
         yellow: {
-          '100': 'rgba(var(--yellow-status-bg-color))',
-          '800': 'rgba(var(--yellow-status-text-color))',
+          100: "rgba(var(--yellow-status-bg-color))",
+          800: "rgba(var(--yellow-status-text-color))",
         },
       },
       fontFamily: {
@@ -40,9 +41,9 @@ module.exports = {
         small: "10px",
         half: "40px",
       },
-      gap:{
-        '13':"52px"
-       }
+      gap: {
+        13: "52px",
+      },
     },
   },
   plugins: [],
