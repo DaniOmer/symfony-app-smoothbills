@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuotationRepository::class)]
 class Quotation
@@ -43,6 +44,11 @@ class Quotation
      * @var Collection<int, QuotationHasService>
      */
     #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class)]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'Vous devez ajouter au moins un service.'
+    )]
+    #[Assert\Valid()]
     private Collection $quotationHasServices;
 
     public function __construct()

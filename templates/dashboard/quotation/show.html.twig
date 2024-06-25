@@ -1,16 +1,12 @@
 {% extends 'base/base_dashboard.html.twig' %}
 
-{% block title %}{{ 'invoice.name'|trans }}{% endblock %}
+{% block title %}{{ 'quotation.name'|trans }}{% endblock %}
 
 {% block body %}
-    <h1>{{ 'invoice.name'|trans }}</h1>
+    <h1>{{ 'quotation.name'|trans }}</h1>
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Uuid</th>
-                <td>{{ quotation.uid }}</td>
-            </tr>
             <tr>
                 <th>Date</th>
                 <td>{{ quotation.sendingDate ? quotation.sendingDate|date('Y-m-d H:i:s') : '' }}</td>
@@ -31,7 +27,6 @@
                     <th>Prix HT</th>
                     <th>Prix TTC</th>
                     <th>Quantité</th>
-                    <th>Proposé par</th>
                     <th>Date</th>
                 </tr>
             </thead>
@@ -47,8 +42,7 @@
                         <td>{{ detail.serviceName }}</td>
                         <td>{{ detail.priceWithoutTax }}€</td>
                         <td>{{ detail.priceWithTax }}€</td>
-                        <td>{{ detail.quantity }}€</td>
-                        <td>{{ detail.company }}</td>
+                        <td>{{ detail.quantity }}</td>
                         <td>{{ detail.date ? detail.date|date('Y-m-d H:i:s') : '' }}</td>
                     </tr>
                 {% endfor %}

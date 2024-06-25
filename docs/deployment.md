@@ -46,7 +46,7 @@ cd <nom_du_projet>
 Pour déployer l'application :
 
 ```bash
-sudo docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build --remove-orphans --force-recreate
+sudo docker compose -f docker compose.yaml -f docker compose.prod.yaml up -d --build --remove-orphans --force-recreate
 ```
 
 Cette commande construit les images Docker, lance les conteneurs en arrière-plan (`-d`), et assure que les conteneurs sont recréés si nécessaire (`--force-recreate`).
@@ -56,7 +56,7 @@ Cette commande construit les images Docker, lance les conteneurs en arrière-pla
 Pour installer les dépendances PHP, exécutez la commande suivante à partir du conteneur PHP :
 
 ```bash
-sudo docker exec -it <nom_de_votre_projet>_php_1 composer install --optimize-autoloader --no-dev
+sudo docker compose -f compose.yaml -f compose.prod.yaml up -d --wait
 ```
 
 Remplacer `<nom_de_votre_projet>_php_1` par le nom réel du conteneur PHP, qui peut être différent.
@@ -68,9 +68,6 @@ Pour les dépendances JavaScript, exécuter ces commandes depuis la racine du pr
 ```bash
 # À exécuter depuis la racine du projet
 npm install
-
-# Si nécessaire pour la compilation (par exemple, pour les environnements de développement)
-npm run watch
 ```
 
 ### 6. Accéder à l'Application
