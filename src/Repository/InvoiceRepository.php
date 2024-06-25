@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Invoice;
 use App\Entity\User;
-use App\Repository\InvoiceStatusRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,13 +15,13 @@ class InvoiceRepository extends ServiceEntityRepository
     private PaginatorInterface $paginator;
     private EntityManagerInterface $entityManager;
     private InvoiceStatusRepository $invoiceStatusRepository;
+    private EntityManagerInterface $entityManager; 
 
-    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager, InvoiceStatusRepository $invoiceStatusRepository)
+    public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, Invoice::class);
         $this->paginator = $paginator;
         $this->entityManager = $entityManager;
-        $this->invoiceStatusRepository = $invoiceStatusRepository;
     }
 
     public function getLastInvoiceNumber(): int
@@ -53,19 +52,6 @@ class InvoiceRepository extends ServiceEntityRepository
             ->setParameter('companyId', $companyId)
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    public function getAllInvoiceStatusNames(): array
-    {
-        $invoiceStatuses = $this->invoiceStatusRepository->findAll();
-
-        $statusNames = [];
-
-        foreach ($invoiceStatuses as $status) {
-            $statusNames[$status->getName()] = $status->getName();
-        }
-
-        return $statusNames;
     }
 
     public function paginateInvoicesByCompagny(User $user, int $page): PaginationInterface

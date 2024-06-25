@@ -58,38 +58,6 @@ class QuotationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getQuotationDetails(Quotation $quotation): array
-    {
-        $quotationDetails = [];
-        $totalPriceWithoutTax = 0;
-        $totalPriceWithTax = 0;
-    
-        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-            $quantity = $quotationHasService->getQuantity();
-            $priceWithoutTax = $quotationHasService->getPriceWithoutTax();
-            $priceWithTax = $quotationHasService->getPriceWithTax();
-    
-            $quotationDetails[] = [
-                'quotation' => $quotation,
-                'priceWithoutTax' => $priceWithoutTax,
-                'priceWithTax' => $priceWithTax,
-                'date' => $quotationHasService->getDate(),
-                'quantity' => $quotationHasService->getQuantity(),
-                'serviceName' => $quotationHasService->getService()->getName(),
-                'company' => $quotationHasService->getService()->getCompany()->getDenomination(),
-            ];
-    
-            $totalPriceWithoutTax += $priceWithoutTax * $quantity;
-            $totalPriceWithTax += $priceWithTax * $quantity;
-        }
-    
-        return [
-            'quotationDetails' => $quotationDetails,
-            'totalPriceWithoutTax' => $totalPriceWithoutTax,
-            'totalPriceWithTax' => $totalPriceWithTax,
-        ];
-    }
-
     //    /**
     //     * @return Quotation[] Returns an array of Quotation objects
     //     */
