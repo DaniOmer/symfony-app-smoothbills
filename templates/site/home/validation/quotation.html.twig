@@ -8,6 +8,9 @@
 
 {% block body %}
 <section class="lg:w-2/3 mx-auto min-h-screen flex flex-col justify-center">
+    {% for flash_success in app.flashes('success') %}
+        <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+    {% endfor %}
     <h1 class='w-full bg-background font-semibold text-subtitle mb-5'>Bonjour {{ quotation.customer.name }},</h1>
 
     <div>

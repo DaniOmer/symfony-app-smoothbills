@@ -103,7 +103,7 @@ class QuotationController extends AbstractController
             if ($sendOption === 'Maintenant') {
                 $token = $this->quotationService->generateQuotationValidationToken($quotation);
                 $encodedToken = base64_encode($token);
-                $quotationValidationUrl = $this->generateUrl('site.home.quotation.validation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
+                $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
                 $this->quotationService->sendQuotationMail($user, $quotation, $quotationValidationUrl);
             }

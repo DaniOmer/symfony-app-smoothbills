@@ -24,7 +24,6 @@ class QuotationService
     private $adminEmail;
     private $csvExporter;
     private $taxService;
-    private $taxtService;
     private $jWTService;
 
     public function __construct(
@@ -42,7 +41,6 @@ class QuotationService
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
         $this->taxService = $taxService;
-        $this->taxtService = $taxService;
         $this->jWTService = $jWTService;
     }
 

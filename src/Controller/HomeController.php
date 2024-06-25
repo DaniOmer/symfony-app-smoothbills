@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Entity\Quotation;
+use App\Service\InvoiceService;
 use App\Service\JWTService;
 use App\Service\QuotationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +24,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/quotation/validation/{token}', name: 'site.home.validation.quotation', methods: ['GET', 'POST'])]
-    public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService): Response
+    public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService, InvoiceService $invoiceService): Response
     {
         $decodedToken = base64_decode($token);
         $jwtData = $jWTService->parseToken($decodedToken);
@@ -71,6 +72,7 @@ class HomeController extends AbstractController
 
             if($action === 'accept'){
                 $quotationService->validateQuotation($quotation, "Accepté");
+                $invoiceService->createInvoice($quotation);
                 $this->addFlash('success', 'Votre devis a bien été validé.');
             }elseif($action=== 'reject'){
                 $quotationService->validateQuotation($quotation, "Refusé");

@@ -64,7 +64,7 @@ class ServiceController extends AbstractController
             return [
                 'id' => $transaction['id'],
                 'service' => strlen($transaction['service']) > 20 ? substr($transaction['service'], 0, 20) . '...' : $transaction['service'],
-                'date' => (new \DateTime($transaction['date']))->format('d M'),
+                'date' => ($transaction['created_at'])->format('d M'),
                 'price' => number_format($transaction['price'], 2) . '€'
             ];
         }, $serviceRepository->getTop3TransactionsByHighestPrice());
