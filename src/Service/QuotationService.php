@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Quotation;
+use App\Entity\QuotationStatus;
 use App\Entity\User;
 use App\Repository\QuotationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -89,10 +90,10 @@ class QuotationService
 
     public function generateQuotationValidationToken(Quotation $quotation)
     {
-        $expiry = 30 * 24 * 60 * 60;
+        $expiry = new \DateTime('+30 days');
         $quotationUid = $quotation->getUid();
 
-        return $this->jWTService->createToken(['quotation_uid' => $quotationUid], $expiry);
+        return $this->jWTService->createToken(['quotation_uid' => $quotationUid, 'exp' => $expiry->getTimestamp()], $expiry->getTimestamp());
     }
 
     public function exportAllQuotations(): Response
@@ -163,6 +164,15 @@ class QuotationService
         }
 
         $quotation->setCompany($company);
+
+        $this->entityManager->persist($quotation);
+        $this->entityManager->flush();
+    }
+
+    public function validateQuotation(Quotation $quotation, $status): void
+    {
+        $quotationStatus = $this->entityManager->getRepository(QuotationStatus::class)->findOneBy(['name' => $status]);
+        $quotation->setQuotationStatus($quotationStatus);
 
         $this->entityManager->persist($quotation);
         $this->entityManager->flush();
