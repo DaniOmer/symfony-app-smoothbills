@@ -18,6 +18,7 @@ class Service
         __construct as private UuidConstruct;
     }
     use TimestampableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
