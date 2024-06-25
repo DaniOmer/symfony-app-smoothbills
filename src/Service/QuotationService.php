@@ -20,6 +20,7 @@ class QuotationService
 {
     private $entityManager;
     private $quotationRepository;
+    private $invoiceService;
     private $mailer;
     private $adminEmail;
     private $csvExporter;
@@ -28,7 +29,8 @@ class QuotationService
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        QuotationRepository $quotationRepository, 
+        QuotationRepository $quotationRepository,
+        InvoiceService $invoiceService,
         MailerInterface $mailer, 
         #[Autowire('%admin_email%')] string $adminEmail, 
         CsvExporter $csvExporter,
@@ -37,6 +39,7 @@ class QuotationService
     ){
         $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
+        $this->invoiceService = $invoiceService;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
@@ -171,6 +174,17 @@ class QuotationService
 
         $this->entityManager->persist($quotation);
         $this->entityManager->flush();
+
+        $this->createInvoiceFromQuotation($quotation);
+    }
+
+    public function createInvoiceFromQuotation($quotation): void
+    {
+        $quotationStatus = $quotation->getQuotationStatus()->getName();
+
+        if($quotationStatus === 'Accepté'){
+            $this->invoiceService->createInvoice($quotation);
+        }
     }
 
     public function validateQuotation(Quotation $quotation, $status): void
