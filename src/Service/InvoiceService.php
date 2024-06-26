@@ -96,7 +96,7 @@ class InvoiceService
             $rows[] = [
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
-                'invoice_number' => $invoice->getUid(),
+                'invoice_number' => $invoice->getInvoiceNumber(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
@@ -124,7 +124,7 @@ class InvoiceService
         $invoiceDetails = [
             'id' => $invoice->getId(),
             'uid' => $quotation->getUid(),
-            'invoice_number' => $invoice->getUid(),
+            'invoice_number' => $invoice->getInvoiceNumber(),
             'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
             'amount_ht' => $amountHt,
             'amount_ttc' => $amountTtc,
