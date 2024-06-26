@@ -13,11 +13,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\Response;
-
-
-
 
 class InvoiceService
 {
@@ -26,7 +21,6 @@ class InvoiceService
     private $entityManager;
     private $csvExporter;
     private $translator;
-    private $invoiceStatusRepository;
 
     public function __construct(InvoiceRepository $invoiceRepository, InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
