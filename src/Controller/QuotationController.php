@@ -7,6 +7,7 @@ use App\Entity\Quotation;
 use App\Entity\Service;
 use App\Form\QuotationType;
 use App\Service\CsvExporter;
+use App\Service\PdfGeneratorService;
 use App\Service\QuotationService;
 use App\Service\UserRegistrationChecker;
 use App\Trait\ProfileCompletionTrait;
@@ -121,19 +122,33 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
-    public function show(Quotation $quotation): Response
+    public function show(Quotation $quotation, PdfGeneratorService $pdfGeneratorService): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
+        $sendingDate = $quotation->getSendingDate();
+        $quotationStatus = $quotation->getQuotationStatus()->getName();
         $quotationDetails = $this->quotationService->getQuotationDetails($quotation);
+        $validityDate = $this->quotationService->getQuotationValidityDate($sendingDate);
 
-        return $this->render('dashboard/quotation/show.html.twig', [
+        $data = [
             'quotation' => $quotation,
+            'validityDate' => $validityDate,
             'quotationDetails' => $quotationDetails['quotationDetails'],
+            'quotationStatus' => $quotationStatus,
             'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
             'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
+            'graphicChart' => $quotationDetails['graphicChart'],
+        ];
+
+        $twigTemplate = $this->renderView('dashboard/quotation/pdf/quotation_template.html.twig', $data);
+
+        $pdfContent = $pdfGeneratorService->showPdf($twigTemplate);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
         ]);
     }
 

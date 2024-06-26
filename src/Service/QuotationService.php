@@ -11,6 +11,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -231,8 +232,11 @@ class QuotationService
         return round($conversionRate, 2);
     }
 
-    public function getQuotationValidityDate($sendingDate): DateTime
+    public function getQuotationValidityDate($sendingDate): DateTime | String
     {
+        if ($sendingDate === null){
+            return "Non définis";
+        }
         return (clone $sendingDate)->modify('+30 days');
     }
 }
