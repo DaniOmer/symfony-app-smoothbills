@@ -236,8 +236,8 @@ class InvoiceService
         $email = (new TemplatedEmail())
             ->from(new Address($this->adminEmail, $company->getDenomination()))
             ->to($customer->getMail())
-            ->subject('Nouveau devis créé')
-            ->html('<h1>Nouveau devis crée</h1><p>Merci pour votre confiance</p>')
+            ->subject('Nouvelle facture créé')
+            ->html('<h1>Nouvelle facture crée</h1><p>Merci pour votre confiance</p>')
             ->attach($invoicePdf, $filename, 'application/pdf');
 
         $this->mailer->send($email);

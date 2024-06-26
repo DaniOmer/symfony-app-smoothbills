@@ -11,11 +11,11 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\MakerBundle\Str;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Twig\Environment;
 
 class QuotationService
 {
@@ -27,8 +27,11 @@ class QuotationService
     private $csvExporter;
     private $taxService;
     private $jWTService;
+    private $pdfGeneratorService;
+    private $twig;
 
     public function __construct(
+        Environment $twig, 
         EntityManagerInterface $entityManager,
         QuotationRepository $quotationRepository,
         InvoiceService $invoiceService,
@@ -37,7 +40,9 @@ class QuotationService
         CsvExporter $csvExporter,
         TaxService $taxService,
         JWTService $jWTService,
+        PdfGeneratorService $pdfGeneratorService,
     ){
+        $this->twig = $twig;
         $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
         $this->invoiceService = $invoiceService;
@@ -46,6 +51,7 @@ class QuotationService
         $this->csvExporter = $csvExporter;
         $this->taxService = $taxService;
         $this->jWTService = $jWTService;
+        $this->pdfGeneratorService = $pdfGeneratorService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -73,10 +79,16 @@ class QuotationService
         return $rows;
     }
 
-    public function sendQuotationMail(User $user, Quotation $quotation, $validationUrl): void
+    public function sendQuotationMail(Quotation $quotation, $validationUrl): void
     {
-        $company = $user->getCompany();
-        $quotationCsvData = $this->csvExporter->exportQuotation($quotation);
+        $company = $quotation->getCompany();
+        $customer = $quotation->getCustomer();
+
+        $data = $this->getQuotationDataForPdf($quotation);
+        $twigTemplate = $this->twig->render('dashboard/quotation/pdf/quotation_template.html.twig', $data);
+        $filename = 'quotation_' . $quotation->getUid() . '.pdf';
+
+        $invoicePdf =$this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
         $email = (new TemplatedEmail())
             ->from(new Address($this->adminEmail, $company->getDenomination()))
@@ -86,12 +98,32 @@ class QuotationService
             ->context([
                 'quotation' => $quotation,
                 'company' => $company,
-                'customerName' => $quotation->getCustomer()->getName(),
+                'customerName' => $customer->getName(),
                 'validationUrl' => $validationUrl,
             ])
-            ->attach($quotationCsvData, 'quotation.csv', 'text/csv');
+            ->attach($invoicePdf, $filename, 'application/pdf');
 
         $this->mailer->send($email);
+    }
+
+    public function getQuotationDataForPdf(Quotation $quotation): array
+    {
+        $sendingDate = $quotation->getSendingDate();
+        $quotationStatus = $quotation->getQuotationStatus()->getName();
+        $quotationDetails = $this->getQuotationDetails($quotation);
+        $validityDate = $this->getQuotationValidityDate($sendingDate);
+
+        $data = [
+            'quotation' => $quotation,
+            'validityDate' => $validityDate,
+            'quotationDetails' => $quotationDetails['quotationDetails'],
+            'quotationStatus' => $quotationStatus,
+            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
+            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
+            'graphicChart' => $quotationDetails['graphicChart'],
+        ];
+
+        return $data;
     }
 
     public function generateQuotationValidationToken(Quotation $quotation)

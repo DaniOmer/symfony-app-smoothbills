@@ -106,7 +106,7 @@ class QuotationController extends AbstractController
                 $encodedToken = base64_encode($token);
                 $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
-                $this->quotationService->sendQuotationMail($user, $quotation, $quotationValidationUrl);
+                $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
             }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
@@ -128,21 +128,7 @@ class QuotationController extends AbstractController
             return $redirectResponse;
         }
 
-        $sendingDate = $quotation->getSendingDate();
-        $quotationStatus = $quotation->getQuotationStatus()->getName();
-        $quotationDetails = $this->quotationService->getQuotationDetails($quotation);
-        $validityDate = $this->quotationService->getQuotationValidityDate($sendingDate);
-
-        $data = [
-            'quotation' => $quotation,
-            'validityDate' => $validityDate,
-            'quotationDetails' => $quotationDetails['quotationDetails'],
-            'quotationStatus' => $quotationStatus,
-            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
-            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
-            'graphicChart' => $quotationDetails['graphicChart'],
-        ];
-
+        $data = $this->quotationService->getQuotationDataForPdf($quotation);
         $twigTemplate = $this->renderView('dashboard/quotation/pdf/quotation_template.html.twig', $data);
 
         $pdfContent = $pdfGeneratorService->showPdf($twigTemplate);
