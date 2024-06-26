@@ -13,26 +13,44 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
+use Twig\Environment;
 
 class InvoiceService
 {
     private $invoiceRepository;
     private $invoiceStatusRepository;
     private $entityManager;
-    private $csvExporter;
+    private $pdfGeneratorService;
     private $translator;
+    private $twig;
+    private $mailer;
+    private $adminEmail;
 
-    public function __construct(InvoiceRepository $invoiceRepository, InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        Environment $twig, 
+        InvoiceRepository $invoiceRepository, 
+        InvoiceStatusRepository $invoiceStatusRepository, 
+        TranslatorInterface $translator, 
+        EntityManagerInterface $entityManager, 
+        PdfGeneratorService $pdfGeneratorService,
+        MailerInterface $mailer, 
+        #[Autowire('%admin_email%')] string $adminEmail, 
+    ){
+        $this->twig = $twig;
+        $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceStatusRepository = $invoiceStatusRepository;
-        $this->csvExporter = $csvExporter;
+        $this->pdfGeneratorService = $pdfGeneratorService;
         $this->translator = $translator;
-        $this->entityManager = $entityManager;
-        $this->invoiceStatusRepository = $invoiceStatusRepository;
+        $this->mailer = $mailer;
+        $this->adminEmail = $adminEmail;
     }
 
-    public function createInvoice(Quotation $quotation): void
+    public function createInvoice(Quotation $quotation): Invoice
     {
         $this->entityManager->beginTransaction();
 
@@ -51,6 +69,8 @@ class InvoiceService
             $this->entityManager->flush();
 
             $this->entityManager->commit();
+
+            return $invoice;
         } catch (Exception |  OptimisticLockException $e) {
             $this->entityManager->rollback();
             throw $e;
@@ -77,7 +97,6 @@ class InvoiceService
 
     public function getInvoicesRows(User $user, $page): array
     {
-
         $rows = [];
         foreach ($this->getPaginatedInvoices($user, $page) as $invoice) {
             $quotation = $invoice->getQuotation();
@@ -201,5 +220,26 @@ class InvoiceService
         }
 
         return $data;
+    }
+
+    public function sendInvoiceByEmail(Invoice $invoice): void
+    {
+        $company = $invoice->getCompany();
+        $customer = $invoice->getQuotation()->getCustomer();
+
+        $data = $this->getInvoiceDataForPdf($invoice);
+        $twigTemplate = $this->twig->render('dashboard/invoice/pdf/invoice_template.html.twig', $data);
+        $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
+
+        $invoicePdf =$this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->adminEmail, $company->getDenomination()))
+            ->to($customer->getMail())
+            ->subject('Nouveau devis créé')
+            ->html('<h1>Nouveau devis crée</h1><p>Merci pour votre confiance</p>')
+            ->attach($invoicePdf, $filename, 'application/pdf');
+
+        $this->mailer->send($email);
     }
 }
