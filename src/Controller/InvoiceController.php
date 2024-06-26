@@ -1,12 +1,12 @@
 <?php
-// src/Controller/InvoiceController.php
 
 namespace App\Controller;
 
 use App\Entity\Invoice;
-use App\Service\InvoiceService;
 use App\Repository\InvoiceRepository;
 use App\Service\CsvExporter;
+use App\Service\InvoiceService;
+use App\Service\PdfGeneratorService;
 use App\Trait\ProfileCompletionTrait;
 use App\Service\UserRegistrationChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,12 +22,14 @@ class InvoiceController extends AbstractController
     private $userRegistrationChecker;
     private $csvExporter;
     private $invoiceService;
-   
-    public function __construct(InvoiceService $invoiceService, UserRegistrationChecker $userRegistrationChecker,CsvExporter $csvExporter)
+    private $pdfGeneratorService;
+
+    public function __construct(InvoiceService $invoiceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter, PdfGeneratorService $pdfGeneratorService)
     {
         $this->invoiceService = $invoiceService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
+        $this->pdfGeneratorService = $pdfGeneratorService;
     }
 
     #[Route('/', name: 'dashboard.invoice.index', methods: ['GET'])]
@@ -44,14 +46,14 @@ class InvoiceController extends AbstractController
         $paginateInvoices = $this->invoiceService->getPaginatedInvoices($user, $page);
         $headers = ['Numéro Facture', 'Date Facture', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
         $rows = $this->invoiceService->getInvoicesRows($user, $page);
-        
+
         $statusCounts = [];
         $allStatusNames = $this->invoiceService->getAllInvoiceStatusNames();
-        
+
         foreach ($allStatusNames as $statusName) {
             $statusCounts[$statusName] = $invoiceRepository->countInvoicesByStatus($statusName, $companyId);
         }
-        
+
         $config = [
             'statusCounts' => $statusCounts,
             'headers' => $headers,
@@ -59,15 +61,15 @@ class InvoiceController extends AbstractController
             'invoices' => $paginateInvoices,
             'actions' => [
                 ['route' => 'dashboard.invoice.show', 'label' => 'Afficher'],
+                ['route' => 'dashboard.invoice.download', 'label' => 'Télécharger'],
             ]
         ];
 
         return $this->render('dashboard/invoice/index.html.twig', $config);
     }
-        
 
     #[Route('/{uid}', name: 'dashboard.invoice.show', methods: ['GET'])]
-    public function show(Invoice $invoice,InvoiceRepository $invoiceRepository): Response
+    public function show(Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
@@ -78,5 +80,22 @@ class InvoiceController extends AbstractController
         return $this->render('dashboard/invoice/show.html.twig', [
             'invoice' => $invoiceDetails,
         ]);
-    }   
+    }
+
+    #[Route('/{uid}/download', name: 'dashboard.invoice.download', methods: ['GET'])]
+    public function download(Invoice $invoice): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        $data = $this->invoiceService->getInvoiceDataForPdf($invoice);
+
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $outputPath = $projectDir . "/invoice_" . $invoice->getInvoiceNumber() . '.pdf';
+
+        $this->pdfGeneratorService->generatePdf('dashboard/invoice/pdf/invoice_template.html.twig', $data, $outputPath);
+
+        return $this->file($outputPath, 'invoice_' . $invoice->getInvoiceNumber() . '.pdf');
+    }
 }

@@ -134,4 +134,62 @@ class InvoiceService
 
         return $statusNames;
     }
+
+    public function getInvoiceDataForPdf(Invoice $invoice): array
+    {
+        $quotation = $invoice->getQuotation();
+        $company = $invoice->getCompany();
+        $companyAddress = $company->getAddress();
+        $customer = $quotation->getCustomer();
+        $customerAddress = $customer->getAddress();
+        $companyCustomer = $customer->getCompany();
+        $services = $quotation->getQuotationHasServices();
+
+        $data = [
+            'invoice' => [
+                'invoice_number' => $invoice->getInvoiceNumber(),
+                'sending_date' => $quotation->getSendingDate(),
+            ],
+            'company' => [
+                'name' => $company->getDenomination(),
+                'address' => $company->getAddress(),
+                'zip_code' => $companyAddress->getZipCode(),
+                'city' => $companyAddress->getCity(),
+                'address' => $companyAddress->getAddress(),
+                'country' => $companyAddress->getCountry(),
+                'vat_number' => $company->getTvaNumber(),
+                'phone' => $company->getPhoneNumber(),
+                'email' => $company->getMail(),
+                'siret' => $company->getSiret(),
+                'logo' => $company->getLogo(),
+                'siren' => $company->getSiren(),
+            ],
+            'customer' => [
+                'name' => $customer->getName(),
+                'code' => $customer->getUid(),
+                'address' => $customerAddress->getAddress(),
+                'zip_code' => $customerAddress->getZipCode(),
+                'city' => $customerAddress->getCity(),
+                'country' => $customerAddress->getCountry(),
+                'phone' => $customer->getPhone(),
+                'email' => $customer->getMail(),
+                'company' => $companyCustomer->getDenomination(),
+                'vat_number' => $companyCustomer->getTvaNumber(),
+                'siret' => $companyCustomer->getSiret(),
+                'siren' => $companyCustomer->getSiren(),
+            ],
+            'services' => [],
+        ];
+
+        foreach ($services as $service) {
+            $data['services'][] = [
+                'name' => $service->getService()->getName(),
+                'quantity' => $service->getQuantity(),
+                'price_without_tax' => $service->getPriceWithoutTax(),
+                'price_with_tax' => $service->getPriceWithTax(),
+            ];
+        }
+
+        return $data;
+    }
 }
