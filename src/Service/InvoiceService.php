@@ -75,7 +75,6 @@ class InvoiceService
         return $paginateInvoices;
     }
 
-
     public function getInvoicesRows(User $user, $page): array
     {
 

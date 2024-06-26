@@ -6,7 +6,6 @@ use App\Entity\Customer;
 use App\Entity\Quotation;
 use App\Entity\Service;
 use App\Form\QuotationType;
-use App\Repository\QuotationRepository;
 use App\Service\CsvExporter;
 use App\Service\QuotationService;
 use App\Service\UserRegistrationChecker;
@@ -16,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/dashboard/quotation')]
 class QuotationController extends AbstractController
@@ -37,26 +37,27 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/', name: 'dashboard.quotation.index', methods: ['GET'])]
-    public function index(QuotationRepository $quotationRepository, Request $request): Response
+    public function index(Request $request): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
         $user = $this->getUser();
-        $company = $user->getCompany();
-        $companyId = $company->getId();
-        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
-
         $page = $request->query->getInt('page', 1);
+
         $paginateQuotations = $this->quotationService->getPaginatedQuotations($user, $page);
+        $totalQuotation = $this->quotationService->getQuotationTotalCount($user);
+        $acceptedQuotation = $this->quotationService->getQuotationAcceptedCount($user);
+        $rejectedQuotation = $this->quotationService->getQuotationRejectedCount($user);
+        $conversionRate = $this->quotationService->getConversionRate($user);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
         $rows = $this->quotationService->getQuotationsRows($user, $page);
 
         $statusCounts = [
-            'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
-            'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
+            'accepted' => $acceptedQuotation,
+            'rejected' => $rejectedQuotation,
         ];
 
         $config = [
@@ -64,7 +65,8 @@ class QuotationController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'quotations' => $paginateQuotations,
-            'totalInvoices' => $totalInvoices,
+            'totalQuotation' => $totalQuotation,
+            'conversionRate' => $conversionRate,
             'actions' => [
                 ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
                 ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'],
@@ -99,8 +101,11 @@ class QuotationController extends AbstractController
 
             $sendOption = $form->get('sendOption')->getData();
             if ($sendOption === 'Maintenant') {
-                $quotationCsvData = $this->exportQuotation($quotation);
-                $this->quotationService->sendQuotationMail($quotation, $quotationCsvData);
+                $token = $this->quotationService->generateQuotationValidationToken($quotation);
+                $encodedToken = base64_encode($token);
+                $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
+
+                $this->quotationService->sendQuotationMail($user, $quotation, $quotationValidationUrl);
             }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
