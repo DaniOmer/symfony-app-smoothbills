@@ -82,7 +82,7 @@ class ServiceRepository extends ServiceEntityRepository
     public function getTop3TransactionsByHighestPrice(): array
     {
         return $this->createQueryBuilder('s')
-            ->select('q.id , s.name AS service, qhs.created_at AS date, qhs.price_with_tax AS price')
+            ->select('q.id , s.name AS service, qhs.created_at, qhs.price_with_tax AS price')
             ->join('s.quotationHasServices', 'qhs')
             ->join('qhs.quotation', 'q')
             ->orderBy('qhs.price_with_tax', 'DESC')

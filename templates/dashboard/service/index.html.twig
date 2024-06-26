@@ -24,16 +24,16 @@
             </div>
         </header>
 
-        <div class="flex gap-4 mb-4">
-            <div class="w-1/3 flex flex-col justify-between gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-rows-2 gap-4">
                 <twig:KpiCard kpi_name="Total Services" kpi_value="{{ totalServices }}" icon_name="mdi:handshake"></twig:KpiCard>
                 <twig:KpiCard kpi_name="Services Actifs" kpi_value="{{ statusCounts.active }}" icon_name="mdi:handshake"></twig:KpiCard>
             </div>
-            <div class="w-1/3">
+            <div>
                 <twig:TopTransaction header_title="Top Transactions" header_icon="mdi:handshake" transactions="{{ topTransactionsData|raw }}" headersTopTransaction="{{ headersTopTransaction|raw }}"
                 ></twig:TopTransaction>
             </div>
-            <div class="w-1/3">
+            <div>
                 <twig:TopService header_title="Top Services" header_icon="mdi:handshake" services="{{ topServicesData|raw }}"></twig:TopService>
             </div>
         </div>

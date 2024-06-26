@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Invoice;
+use App\Entity\InvoiceStatus;
+use App\Entity\Quotation;
 use App\Entity\User;
 use App\Repository\InvoiceRepository;
 use App\Repository\InvoiceStatusRepository;
@@ -11,49 +13,59 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Exception;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\Response;
-
-
-
 
 class InvoiceService
 {
     private $invoiceRepository;
+    private $invoiceStatusRepository;
     private $entityManager;
     private $csvExporter;
     private $translator;
-    private $invoiceStatusRepository;
 
-    public function __construct(InvoiceRepository $invoiceRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager, InvoiceStatusRepository $invoiceStatusRepository)
+    public function __construct(InvoiceRepository $invoiceRepository, InvoiceStatusRepository $invoiceStatusRepository, CsvExporter $csvExporter, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
         $this->invoiceRepository = $invoiceRepository;
+        $this->invoiceStatusRepository = $invoiceStatusRepository;
         $this->csvExporter = $csvExporter;
         $this->translator = $translator;
         $this->entityManager = $entityManager;
         $this->invoiceStatusRepository = $invoiceStatusRepository;
     }
 
-    public function createInvoice(Invoice $invoice): void
+    public function createInvoice(Quotation $quotation): void
     {
         $this->entityManager->beginTransaction();
 
         try {
-            $year = date('Y');
-            $month = date('m');
-            $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
-            $lastInvoiceNumber = str_pad((string)$lastInvoiceNumber, 4, '0', STR_PAD_LEFT);
+            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'pending']);
+            $invoiceNumber = $this->generateInvoiceNumber();
+            $company = $quotation->getCompany();
+            $invoice = new Invoice();
 
-            $lastInvoiceNumber = 'FA' . $year . $month . $lastInvoiceNumber;
-            $invoice->setInvoiceNumber($lastInvoiceNumber);
+            $invoice->setQuotation($quotation);
+            $invoice->setCompany($company);
+            $invoice->setInvoiceStatus($invoiceStatus);
+            $invoice->setInvoiceNumber($invoiceNumber);
 
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
+
             $this->entityManager->commit();
         } catch (Exception |  OptimisticLockException $e) {
             $this->entityManager->rollback();
             throw $e;
         }
+    }
+
+    private function generateInvoiceNumber(): string
+    {
+        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
+
+        $year = date('Y');
+        $month = date('m');
+        $nextInvoiceNumber = $lastInvoiceNumber + 1;
+
+        return 'FA' . $year . $month . str_pad((string) $nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
@@ -84,7 +96,7 @@ class InvoiceService
             $rows[] = [
                 'id' => $invoice->getId(),
                 'uid' => $invoice->getUid(),
-                'invoice_number' => $invoice->getInvoiceNumber(),
+                'invoice_number' => $invoice->getUid(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
@@ -125,7 +137,6 @@ class InvoiceService
     public function getAllInvoiceStatusNames(): array
     {
         $invoiceStatuses = $this->invoiceStatusRepository->findAll();
-
         $statusNames = [];
 
         foreach ($invoiceStatuses as $status) {
