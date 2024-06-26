@@ -72,8 +72,14 @@ class HomeController extends AbstractController
 
             if($action === 'accept'){
                 $quotationService->validateQuotation($quotation, "Accepté");
-                $invoiceService->createInvoice($quotation);
-                $this->addFlash('success', 'Votre devis a bien été validé.');
+                $invoice = $invoiceService->createInvoice($quotation);
+                
+                if ($invoice) {
+                    $this->addFlash('success', 'Votre devis a bien été validé.');
+                    $invoiceService->sendInvoiceByEmail($invoice);
+                } else {
+                    $this->addFlash('error', 'Une erreur est survenue lors de la création de la facture. Veuillez réessayer.');
+                }
             }elseif($action=== 'reject'){
                 $quotationService->validateQuotation($quotation, "Refusé");
                 $this->addFlash('success', 'Votre devis a bien été rejeté.');

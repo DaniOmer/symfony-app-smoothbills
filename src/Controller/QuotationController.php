@@ -7,6 +7,7 @@ use App\Entity\Quotation;
 use App\Entity\Service;
 use App\Form\QuotationType;
 use App\Service\CsvExporter;
+use App\Service\PdfGeneratorService;
 use App\Service\QuotationService;
 use App\Service\UserRegistrationChecker;
 use App\Trait\ProfileCompletionTrait;
@@ -105,7 +106,7 @@ class QuotationController extends AbstractController
                 $encodedToken = base64_encode($token);
                 $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
-                $this->quotationService->sendQuotationMail($user, $quotation, $quotationValidationUrl);
+                $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
             }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
@@ -121,19 +122,19 @@ class QuotationController extends AbstractController
     }
 
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
-    public function show(Quotation $quotation): Response
+    public function show(Quotation $quotation, PdfGeneratorService $pdfGeneratorService): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
-        $quotationDetails = $this->quotationService->getQuotationDetails($quotation);
+        $data = $this->quotationService->getQuotationDataForPdf($quotation);
+        $twigTemplate = $this->renderView('dashboard/quotation/pdf/quotation_template.html.twig', $data);
 
-        return $this->render('dashboard/quotation/show.html.twig', [
-            'quotation' => $quotation,
-            'quotationDetails' => $quotationDetails['quotationDetails'],
-            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
-            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
+        $pdfContent = $pdfGeneratorService->showPdf($twigTemplate);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
         ]);
     }
 
