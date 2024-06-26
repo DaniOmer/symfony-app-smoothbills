@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\GraphicChart;
 use App\Entity\Quotation;
+use App\Entity\QuotationStatus;
 use App\Entity\User;
 use App\Repository\QuotationRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -17,25 +20,31 @@ class QuotationService
 {
     private $entityManager;
     private $quotationRepository;
+    private $invoiceService;
     private $mailer;
     private $adminEmail;
     private $csvExporter;
     private $taxService;
+    private $jWTService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        QuotationRepository $quotationRepository, 
+        QuotationRepository $quotationRepository,
+        InvoiceService $invoiceService,
         MailerInterface $mailer, 
         #[Autowire('%admin_email%')] string $adminEmail, 
         CsvExporter $csvExporter,
         TaxService $taxService,
+        JWTService $jWTService,
     ){
         $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
+        $this->invoiceService = $invoiceService;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
         $this->taxService = $taxService;
+        $this->jWTService = $jWTService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -63,22 +72,33 @@ class QuotationService
         return $rows;
     }
 
-    public function sendQuotationMail(Quotation $quotation): void
+    public function sendQuotationMail(User $user, Quotation $quotation, $validationUrl): void
     {
+        $company = $user->getCompany();
         $quotationCsvData = $this->csvExporter->exportQuotation($quotation);
 
         $email = (new TemplatedEmail())
-            ->from(new Address($this->adminEmail, 'Smoothbill'))
+            ->from(new Address($this->adminEmail, $company->getDenomination()))
             ->to($quotation->getCustomer()->getMail())
             ->subject('Nouveau devis créé')
-            ->htmlTemplate('site/quotation/mail/export_csv_email.html.twig')
+            ->htmlTemplate('dashboard/quotation/mail/quotation_email.html.twig')
             ->context([
                 'quotation' => $quotation,
-                'customerName' => $quotation->getCustomer()->getName()
+                'company' => $company,
+                'customerName' => $quotation->getCustomer()->getName(),
+                'validationUrl' => $validationUrl,
             ])
             ->attach($quotationCsvData, 'quotation.csv', 'text/csv');
 
         $this->mailer->send($email);
+    }
+
+    public function generateQuotationValidationToken(Quotation $quotation)
+    {
+        $expiry = new \DateTime('+30 days');
+        $quotationUid = $quotation->getUid();
+
+        return $this->jWTService->createToken(['quotation_uid' => $quotationUid, 'exp' => $expiry->getTimestamp()], $expiry->getTimestamp());
     }
 
     public function exportAllQuotations(): Response
@@ -103,6 +123,8 @@ class QuotationService
         $quotationDetails = [];
         $totalPriceWithoutTax = 0;
         $totalPriceWithTax = 0;
+        $company = $quotation->getCompany();
+        $graphicChart = $this->entityManager->getRepository(GraphicChart::class)->findOneBy(['company' => $company]);
     
         foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
             $quantity = $quotationHasService->getQuantity();
@@ -113,12 +135,11 @@ class QuotationService
                 'quotation' => $quotation,
                 'priceWithoutTax' => $priceWithoutTax,
                 'priceWithTax' => $priceWithTax,
-                'date' => $quotationHasService->getCreatedAt(),
                 'quantity' => $quotationHasService->getQuantity(),
                 'serviceName' => $quotationHasService->getService()->getName(),
                 'company' => $quotationHasService->getService()->getCompany()->getDenomination(),
             ];
-    
+            
             $totalPriceWithoutTax += $priceWithoutTax * $quantity;
             $totalPriceWithTax += $priceWithTax * $quantity;
         }
@@ -127,6 +148,7 @@ class QuotationService
             'quotationDetails' => $quotationDetails,
             'totalPriceWithoutTax' => $totalPriceWithoutTax,
             'totalPriceWithTax' => $totalPriceWithTax,
+            'graphicChart' => $graphicChart,
         ];
     }
 
@@ -147,10 +169,70 @@ class QuotationService
         } else {
             $quotation->setSendingDate(null);
         }
-      
+
         $quotation->setCompany($company);
+
+        $this->entityManager->persist($quotation);
+        $this->entityManager->flush();
+
+        $this->createInvoiceFromQuotation($quotation);
+    }
+
+    public function createInvoiceFromQuotation($quotation): void
+    {
+        $quotationStatus = $quotation->getQuotationStatus()->getName();
+
+        if($quotationStatus === 'Accepté'){
+            $this->invoiceService->createInvoice($quotation);
+        }
+    }
+
+    public function validateQuotation(Quotation $quotation, $status): void
+    {
+        $quotationStatus = $this->entityManager->getRepository(QuotationStatus::class)->findOneBy(['name' => $status]);
+        $quotation->setQuotationStatus($quotationStatus);
+
         $this->entityManager->persist($quotation);
         $this->entityManager->flush();
     }
 
+    public function getQuotationTotalCount(User $user): int
+    {
+        return $this->quotationRepository->countTotalQuotationsByCompany($user);
+    }
+
+    public function getQuotationAcceptedCount(User $user): int
+    {
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+
+        return $this->quotationRepository->countQuotationsByStatus('Accepté', $companyId);
+    }
+
+    public function getQuotationRejectedCount(User $user): int
+    {
+        $company = $user->getCompany();
+        $companyId = $company->getId();
+
+        return $this->quotationRepository->countQuotationsByStatus('Refusé', $companyId);;
+    }
+
+    public function getConversionRate(User $user): float
+    {
+        $quotationTotal = $this->getQuotationTotalCount($user);
+        $quotationAccepted = $this->getQuotationAcceptedCount($user);
+        
+        if ($quotationTotal === 0) {
+            return 0.00;
+        }
+
+        $conversionRate = ($quotationAccepted / $quotationTotal) * 100;
+
+        return round($conversionRate, 2);
+    }
+
+    public function getQuotationValidityDate($sendingDate): DateTime
+    {
+        return (clone $sendingDate)->modify('+30 days');
+    }
 }
