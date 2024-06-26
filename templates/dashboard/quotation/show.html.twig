@@ -27,7 +27,6 @@
                     <th>Prix HT</th>
                     <th>Prix TTC</th>
                     <th>Quantité</th>
-                    <th>Date</th>
                 </tr>
             </thead>
         {% endif %}
@@ -43,7 +42,6 @@
                         <td>{{ detail.priceWithoutTax }}€</td>
                         <td>{{ detail.priceWithTax }}€</td>
                         <td>{{ detail.quantity }}</td>
-                        <td>{{ detail.date ? detail.date|date('Y-m-d H:i:s') : '' }}</td>
                     </tr>
                 {% endfor %}
             {% endif %}

@@ -14,7 +14,6 @@ class InvoiceRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;
     private EntityManagerInterface $entityManager;
-    private InvoiceStatusRepository $invoiceStatusRepository;
 
     public function __construct(ManagerRegistry $registry, PaginatorInterface $paginator, EntityManagerInterface $entityManager)
     {
