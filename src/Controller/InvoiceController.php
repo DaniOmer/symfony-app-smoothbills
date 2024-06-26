@@ -69,16 +69,19 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{uid}', name: 'dashboard.invoice.show', methods: ['GET'])]
-    public function show(Invoice $invoice, InvoiceRepository $invoiceRepository): Response
+    public function show(Invoice $invoice): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
-        $invoiceDetails = $this->invoiceService->getInvoiceDetails($invoice);
+        $data = $this->invoiceService->getInvoiceDataForPdf($invoice);
+        $twigTemplate = $this->renderView('dashboard/invoice/pdf/invoice_template.html.twig', $data);
 
-        return $this->render('dashboard/invoice/show.html.twig', [
-            'invoice' => $invoiceDetails,
+        $pdfContent = $this->pdfGeneratorService->showPdf($twigTemplate);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
         ]);
     }
 
@@ -90,12 +93,10 @@ class InvoiceController extends AbstractController
         }
 
         $data = $this->invoiceService->getInvoiceDataForPdf($invoice);
+        $twigTemplate = $this->renderView('dashboard/invoice/pdf/invoice_template.html.twig', $data);
+        $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
 
-        $projectDir = $this->getParameter('kernel.project_dir');
-        $outputPath = $projectDir . "/invoice_" . $invoice->getInvoiceNumber() . '.pdf';
-
-        $this->pdfGeneratorService->generatePdf('dashboard/invoice/pdf/invoice_template.html.twig', $data, $outputPath);
-
-        return $this->file($outputPath, 'invoice_' . $invoice->getInvoiceNumber() . '.pdf');
+        return $this->pdfGeneratorService->downloadPdf($twigTemplate, $filename);
     }
+
 }

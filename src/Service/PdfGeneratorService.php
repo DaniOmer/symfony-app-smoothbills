@@ -50,4 +50,11 @@ class PdfGeneratorService
 
         return $dompdf->output();
     }
+
+    public function downloadPdf(string $twigtemplate, string $filename): StreamedResponse
+    {
+        $response = $this->wrapper->getStreamResponse($twigtemplate, $filename);
+
+        return $response;
+    }
 }
