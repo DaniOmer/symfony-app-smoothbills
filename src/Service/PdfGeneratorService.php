@@ -57,4 +57,9 @@ class PdfGeneratorService
 
         return $response;
     }
+
+    public function getPdfBinaryContent(string $html)
+    {
+        return $this->wrapper->getPdf($html);
+    }
 }
