@@ -67,7 +67,7 @@ class ServiceController extends AbstractController
                 'date' => $transaction['date']->format('d M'),
                 'price' => number_format($transaction['price'], 2) . '€'
             ];
-        }, $serviceRepository->getTop3TransactionsByHighestPrice());
+        }, $serviceRepository->getTop3TransactionsByHighestPrice($company));
 
         $topServicesData = array_map(function ($service) {
             return [
@@ -75,7 +75,7 @@ class ServiceController extends AbstractController
                 'sales' => $service['sales'],
                 'revenue' => number_format($service['revenue'], 2) . '€'
             ];
-        }, $serviceRepository->getTop3ServicesBySales());
+        }, $serviceRepository->getTop3ServicesBySales($company));
 
         $config = [
             'statusCounts' => $statusCounts,
