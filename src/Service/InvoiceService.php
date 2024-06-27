@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
+use App\Service\PdfGeneratorService;
 
 class InvoiceService
 {
@@ -50,7 +51,7 @@ class InvoiceService
         $this->adminEmail = $adminEmail;
     }
 
-    public function createInvoice(Quotation $quotation): void
+    public function createInvoice(Quotation $quotation): Invoice
     {
         $this->entityManager->beginTransaction();
 
@@ -70,6 +71,7 @@ class InvoiceService
             $this->entityManager->flush();
 
             $this->entityManager->commit();
+            return $invoice;
         } catch (Exception | OptimisticLockException $e) {
             $this->entityManager->rollback();
             throw $e;
