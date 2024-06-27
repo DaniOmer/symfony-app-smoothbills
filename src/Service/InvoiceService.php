@@ -31,15 +31,15 @@ class InvoiceService
     private $adminEmail;
 
     public function __construct(
-        Environment $twig, 
-        InvoiceRepository $invoiceRepository, 
-        InvoiceStatusRepository $invoiceStatusRepository, 
-        TranslatorInterface $translator, 
-        EntityManagerInterface $entityManager, 
+        Environment $twig,
+        InvoiceRepository $invoiceRepository,
+        InvoiceStatusRepository $invoiceStatusRepository,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
         PdfGeneratorService $pdfGeneratorService,
-        MailerInterface $mailer, 
-        #[Autowire('%admin_email%')] string $adminEmail, 
-    ){
+        MailerInterface $mailer,
+        #[Autowire('%admin_email%')] string $adminEmail,
+    ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
@@ -50,7 +50,7 @@ class InvoiceService
         $this->adminEmail = $adminEmail;
     }
 
-    public function createInvoice(Quotation $quotation): Invoice
+    public function createInvoice(Quotation $quotation): void
     {
         $this->entityManager->beginTransaction();
 
@@ -64,14 +64,13 @@ class InvoiceService
             $invoice->setCompany($company);
             $invoice->setInvoiceStatus($invoiceStatus);
             $invoice->setInvoiceNumber($invoiceNumber);
+            $invoice->setDueDate((new \DateTime())->modify('+30 days'));
 
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
 
             $this->entityManager->commit();
-
-            return $invoice;
-        } catch (Exception |  OptimisticLockException $e) {
+        } catch (Exception | OptimisticLockException $e) {
             $this->entityManager->rollback();
             throw $e;
         }
@@ -231,13 +230,38 @@ class InvoiceService
         $twigTemplate = $this->twig->render('dashboard/invoice/pdf/invoice_template.html.twig', $data);
         $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
 
-        $invoicePdf =$this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+        $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
         $email = (new TemplatedEmail())
             ->from(new Address($this->adminEmail, $company->getDenomination()))
             ->to($customer->getMail())
             ->subject('Nouvelle facture créé')
             ->html('<h1>Nouvelle facture crée</h1><p>Merci pour votre confiance</p>')
+            ->attach($invoicePdf, $filename, 'application/pdf');
+
+        $this->mailer->send($email);
+    }
+
+    public function sendInvoiceReminder(Invoice $invoice): void
+    {
+        $customer = $invoice->getQuotation()->getCustomer();
+        $company = $invoice->getCompany();
+        $data = $this->getInvoiceDataForPdf($invoice);
+        $twigTemplate = $this->twig->render('dashboard/invoice/mail/invoice_reminder.html.twig', $data);
+        $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
+        $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->adminEmail, $company->getDenomination()))
+            ->to($customer->getMail())
+            ->subject('Rappel de facture')
+            ->htmlTemplate('dashboard/invoice/mail/invoice_reminder.html.twig')
+            ->context([
+                'invoice_number' => $invoice->getInvoiceNumber(),
+                'customer_name' => $customer->getName(),
+                'company_name' => $invoice->getCompany()->getDenomination(),
+                'sending_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+            ])
             ->attach($invoicePdf, $filename, 'application/pdf');
 
         $this->mailer->send($email);
