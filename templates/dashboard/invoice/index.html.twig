@@ -15,7 +15,6 @@
 {% block body %}
 
     <section>
-
         <header class="w-full flex justify-between mb-4">
             <h1 class="text-title font-title font-semibold">{{ 'invoice.title'|trans }}</h1>
         </header>
@@ -24,10 +23,8 @@
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_paid'|trans }}" kpi_value="{{ statusCounts['paid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_unpaid'|trans }}" kpi_value="{{ statusCounts['unpaid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_pending'|trans }}" kpi_value="{{ statusCounts['pending'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
-
         </div>
     </section>
-    <section></section> 
     <section class="mt-8">
        {{ component('Table', { invoices: invoices, headers: headers, rows: rows, title: 'invoice.table_title'|trans, actions: actions, paginatedData: invoices, statusColors: statusColors, deleteFormTemplate: null, deleteRoute: null}) }}
     </section>

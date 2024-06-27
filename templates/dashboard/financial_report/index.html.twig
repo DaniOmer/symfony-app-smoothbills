@@ -2,37 +2,54 @@
 
 {% block title %}Rapports financiers{% endblock %}
 
-{% block body %}
-    <h1>Ventes par période</h1>
-    <p>Période : {{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</p>
+{% set rowClasses = "py-3 px-4" %}
 
-    {% if invoices|length > 0 %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Numéro de facture</th>
-                    <th>Client</th>
-                    <th>Montant HT</th>
-                    <th>Montant TTC</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                    <tr>
-                        <td>{{ invoice.invoice_number }}</td>
-                        <td>{{ invoice.client }}</td>
-                        <td>{{ invoice.amount_ht|number_format(2, ',', ' ') }}</td>
-                        <td>{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</td>
-                        <td>{{ invoice.invoice_date|date('d/m/Y') }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    <div>Le montant total des ventes sur la période sélectionnée :</div>
-    <div>Montant total hors taxe : {{ totalAmountHT|number_format(2, ',', ' ') }} €</div>
-    <div>Montant total toute charge comprise : {{ totalAmountTTC|number_format(2, ',', ' ') }} €</div>
-    {% else %}
-    <div> Vous n'avez réalisé aucune vente sur la période sélectionnée</div>
-    {% endif %}
+{% block body %}
+    <section>
+        <header class="mb-10">
+            <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
+            <p class="text-sm">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+        </header>
+        
+        <article>
+            {% if invoices|length > 0 %}
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
+                    <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length }}"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ totalAmountHT|number_format(2, ',', ' ') }} €"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ totalAmountTTC|number_format(2, ',', ' ') }} €"></twig:KpiCard>
+                </div>
+
+                <div>
+                    <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
+                    <div class="border table w-full text-left pb-5 bg-white">
+                        <div class="table-header-group bg-background">
+                            <div class="table-row font-semibold">
+                                <div class="{{ rowClasses }} table-cell text-left">Numéro de facture</div>
+                                <div class="{{ rowClasses }} table-cell text-left">Client</div>
+                                <div class="{{ rowClasses }} table-cell text-left">Montant HT</div>
+                                <div class="{{ rowClasses }} table-cell text-left">Montant TTC</div>
+                                <div class="{{ rowClasses }} table-cell text-left">Date</div>
+                            </div>
+                        </div>
+                        <div class="table-row-group">
+                            {% for invoice in invoices %}
+                                <div class="table-row">
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
+                                        <a href={{ path('dashboard.invoice.show', {uid : invoice.uid}) }}>
+                                            {{ invoice.invoice_number }}
+                                        </a>
+                                    </div>
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.client }}</div>
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ht|number_format(2, ',', ' ') }}</div>
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</div>
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.invoice_date|date('d/m/Y') }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div> Vous n'avez réalisé aucune vente sur la période sélectionnée.</div>
+            {% endif %}
+        </article>
 {% endblock %}
