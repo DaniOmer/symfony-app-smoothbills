@@ -61,8 +61,8 @@
             </li>
             <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
-                    href="#" alt="Rapports" 
-                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    href="{{ path('dashboard.financial.report') }}" alt="Rapports" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.financial.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('lets-icons:line-up') }}
                     Rapports
                 </twig:MenuItem>

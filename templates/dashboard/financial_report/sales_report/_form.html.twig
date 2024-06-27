@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+    {{ form_row(form.dateDebut, {'attr': {'class': 'datepicker'}}) }}
+    {{ form_row(form.dateFin, {'attr': {'class': 'datepicker'}}) }}
+    {{ form_widget(form.submit, {'attr': {'class': 'px-4 py-2 border border-primary rounded-small'}}) }}
+{{ form_end(form) }}
+
+<script>
+    flatpickr('.datepicker', {
+        dateFormat: 'Y-m-d',
+        // Options supplémentaires
+    });
+</script>

@@ -1,0 +1,38 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Rapports financiers{% endblock %}
+
+{% block body %}
+    <h1>Ventes par période</h1>
+    <p>Période : {{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</p>
+
+    {% if invoices|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Numéro de facture</th>
+                    <th>Client</th>
+                    <th>Montant HT</th>
+                    <th>Montant TTC</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ invoice.invoice_number }}</td>
+                        <td>{{ invoice.client }}</td>
+                        <td>{{ invoice.amount_ht|number_format(2, ',', ' ') }}</td>
+                        <td>{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</td>
+                        <td>{{ invoice.invoice_date|date('d/m/Y') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <div>Le montant total des ventes sur la période sélectionnée :</div>
+    <div>Montant total hors taxe : {{ totalAmountHT|number_format(2, ',', ' ') }} €</div>
+    <div>Montant total toute charge comprise : {{ totalAmountTTC|number_format(2, ',', ' ') }} €</div>
+    {% else %}
+    <div> Vous n'avez réalisé aucune vente sur la période sélectionnée</div>
+    {% endif %}
+{% endblock %}
