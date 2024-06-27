@@ -65,27 +65,15 @@ class InvoiceRepository extends ServiceEntityRepository
         );
     }
 
-    public function getInvoiceDetails(Invoice $invoice): ?array
+    public function findInvoicesByPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company): array
     {
-        $quotation = $invoice->getQuotation();
-        $customerName = $quotation->getCustomer()->getName();
-
-        $amountHt = 0;
-        $amountTtc = 0;
-
-        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-            $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
-            $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
-        }
-
-        return [
-            'id' => $invoice->getId(),
-            'uid' => $quotation->getUid(),
-            'invoice_number' => $invoice->getInvoiceNumber(),
-            'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
-            'amount_ht' => $amountHt,
-            'amount_ttc' => $amountTtc,
-            'client' => $customerName,
-        ];
+        return $this->createQueryBuilder('i')
+            ->where('i.created_at BETWEEN :startDate AND :endDate')
+            ->andWhere('i.company = :company')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->setParameter('company', $company)
+            ->getQuery()
+            ->getResult();
     }
 }
