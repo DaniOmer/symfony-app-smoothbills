@@ -6,9 +6,14 @@
 
 {% block body %}
     <section>
-        <header class="mb-10">
-            <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
-            <p class="text-sm">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
+                <p class="text-sm">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+            </div>
+            <div>
+                {{ include('dashboard/financial_report/sales_report/_form.html.twig', {'form': form}) }}
+            </div>
         </header>
         
         <article>
@@ -16,11 +21,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
                     <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length }}"></twig:KpiCard>
                     <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ totalAmountHT|number_format(2, ',', ' ') }} €"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total TVA" kpi_value="{{ (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') }} €"></twig:KpiCard>
                     <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ totalAmountTTC|number_format(2, ',', ' ') }} €"></twig:KpiCard>
                 </div>
 
                 <div>
-                    <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
+                    <div class="flex justify-between mb-3">
+                        <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
+                        <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                            <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
+                            Télécharger
+                        </twig:MenuItem>
+                    </div>
                     <div class="border table w-full text-left pb-5 bg-white">
                         <div class="table-header-group bg-background">
                             <div class="table-row font-semibold">

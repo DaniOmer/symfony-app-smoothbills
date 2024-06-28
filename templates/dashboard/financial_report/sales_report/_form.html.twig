@@ -1,12 +1,20 @@
-{{ form_start(form) }}
-    {{ form_row(form.dateDebut, {'attr': {'class': 'datepicker'}}) }}
-    {{ form_row(form.dateFin, {'attr': {'class': 'datepicker'}}) }}
-    {{ form_widget(form.submit, {'attr': {'class': 'px-4 py-2 border border-primary rounded-small'}}) }}
-{{ form_end(form) }}
 
-<script>
-    flatpickr('.datepicker', {
-        dateFormat: 'Y-m-d',
-        // Options supplémentaires
-    });
-</script>
+{{ form_start(form) }}
+    <div class="flex justify-center items-center gap-x-3">
+        <div>
+            {{ form_row(form.startDate, {
+                label: 'Date de début',
+            }) }}
+        </div>
+        <div>
+            {{ form_row(form.endDate, {
+                label: 'Date de fin',
+            }) }}
+        </div>
+        <button 
+            class="p-3 text-xl border border-primary bg-primary text-white hover:bg-transparent hover:text-black rounded-small transition ease-in-out delay-75"
+        >
+            {{ ux_icon('teenyicons:search-outline') }}
+        </button>
+    <div>
+{{ form_end(form) }}

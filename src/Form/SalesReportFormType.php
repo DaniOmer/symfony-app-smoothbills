@@ -12,14 +12,18 @@ class SalesReportFormType extends AbstractType
     {
         $builder
             ->add('startDate', DateType::class, [
-                'widget' => 'single_text',
-                'html5' => false,
-                'attr' => ['class' => 'datepicker'],
+                'widget' => 'choice',
+                'years' => range(date('2023'), date('Y')),
+                'placeholder' => [
+                    'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
+                ],
             ])
             ->add('endDate', DateType::class, [
-                'widget' => 'single_text',
-                'html5' => false,
-                'attr' => ['class' => 'datepicker'],
+                'widget' => 'choice',
+                'years' => range(date('2023'), date('Y')),
+                'placeholder' => [
+                    'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
+                ],
             ]);
     }
 }
