@@ -1,15 +1,14 @@
+{% form_theme form 'theme/form.html.twig' %}
 
-{{ form_start(form) }}
+{{ form_start(form, { 'attr': { 'data-controller': 'flatpickr' } }) }}
     <div class="flex justify-center items-center gap-x-3">
-        <div>
-            {{ form_row(form.startDate, {
-                label: 'Date de début',
-            }) }}
-        </div>
-        <div>
-            {{ form_row(form.endDate, {
-                label: 'Date de fin',
-            }) }}
+        <div class="flex gap-2">
+            <div>
+                {{ form_row(form.startDate, {'attr': {'data-flatpickr-target': 'startDate', 'value': rawStartDate}, 'label' : 'Date de Début'}) }}
+            </div>
+            <div>
+                {{ form_row(form.endDate, {'attr': {'data-flatpickr-target': 'endDate', 'value': rawEndDate}, 'label' : 'Date de Fin'}) }}
+            </div>
         </div>
         <button 
             class="p-3 text-xl border border-primary bg-primary text-white hover:bg-transparent hover:text-black rounded-small transition ease-in-out delay-75"

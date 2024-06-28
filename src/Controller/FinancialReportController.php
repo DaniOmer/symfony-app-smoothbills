@@ -54,7 +54,9 @@ class FinancialReportController extends AbstractController
             'totalAmountHT' => $sales['totalAmountHT'],
             'totalAmountTTC' => $sales['totalAmountTTC'],
             'startDate' => $startDate->format('Y-m-d'),
-            'endDate' => $endDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y/m/d'),
+            'rawStartDate' => $startDate->format('d/m/Y'),
+            'rawEndDate' => $endDate->format('d/m/Y'),
             'form' => $form->createView(),
         ];
 

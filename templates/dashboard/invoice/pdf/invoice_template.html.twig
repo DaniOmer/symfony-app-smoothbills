@@ -144,8 +144,9 @@
                     <tr>
                         <th>Désignation</th>
                         <th>Quantité</th>
-                        <th>Prix HT</th>
-                        <th>Prix TTC</th>
+                        <th>Prix unitaire</th>
+                        <th>Montant HT</th>
+                        <th>Montant TTC</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,21 +155,22 @@
                             <td>{{ service.name }}</td>
                             <td class="text-center">{{ service.quantity }}</td>
                             <td class="text-right">{{ service.price_without_tax|number_format(2, ',', ' ') }} €</td>
-                            <td class="text-right">{{ service.price_with_tax|number_format(2, ',', ' ') }} €</td>
+                            <td class="text-right">{{ (service.price_without_tax * service.quantity)|number_format(2, ',', ' ') }} €</td>
+                            <td class="text-right">{{ (service.price_with_tax * service.quantity)|number_format(2, ',', ' ') }} €</td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="2"></td>
+                        <td colspan="3"></td>
                         <td class="text-right font-semibold">Total HT</td>
-                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + service.price_without_tax, 0)|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + (service.price_without_tax * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
                     </tr>
                     <tr>
-                        <td colspan="2"></td>
+                        <td colspan="3"></td>
                         <td class="text-right font-semibold">TVA</td>
                         <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + ((service.price_with_tax - service.price_without_tax) * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
                     </tr>
                     <tr>
-                        <td colspan="2"></td>
+                        <td colspan="3"></td>
                         <td class="text-right font-bold">Total TTC</td>
                         <td class="text-right font-bold">{{ services|reduce((carry, service) => carry + (service.price_with_tax * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
                     </tr>
