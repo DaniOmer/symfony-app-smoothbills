@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\SubscriptionService;
 
 #[Route('/dashboard/service')]
 class ServiceController extends AbstractController
@@ -22,12 +23,14 @@ class ServiceController extends AbstractController
     private $serviceService;
     private $userRegistrationChecker;
     private $csvExporter;
+    private $subscriptionService;
 
-    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
+    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter, SubscriptionService $subscriptionService)
     {
         $this->serviceService = $serviceService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
+        $this->subscriptionService = $subscriptionService;
     }
     #[Route('/', name: 'dashboard.service.index', methods: ['GET'])]
     public function index(ServiceRepository $serviceRepository, Request $request): Response
@@ -172,6 +175,15 @@ class ServiceController extends AbstractController
     #[Route('/export/all', name: 'dashboard.service.export_all', methods: ['GET'])]
     public function exportAllServices(ServiceRepository $serviceRepository): Response
     {
+
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+        if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
+            $this->addFlash('error', 'Vous devez être abonné à un plan Starter pour exporter les services.');
+            return $this->redirectToRoute('dashboard.service.index');
+        }
+
         $services = $serviceRepository->findAll();
         $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {

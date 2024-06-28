@@ -7,6 +7,9 @@
         {% for flash_success in app.flashes('success') %}
             <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
         {% endfor %}
+        {% for flash_error in app.flashes('error') %}
+            <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
+        {% endfor %}
 
         <header class="w-full flex justify-between">
             <h1 class="text-title font-title font-semibold">{{ 'service.title'|trans }}</h1>

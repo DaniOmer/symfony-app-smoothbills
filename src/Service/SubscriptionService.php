@@ -49,4 +49,13 @@ class SubscriptionService
 
         return $subscriptionData;
     }
+
+    public function isCurrentSubscription(string $subscriptionName): bool
+    {
+        $user = $this->security->getUser();
+        $company = $user ? $user->getCompany() : null;
+        $subscription = $company ? $this->companySubscriptionRepository->findLatestSubscriptionForCompany($company->getId()) : null;
+
+        return $subscription && $subscription->getSubscription()->getName() === $subscriptionName;
+    }
 }
