@@ -1,0 +1,20 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+{{ form_start(form, { 'attr': { 'data-controller': 'flatpickr' } }) }}
+    <div class="flex flex-col sm:flex-row justify-center items-center sm:gap-x-3 w-full">
+        <div class="flex justify-between min-w-full sm:min-w-fit sm:justify-center gap-x-4">
+            <div>
+                {{ form_row(form.startDate, {'attr': {'data-flatpickr-target': 'startDate', 'value': rawStartDate}, 'label' : 'Date de Début'}) }}
+            </div>
+            <div>
+                {{ form_row(form.endDate, {'attr': {'data-flatpickr-target': 'endDate', 'value': rawEndDate}, 'label' : 'Date de Fin'}) }}
+            </div>
+        </div>
+        <button 
+            class="px-4 py-2 w-full sm:w-fit sm:p-3 border border-primary bg-primary text-white hover:bg-transparent hover:text-black rounded-small transition ease-in-out delay-75"
+        >
+            <span class="sm:hidden">Rechercher</span>
+            <span class="hidden sm:block ">{{ ux_icon('teenyicons:search-outline') }}</span>
+        </button>
+    <div>
+{{ form_end(form) }}
