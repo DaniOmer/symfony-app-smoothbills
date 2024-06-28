@@ -37,9 +37,9 @@ class ServiceController extends AbstractController
         }
 
         $statusColors = [
-            'Actif' => 'bg-green-100 text-green-800',
-            'Inactif' => 'bg-red-100 text-red-800',
-            'En attente' => 'bg-yellow-100 text-yellow-800',
+            'Active' => 'bg-green-100 text-green-800',
+            'Inactive' => 'bg-red-100 text-red-800',
+            'Pendding' => 'bg-yellow-100 text-yellow-800',
         ];
 
         $user = $this->getUser();
@@ -55,8 +55,8 @@ class ServiceController extends AbstractController
         $totalServices = $serviceRepository->countTotalServicesByCompany($user);
 
         $statusCounts = [
-            'active' => $serviceRepository->countServicesByStatus('Actif', $companyId),
-            'inactive' => $serviceRepository->countServicesByStatus('Inactif', $companyId),
+            'active' => $serviceRepository->countServicesByStatus('Active', $companyId),
+            'inactive' => $serviceRepository->countServicesByStatus('Inactive', $companyId),
         ];
 
         $headersTopTransaction = ['id' => 'ID', 'service' => 'Service', 'date' => 'Date', 'price' => 'Prix'];

@@ -55,6 +55,8 @@ button:
     download: "Exporter"
     export: "Exporter"
     export_all: "Tout exporter"
+    change_subscription: "Changer d'abonnement"
+    current_subscription: "Abonnement actuel"
 
 service:
     title: "Services"

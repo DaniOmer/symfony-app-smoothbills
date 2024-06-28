@@ -95,7 +95,7 @@ class InvoiceRepository extends ServiceEntityRepository
             ->where('i.due_date < :date')
             ->andWhere('i.invoiceStatus.name != :paid')
             ->setParameter('date', $date)
-            ->setParameter('paid', 'paid')
+            ->setParameter('paid', 'Paid')
             ->getQuery()
             ->getResult();
     }

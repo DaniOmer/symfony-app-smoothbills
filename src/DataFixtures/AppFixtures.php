@@ -9,13 +9,17 @@ use App\Entity\LegalForm;
 use App\Entity\Service;
 use App\Entity\ServiceStatus;
 use App\Entity\InvoiceStatus;
+use App\Entity\Subscription;
+use App\Entity\SubscriptionOption;
+use App\Entity\QuotationStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 
-class AppFixtures extends Fixture
+class AppFixtures extends Fixture implements FixtureGroupInterface
 {
     private UserPasswordHasherInterface $passwordHasher;
 
@@ -51,7 +55,7 @@ class AppFixtures extends Fixture
         }
 
         // Create Service Statuses
-        $serviceStatusesNames = ['Actif', 'Inactif', 'En attente'];
+        $serviceStatusesNames = ['Active', 'Inactive', 'Pending', 'Cancelled', ''];
         $serviceStatuses = [];
         foreach ($serviceStatusesNames as $statusName) {
             $status = new ServiceStatus();
@@ -61,13 +65,21 @@ class AppFixtures extends Fixture
         }
 
         // Create Invoice Statuses
-        $invoiceStatusesNames = ['Paid', 'Unpaid', 'Overdue', 'Cancelled'];
+        $invoiceStatusesNames = ['Paid', 'Unpaid', 'Overdue', 'Cancelled', 'Pending', 'Sent', 'Refunded', 'Partially Paid'];
         $invoiceStatuses = [];
         foreach ($invoiceStatusesNames as $statusName) {
             $status = new InvoiceStatus();
             $status->setName($statusName);
             $manager->persist($status);
             $invoiceStatuses[] = $status;
+        }
+
+        // Create Quotation Statuses
+        $quotationStatusesNames = ['Accepted', 'Rejected', 'Pending'];
+        foreach ($quotationStatusesNames as $statusName) {
+            $status = new QuotationStatus();
+            $status->setName($statusName);
+            $manager->persist($status);
         }
 
         // Create Companies with unique addresses
@@ -117,6 +129,66 @@ class AppFixtures extends Fixture
             }
         }
 
+        // Create Subscriptions and Options
+        // Freemium Subscription
+        $freemium = new Subscription();
+        $freemium->setName('Freemium');
+        $freemium->setPrice('0.00');
+        $freemium->setDuration(30); // 30 days for example
+
+        $optionsFreemium = [
+            ['name' => 'Création et envoi de facture (5 par mois)', 'isActive' => true],
+            ['name' => 'Création et envoi de devis (5 par mois)', 'isActive' => true],
+            ['name' => 'Ajout d\'autres utilisateurs', 'isActive' => false],
+            ['name' => 'Personnalisation du dashboard', 'isActive' => false],
+            ['name' => 'Personnalisation du shart graphique', 'isActive' => false],
+            ['name' => 'Relance automatique des factures', 'isActive' => false],
+            ['name' => 'Personnalisation des rapports', 'isActive' => false],
+            ['name' => 'Exporter les données en csv', 'isActive' => false]
+        ];
+
+        foreach ($optionsFreemium as $optionData) {
+            $option = new SubscriptionOption();
+            $option->setName($optionData['name']);
+            $option->setIsActive($optionData['isActive']);
+            $freemium->addOption($option);
+            $manager->persist($option);
+        }
+
+        $manager->persist($freemium);
+
+        // Starter Subscription
+        $starter = new Subscription();
+        $starter->setName('Starter');
+        $starter->setPrice('9.99');
+        $starter->setDuration(30); // 30 days for example
+
+        $optionsStarter = [
+            ['name' => 'Création et envoi de facture (illimité)', 'isActive' => true],
+            ['name' => 'Création et envoi de devis (illimité)', 'isActive' => true],
+            ['name' => 'Ajout d\'autres utilisateurs', 'isActive' => true],
+            ['name' => 'Personnalisation du dashboard', 'isActive' => true],
+            ['name' => 'Support client premium', 'isActive' => true],
+            ['name' => 'Export de données en format CSV', 'isActive' => true],
+            ['name' => 'Automatisation du flux de travail', 'isActive' => true],
+            ['name' => 'Rapports avancés', 'isActive' => false]
+        ];
+
+        foreach ($optionsStarter as $optionData) {
+            $option = new SubscriptionOption();
+            $option->setName($optionData['name']);
+            $option->setIsActive($optionData['isActive']);
+            $starter->addOption($option);
+            $manager->persist($option);
+        }
+
+        $manager->persist($starter);
+
         $manager->flush();
+    }
+
+    public static function getGroups(): array
+    {
+        return ['subscription'];
     }
 }

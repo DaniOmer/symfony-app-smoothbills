@@ -1,0 +1,15 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'settings.subscription.index_title'|trans }}{% endblock %}
+
+{% block body %}
+    <section class="flex flex-col gap-10">
+     {% for flash_success in app.flashes('success') %}
+            <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+     {% endfor %}
+     {% for flash_error in app.flashes('error') %}
+            <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
+     {% endfor %}
+           <twig:Subscription plans="{{ subscriptions|raw }}" />  </twig:Subscription>
+    </section>
+{% endblock %}

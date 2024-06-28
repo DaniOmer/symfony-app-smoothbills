@@ -17,10 +17,12 @@
                 >
                     {{ 'crud.create_new'|trans }}
                 </a>
+                {% if subscriptionName != 'Freemium' %}
                 <twig:MenuItem href="{{ path('dashboard.service.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                     <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
                     {{ 'crud.export_all'|trans }}
                 </twig:MenuItem>
+                {% endif %}
             </div>
         </header>
 
