@@ -46,7 +46,7 @@
                     </div>
                     <nav id="actions-list" class="flex flex-col text-[12px] shadow-md drop-shadow-md">
                         <span class="block px-6 py-2 border-b">{{ app.user.email }}</span>
-                        <span class="block px-6 py-2 border-b">Freemium</span>
+                        <span class="block px-6 py-2 border-b">{{ subscriptionName }}</span>
                         <twig:MenuItem href="{{ path('dashboard.settings.user.profile' )}}" additionalClasses="hover:bg-primary/10 px-6 py-2">Profil</twig:MenuItem>
                         <twig:MenuItem href="#" additionalClasses="hover:bg-primary/10 px-6 py-2">Settings</twig:MenuItem>
                         <twig:MenuItem href="{{path('site.logout')}}" additionalClasses="hover:bg-primary/10 p-2">Se déconnecter</twig:MenuItem>
