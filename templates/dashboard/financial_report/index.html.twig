@@ -6,19 +6,19 @@
 
 {% block body %}
     <section>
-        <header class="mb-10 flex justify-between">
-            <div>
+        <header class="mb-10 flex flex-col gap-4 lg:flex-row md:justify-between">
+            <div class="">
                 <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
-                <p class="text-sm">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+                <p class="text-xs">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
             </div>
-            <div>
+            <div class="sm:flex sm:justify-start">
                 {{ include('dashboard/financial_report/sales_report/_form.html.twig', {'form': form}) }}
             </div>
         </header>
         
         <article>
             {% if invoices|length > 0 %}
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
                     <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length }}"></twig:KpiCard>
                     <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ totalAmountHT|number_format(2, ',', ' ') }} €"></twig:KpiCard>
                     <twig:KpiCard kpi_name="Montant total TVA" kpi_value="{{ (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') }} €"></twig:KpiCard>
@@ -30,33 +30,35 @@
                         <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
                         <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                             <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
-                            Télécharger
+                            <span class="hidden sm:inline-block">Télécharger</span>
                         </twig:MenuItem>
                     </div>
-                    <div class="border table w-full text-left pb-5 bg-white">
-                        <div class="table-header-group bg-background">
-                            <div class="table-row font-semibold">
-                                <div class="{{ rowClasses }} table-cell text-left">Numéro de facture</div>
-                                <div class="{{ rowClasses }} table-cell text-left">Client</div>
-                                <div class="{{ rowClasses }} table-cell text-left">Montant HT</div>
-                                <div class="{{ rowClasses }} table-cell text-left">Montant TTC</div>
-                                <div class="{{ rowClasses }} table-cell text-left">Date</div>
-                            </div>
-                        </div>
-                        <div class="table-row-group">
-                            {% for invoice in invoices %}
-                                <div class="table-row">
-                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
-                                        <a href={{ path('dashboard.invoice.show', {uid : invoice.uid}) }}>
-                                            {{ invoice.invoice_number }}
-                                        </a>
-                                    </div>
-                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.client }}</div>
-                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ht|number_format(2, ',', ' ') }}</div>
-                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</div>
-                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.invoice_date|date('d/m/Y') }}</div>
+                    <div class="overflow-x-auto max-w-full">
+                        <div class="border box-border table min-w-full text-left pb-5 bg-white">
+                            <div class="table-header-group bg-background">
+                                <div class="table-row font-semibold">
+                                    <div class="{{ rowClasses }} table-cell text-left">Numéro de facture</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Client</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Montant HT</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Montant TTC</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Date</div>
                                 </div>
-                            {% endfor %}
+                            </div>
+                            <div class="table-row-group">
+                                {% for invoice in invoices %}
+                                    <div class="table-row">
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
+                                            <a href={{ path('dashboard.invoice.show', {uid : invoice.uid}) }}>
+                                                {{ invoice.invoice_number }}
+                                            </a>
+                                        </div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.client }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ht|number_format(2, ',', ' ') }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.invoice_date|date('d/m/Y') }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>

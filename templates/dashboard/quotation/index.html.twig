@@ -18,23 +18,24 @@
             <h1 class="text-title font-title font-semibold">{{ 'quotation.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
                 <a class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
-                <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                <twig:MenuItem href="#" additionalClasses="hidden md:flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                     <span class="text-xl">{{ ux_icon('tabler:cloud-upload') }}</span>
                     {{ 'crud.upload'|trans }}
                 </twig:MenuItem>
-                <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="hidden md:flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                     <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
                     {{ 'crud.export_all'|trans }}
                 </twig:MenuItem>
             </div>
         </header>
-        <div class="grid grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_total'|trans }}" kpi_value="{{ totalQuotation }}" icon_name="pajamas:stage-all"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_accepted'|trans }}" kpi_value="{{ statusCounts['accepted'] }}" icon_name="healthicons:i-documents-accepted-outline"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="marketeq:rejected-file-2"></twig:KpiCard>
             <twig:KpiCard kpi_name="Taux de conversion" kpi_value="{{ conversionRate }} %" icon_name="prime:percentage"></twig:KpiCard>
         </div>
-
-        {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, paginatedData: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
+        <div class="">
+            {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, paginatedData: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
+        </div>
     </section>
 {% endblock %}
