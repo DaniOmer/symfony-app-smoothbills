@@ -22,25 +22,42 @@ class FinancialReportController extends AbstractController
         $this->invoiceService = $invoiceService;
     }
 
-    #[Route('/', name: 'dashboard.financial.report')]
+    #[Route('/', name: 'dashboard.financial.report', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
         $form = $this->createForm(SalesReportFormType::class);
         $form->handleRequest($request);
 
-        $defaultStartDate = new \DateTime('-30 days');
-        $defaultEndDate = new \DateTime();
         $company = $this->getUser()->getCompany();
 
-        $sales = $this->salesReportService->generateSalesReportByPeriod($defaultStartDate, $defaultEndDate, $company);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $startDate = $data['startDate'];
+            $endDate = $data['endDate'];
 
-        return $this->render('dashboard/financial_report/index.html.twig', [
+            return $this->redirect($this->generateUrl('dashboard.financial.report', [
+                'startDate' => $startDate->format('Y-m-d'),
+                'endDate' => $endDate->format('Y-m-d'),
+            ]));
+        }
+
+        $startDateParam = $request->query->get('startDate');
+        $endDateParam = $request->query->get('endDate');
+
+        $startDate = $startDateParam ? new \DateTime($startDateParam) : new \DateTime('-30 days');
+        $endDate = $endDateParam ? new \DateTime($endDateParam) : new \DateTime();
+
+        $sales = $this->salesReportService->generateSalesReportByPeriod($startDate, $endDate, $company);
+
+        $data = [
             'invoices' => $sales['invoices'],
             'totalAmountHT' => $sales['totalAmountHT'],
             'totalAmountTTC' => $sales['totalAmountTTC'],
-            'startDate' => $defaultStartDate,
-            'endDate' => $defaultEndDate,
-            'form' => $form,
-        ]);
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+            'form' => $form->createView(),
+        ];
+
+        return $this->render('dashboard/financial_report/index.html.twig', $data);
     }
 }

@@ -165,12 +165,12 @@
                     <tr>
                         <td colspan="2"></td>
                         <td class="text-right font-semibold">TVA</td>
-                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + (service.price_with_tax - service.price_without_tax), 0)|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + ((service.price_with_tax - service.price_without_tax) * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
                     </tr>
                     <tr>
                         <td colspan="2"></td>
                         <td class="text-right font-bold">Total TTC</td>
-                        <td class="text-right font-bold">{{ services|reduce((carry, service) => carry + service.price_with_tax, 0)|number_format(2, ',', ' ') }} €</td>
+                        <td class="text-right font-bold">{{ services|reduce((carry, service) => carry + (service.price_with_tax * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
                     </tr>
                 </tbody>
             </table>
