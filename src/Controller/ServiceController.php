@@ -172,7 +172,10 @@ class ServiceController extends AbstractController
     #[Route('/export/all', name: 'dashboard.service.export_all', methods: ['GET'])]
     public function exportAllServices(ServiceRepository $serviceRepository): Response
     {
-        $services = $serviceRepository->findAll();
+        $company = $this->getUser()->getCompany();
+
+        $services = $serviceRepository->findBy(['company' => $company]);
+        
         $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {
             return [
