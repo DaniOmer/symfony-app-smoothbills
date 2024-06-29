@@ -1,0 +1,32 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'invoice.index_title'|trans }}{% endblock %}
+
+
+
+
+{% set statusColors = {
+    'Payée': 'bg-green-100 text-green-800',
+    'Non payée': 'bg-red-100 text-red-800',
+    'En attente': 'bg-yellow-100 text-yellow-800',
+    'Annulée': 'bg-red-100 text-red-800'
+} %}
+
+{% block body %}
+
+    <section class="flex flex-col gap-10">
+        <header class="w-full flex justify-between">
+            <h1 class="text-title font-title font-semibold">{{ 'invoice.title'|trans }}</h1>
+        </header>
+
+        <div class="flex justify-between items-center gap-4">
+            <twig:KpiCard kpi_name="{{ 'invoice.invoice_paid'|trans }}" kpi_value="{{ statusCounts['paid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'invoice.invoice_unpaid'|trans }}" kpi_value="{{ statusCounts['unpaid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'invoice.invoice_pending'|trans }}" kpi_value="{{ statusCounts['pending'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
+        </div>
+        <div class="w-full">
+            {{ component('Table', { invoices: invoices, headers: headers, rows: rows, title: 'invoice.table_title'|trans, actions: actions, paginatedData: invoices, statusColors: statusColors, deleteFormTemplate: null, deleteRoute: null}) }}
+        </div>
+    </section>
+
+{% endblock %}

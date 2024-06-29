@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Devis n° {{ quotation.uid }}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1.2em' font-size='96'>⚫️</text><text y='1.3em' x='0.2em' font-size='76' fill='#fff'>sf</text></svg>">
+    <style>
+        body {
+            background-color: #f7fafc;
+            padding: 32px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            background-color: white;
+            padding: 32px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        header .flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header .flex img {
+            height: 48px;
+        }
+        header .flex div {
+            text-align: right;
+        }
+        header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        header p {
+            margin: 4px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .bg-gray-50 {
+            background-color: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .bg-gray-50 h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f7fafc;
+            font-weight: bold;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .font-semibold {
+            font-weight: 600;
+        }
+        .font-bold {
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 12px;
+        }
+        footer .flex {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        footer img {
+            height: 80px;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="flex">
+                <div>
+                    {% if graphicChart and null != graphicChart.logo %}
+                        <div class="image-container">
+                            <img class="full-width-height object-cover" src="{{ graphicChart.logo }}" alt="Logo de {{ quotation.company.denomination }}">
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="text-right">
+                    <h1>Devis n° {{ quotation.uid }}</h1>
+                    <p>Date : {{ quotation.sendingDate|date('d/m/Y') }}</p>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="bg-gray-50">
+                    <h2>Informations sur l'entreprise</h2>
+                    <p>{{ quotation.company.denomination }}</p>
+                    <p>{{ quotation.company.address.address }}</p>
+                    <p>{{ quotation.company.address.zipcode }} {{ quotation.company.address.city }}</p>
+                    <p>{{ quotation.company.address.country }}</p>
+                    <p>Téléphone : {{ quotation.company.phoneNumber }}</p>
+                    <p>Email : {{ quotation.company.mail }}</p>
+                    <p>SIRET : {{ quotation.company.siret }}</p>
+                </div>
+                <div class="bg-gray-50 text-right">
+                    <h2>Informations sur le client</h2>
+                    <p>Nom : {{ quotation.customer.name }}</p>
+                    <p>Code : {{ quotation.customer.uid }}</p>
+                    <p>{{ quotation.customer.address.address }}</p>
+                    <p>{{ quotation.customer.address.zipcode }} {{ quotation.customer.address.city }}</p>
+                    <p>{{ quotation.customer.address.country }}</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Quantité</th>
+                        <th>Prix HT</th>
+                        <th>Prix TTC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in quotationDetails %}
+                        <tr>
+                            <td>{{ service.serviceName }}</td>
+                            <td class="text-center">{{ service.quantity }}</td>
+                            <td class="text-right">{{ service.priceWithoutTax|number_format(2, ',', ' ') }} €</td>
+                            <td class="text-right">{{ service.priceWithTax|number_format(2, ',', ' ') }} €</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="2"></td>
+                        <td class="text-right font-semibold">Total HT</td>
+                        <td class="text-right font-semibold">{{ quotationDetails|reduce((carry, service) => carry + service.priceWithoutTax, 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td class="text-right font-semibold">TVA</td>
+                        <td class="text-right font-semibold">{{ quotationDetails|reduce((carry, service) => carry + (service.priceWithTax - service.priceWithoutTax), 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td class="text-right font-bold">Total TTC</td>
+                        <td class="text-right font-bold">{{ quotationDetails|reduce((carry, service) => carry + service.priceWithTax, 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+
+        <footer>
+            <p>Merci de votre confiance</p>
+            <p>Pour toute question, contactez-nous à l'adresse : <a href=href="mailto:{{quotation.company.mail}}">{{quotation.company.mail}}</a></p>
+            <p>Pour valider le devis, suivez les instructions détaillé dans le mail.</p>
+            <p>Au plaisir de vous servir à nouveau</p>
+            <p>Numéro de TVA : FR12345678901</p>
+            <p>Adresse : 123 Rue Exemple, 75001 Paris - Téléphone : 01 23 45 67 89</p>
+            <p>SIRET : 123 456 789 00012</p>
+        </footer>
+    </div>
+</body>
+</html>

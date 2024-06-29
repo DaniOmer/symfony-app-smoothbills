@@ -8,7 +8,7 @@ export default class extends Controller {
     console.log("Connected");
   }
 
-  showModal(event) {
+  showModal() {
     // this.modalTarget.classList.remove("translate-x-full");
     this.modalTarget.classList.remove("hidden");
     this.modalTarget.classList.remove("opacity-0");

@@ -5,22 +5,25 @@ namespace App\Entity;
 use App\Repository\InvoiceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 #[ORM\Table(name: "invoice")]
 class Invoice
 {
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
-
-    #[ORM\Column(type: Types::STRING, length: 45, unique: true)]
-    private ?string $uuid = null;
+    #[ORM\Column(type: Types::STRING, length: 14, nullable: false)]
+    private ?string $invoice_number = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,33 +33,28 @@ class Invoice
     #[ORM\JoinColumn(nullable: false)]
     private ?Company $company = null;
 
-    private InvoiceRepository $repository;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Quotation $quotation = null;
 
+    public function __construct()
+    {
+        $this->UuidConstruct();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getInvoiceNumber(): ?string
     {
-        return $this->date;
+        return $this->invoice_number;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setInvoiceNumber(string $invoice_number): static
     {
-        $this->date = $date;
-        return $this;
-    }
-
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(string $uuid): static
-    {
-        $this->uuid = $uuid;
+        $this->invoice_number = $invoice_number;
         return $this;
     }
 
@@ -71,7 +69,6 @@ class Invoice
         return $this;
     }
 
-
     public function getCompany(): ?Company
     {
         return $this->company;
@@ -80,6 +77,17 @@ class Invoice
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+        return $this;
+    }
+
+    public function getQuotation(): ?Quotation
+    {
+        return $this->quotation;
+    }
+
+    public function setQuotation(?Quotation $quotation): static
+    {
+        $this->quotation = $quotation;
         return $this;
     }
 }

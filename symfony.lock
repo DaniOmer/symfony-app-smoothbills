@@ -53,6 +53,18 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v6.4.0"
     },
+    "nucleos/dompdf-bundle": {
+        "version": "4.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "3.1",
+            "ref": "ac77a0c751bdccab42ddc73d7290719b31ecb691"
+        },
+        "files": [
+            "config/packages/nucleos_dompdf.yaml"
+        ]
+    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {

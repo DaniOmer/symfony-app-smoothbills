@@ -1,0 +1,32 @@
+{% props header_title = '', header_icon = '', services = [] %}
+
+<section class="flex flex-col p-2 md:px-4 md:pt-3 md:pb-6 bg-white rounded-xl border border-gray-300 hover:border-primary/40 max-w-full min-h-[200px] h-full group relative">
+    <header class="flex items-center gap-4 mb-4">
+        <div class="flex justify-center items-center p-2 bg-backgroundIcon rounded-xl">
+            {% if header_icon %}
+                <div class="w-8 h-8">
+                    {{ ux_icon(header_icon) }}
+                </div>
+            {% endif %}
+        </div>
+        <h1 class="text-base md:text-lg font-semibold">{{ header_title }}</h1>
+    </header>
+    
+    {% if services is empty %}
+        <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{{ 'service.not_data'|trans }}</p>
+    {% else %}
+    <div class="flex flex-col gap-2">
+        {% for service in services %}
+            <article class="flex justify-between gap-1 px-1 md:px-4 py-1.5 bg-backgroundIcon border border-gray-300 hover:border-primary/40 rounded-lg">
+                <h2 class="w-2/5 text-sm font-semibold">
+                    {{ service.title }}
+                </h2>
+                <div class="flex-1 flex flex-col text-sm gap-0.5">
+                    <div>Ventes : <span class="font-semibold">{{ service.sales }}</span></div>
+                    <div>Revenus : <span class="font-semibold">{{ service.revenue }}</span</div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>

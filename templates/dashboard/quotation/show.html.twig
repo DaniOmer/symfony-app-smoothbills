@@ -8,10 +8,6 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Uuid</th>
-                <td>{{ quotation.uid }}</td>
-            </tr>
-            <tr>
                 <th>Date</th>
                 <td>{{ quotation.sendingDate ? quotation.sendingDate|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
@@ -31,8 +27,6 @@
                     <th>Prix HT</th>
                     <th>Prix TTC</th>
                     <th>Quantité</th>
-                    <th>Proposé par</th>
-                    <th>Date</th>
                 </tr>
             </thead>
         {% endif %}
@@ -47,9 +41,7 @@
                         <td>{{ detail.serviceName }}</td>
                         <td>{{ detail.priceWithoutTax }}€</td>
                         <td>{{ detail.priceWithTax }}€</td>
-                        <td>{{ detail.quantity }}€</td>
-                        <td>{{ detail.company }}</td>
-                        <td>{{ detail.date ? detail.date|date('Y-m-d H:i:s') : '' }}</td>
+                        <td>{{ detail.quantity }}</td>
                     </tr>
                 {% endfor %}
             {% endif %}

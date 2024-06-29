@@ -59,6 +59,19 @@ quotation:
     invoice_rejected: "Rejected quotations"
     details: "Services"
 
+invoice:
+    title: "Invoices"
+    table_title: "All invoices"
+    invoice_paid: "Paid invoices"
+    invoice_unpaid: "Unpaid invoices"
+    invoice_pending: "Pending invoices"
+    invoice_details: "Details of the invoice"
+    status:
+        paid: "Paid"
+        unpaid: "Unpaid"
+        pending: "Pending"
+        cancelled: "Cancelled"
+
 payment:
     title: "Payments"
     table_title: "All payments"

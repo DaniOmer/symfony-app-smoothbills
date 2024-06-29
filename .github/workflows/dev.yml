@@ -27,7 +27,6 @@ jobs:
             git pull origin dev &&
             sudo docker compose -f compose.yaml -f compose.prod.yaml up -d --wait &&
             sudo docker compose exec php composer install &&
-            npm install &&
-            npm run watch
+            npm install
           '
           rm private_key

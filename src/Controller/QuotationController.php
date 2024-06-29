@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Quotation;
-use App\Entity\QuotationStatus;
+use App\Entity\Service;
 use App\Form\QuotationType;
-use App\Repository\QuotationRepository;
 use App\Service\CsvExporter;
+use App\Service\PdfGeneratorService;
 use App\Service\QuotationService;
 use App\Service\UserRegistrationChecker;
 use App\Trait\ProfileCompletionTrait;
@@ -15,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/dashboard/quotation')]
 class QuotationController extends AbstractController
@@ -25,15 +27,18 @@ class QuotationController extends AbstractController
     private $userRegistrationChecker;
     private $csvExporter;
 
-    public function __construct(QuotationService $quotationService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
-    {
+    public function __construct(
+        QuotationService $quotationService, 
+        UserRegistrationChecker $userRegistrationChecker,
+        CsvExporter $csvExporter
+    ){
         $this->quotationService = $quotationService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
     }
 
     #[Route('/', name: 'dashboard.quotation.index', methods: ['GET'])]
-    public function index(QuotationRepository $quotationRepository, Request $request): Response
+    public function index(Request $request): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
@@ -41,21 +46,19 @@ class QuotationController extends AbstractController
 
         $user = $this->getUser();
         $page = $request->query->getInt('page', 1);
+
         $paginateQuotations = $this->quotationService->getPaginatedQuotations($user, $page);
+        $totalQuotation = $this->quotationService->getQuotationTotalCount($user);
+        $acceptedQuotation = $this->quotationService->getQuotationAcceptedCount($user);
+        $rejectedQuotation = $this->quotationService->getQuotationRejectedCount($user);
+        $conversionRate = $this->quotationService->getConversionRate($user);
 
         $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
         $rows = $this->quotationService->getQuotationsRows($user, $page);
 
-        $user = $this->getUser();
-        $company = $user->getCompany();
-
-        $companyId = $company->getId();
-
-        $totalInvoices = $quotationRepository->countTotalQuotationsByCompany($user);
-
         $statusCounts = [
-            'accepted' => $quotationRepository->countQuotationsByStatus('Accepté', $companyId),
-            'rejected' => $quotationRepository->countQuotationsByStatus('Refusé', $companyId),
+            'accepted' => $acceptedQuotation,
+            'rejected' => $rejectedQuotation,
         ];
 
         $config = [
@@ -63,7 +66,8 @@ class QuotationController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'quotations' => $paginateQuotations,
-            'totalInvoices' => $totalInvoices,
+            'totalQuotation' => $totalQuotation,
+            'conversionRate' => $conversionRate,
             'actions' => [
                 ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
                 ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'],
@@ -86,52 +90,51 @@ class QuotationController extends AbstractController
         $quotation = new Quotation();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
+
         $user = $this->getUser();
         $company = $user->getCompany();
 
+        $customer = $entityManager->getRepository(Customer::class)->findOneBy(['company' => $company]);
+        $service = $entityManager->getRepository(Service::class)->findOneBy(['company' => $company]);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->quotationService->processQuotation($quotation, $form, $company);
+
             $sendOption = $form->get('sendOption')->getData();
             if ($sendOption === 'Maintenant') {
-                $quotation->setSendingDate(new \DateTime());
-            } else {
-                $quotation->setSendingDate(null);
-            }
+                $token = $this->quotationService->generateQuotationValidationToken($quotation);
+                $encodedToken = base64_encode($token);
+                $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $user = $this->getUser();            
-            $quotation->setCompany($company);
-            $entityManager->persist($quotation);
-            $entityManager->flush();
-
-            if ($sendOption === 'Maintenant') {
-                $quotationCsvData = $this->exportQuotation($quotation);
-                $this->quotationService->sendQuotationMail($quotation, $quotationCsvData);
+                $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
             }
 
             $this->addFlash('success', 'Le devis a été créé avec succès.');
-
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dashboard/quotation/new.html.twig', [
             'quotation' => $quotation,
+            'customer' => $customer,
+            'service' => $service,
             'form' => $form,
         ]);
     }
 
     #[Route('/{uid}', name: 'dashboard.quotation.show', methods: ['GET'])]
-    public function show(Quotation $quotation, QuotationRepository $quotationRepository): Response
+    public function show(Quotation $quotation, PdfGeneratorService $pdfGeneratorService): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
 
-        $quotationDetails = $quotationRepository->getQuotationDetails($quotation);
+        $data = $this->quotationService->getQuotationDataForPdf($quotation);
+        $twigTemplate = $this->renderView('dashboard/quotation/pdf/quotation_template.html.twig', $data);
 
-        return $this->render('dashboard/quotation/show.html.twig', [
-            'quotation' => $quotation,
-            'quotationDetails' => $quotationDetails['quotationDetails'],
-            'totalPriceWithoutTax' => $quotationDetails['totalPriceWithoutTax'],
-            'totalPriceWithTax' => $quotationDetails['totalPriceWithTax'],
+        $pdfContent = $pdfGeneratorService->showPdf($twigTemplate);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
         ]);
     }
 

@@ -1,0 +1,16 @@
+<div style="font-family: Arial, sans-serif; color: #333;">
+    <h1 style="font-weight: bold; font-size: 1.25rem; text-align: center; margin-bottom: 20px;">{{ company.denomination }}</h1>
+    <h2 style="font-weight: 600; color: #666;">Votre nouveau devis</h2>
+    <p>Bonjour {{ customerName }},</p>
+    <p>
+        Vous trouverez ci-joint en pièce jointe le devis que nous avons créé pour vous.
+    </p>
+    <p>Pour valider ce devis, veuillez cliquer sur le lien ci-dessous :</p>
+    <p>
+        <a href="{{ validationUrl }}" style="color: #fff; text-decoration: none; border: 1px solid #4858D0; background-color: #4858D0; padding: 8px 24px;">Valider le devis</a>
+    </p>
+    <p>Ce lien sera valide pour une durée de 30 jours.</p>
+
+    <p style="margin-top: 40px;">Merci pour votre confiance !</p>
+    <p>L'équipe {{ company.denomination }}</p>
+</div>

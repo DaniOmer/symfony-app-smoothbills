@@ -37,6 +37,7 @@ class ServiceService
                 'price' => $service->getPrice(),
                 'estimated_duration' => $service->getEstimatedDuration(),
                 'status' => $service->getServiceStatus()->getName(),
+                'created_at' => $service->getCreatedAt()->format('d/m/Y'),
             ];
         }
 

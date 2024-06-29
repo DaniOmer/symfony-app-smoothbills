@@ -66,6 +66,8 @@ service:
     price: "Prix"
     description: "Description"
     estimatedDuration: "Durée estimée"
+    not_data: "Aucune donnée"
+
 
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
@@ -88,6 +90,19 @@ quotation:
     invoice_accepted: "Devis acceptés"
     invoice_rejected: "Devis rejetés"
     details: "Services"
+
+invoice: 
+    title: "Factures"
+    table_title: "Toutes les factures"
+    invoice_paid: "Factures payées"
+    invoice_unpaid: "Factures impayées"
+    invoice_pending: "Factures en attente"
+    invoice_details: "Détails de la facture"
+    status:
+        paid: "Payée"
+        unpaid: "Non payée"
+        pending: "En attente"
+        cancelled: "Annulée"
 
 payment:
     title: "Paiements"

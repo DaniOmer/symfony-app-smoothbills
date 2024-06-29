@@ -13,6 +13,7 @@ module.exports = {
         secondary: "rgba(var(--secondary-color))",
         tertiary: "rgba(var(--tertiary-color))",
         background: "rgba(var(--background-color))",
+        backgroundIcon: '#FBF6F6',
         green: {
           '100': 'rgba(var(--green-status-bg-color))',
           '800': 'rgba(var(--green-status-text-color))',
@@ -42,7 +43,7 @@ module.exports = {
       },
       gap:{
         '13':"52px"
-       }
+      }
     },
   },
   plugins: [],

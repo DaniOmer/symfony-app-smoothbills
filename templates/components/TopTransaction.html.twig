@@ -1,0 +1,51 @@
+{% props header_title = '', header_icon = '', transactions = [], headersTopTransaction = {} %}
+{% set rowClasses = "py-3 px-4" %}
+
+<section class="flex flex-col bg-white rounded-xl border border-gray-300 hover:border-primary/40 max-w-full min-h-[200px] h-full group overflow-hidden relative">
+    <header class="flex items-center gap-4 py-2 px-4">
+        <div class="flex justify-center items-center p-2 bg-backgroundIcon rounded-lg">
+            {% if header_icon %}
+                <div class="w-8 h-8">
+                    {{ ux_icon(header_icon) }}
+                </div>
+            {% endif %}
+        </div>
+        <h2 class="text-lg font-semibold">{{ header_title }}</h2>
+    </header>
+    
+    {% if transactions is empty %}
+        <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{{ 'service.not_data'|trans }}</p>
+    {% else %}
+    <div class="overflow-x-auto">
+        <div class="table w-full text-left">
+            <div class="table-header-group text-xs font-medium px-0 py-4 bg-backgroundIcon">
+                <div class="table-row font-semibold">
+                    <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.id }}</div>
+                    <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.service }}</div>
+                    <div class="{{ rowClasses }} hidden sm:table-cell text-left">{{ headersTopTransaction.date }}</div>
+                    <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.price }}</div>
+                </div>
+            </div>
+
+            <div class="table-row-group">
+                {% for transaction in transactions %}
+                    <div class="table-row text-xs font-medium leading-7 {% if loop.index is even %}bg-backgroundIcon{% else %}bg-white{% endif %} rounded-lg">
+                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                            <div>{{ transaction.id }}</div>
+                        </div>
+                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                            <div>{{ transaction.service }}</div>
+                        </div>
+                        <div class="{{ rowClasses }} hidden sm:table-cell whitespace-nowrap">
+                            <time datetime="{{ transaction.date }}">{{ transaction.date|date('d M') }}</time>
+                        </div>
+                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                            <div>{{ transaction.price }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
