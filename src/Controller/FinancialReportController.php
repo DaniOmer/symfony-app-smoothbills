@@ -4,28 +4,31 @@ namespace App\Controller;
 
 use App\Form\SalesReportFormType;
 use App\Service\FinancialReportService;
-use App\Service\InvoiceService;
+use App\Service\PdfGeneratorService;
+use App\Service\UserRegistrationChecker;
+use App\Trait\ProfileCompletionTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\UX\Chartjs\Model\Chart;
 
-#[Route('/dashboard/financial/report')]
+#[Route('/dashboard/financial')]
 class FinancialReportController extends AbstractController
 {
+    use ProfileCompletionTrait;
+    private $userRegistrationChecker;
     private $financialReportService;
-    private $invoiceService;
-    private $chartBuilder;
+    private $pdfGeneratorService;
 
-    public function __construct(FinancialReportService $financialReportService, InvoiceService $invoiceService)
+    public function __construct(FinancialReportService $financialReportService, UserRegistrationChecker $userRegistrationChecker, PdfGeneratorService $pdfGeneratorService)
     {
+        $this->userRegistrationChecker = $userRegistrationChecker;
         $this->financialReportService = $financialReportService;
-        $this->invoiceService = $invoiceService;
+        $this->pdfGeneratorService = $pdfGeneratorService;
     }
 
-    #[Route('/', name: 'dashboard.financial.report', methods: ['GET', 'POST'])]
-    public function index(Request $request): Response
+    #[Route('/sales/by/period', name: 'dashboard.financial.report.sales', methods: ['GET', 'POST'])]
+    public function getSalesReport(Request $request): Response
     {
         $form = $this->createForm(SalesReportFormType::class);
         $form->handleRequest($request);
@@ -37,19 +40,13 @@ class FinancialReportController extends AbstractController
             $startDate = $data['startDate'];
             $endDate = $data['endDate'];
 
-            // dd($data);
-            return $this->redirect($this->generateUrl('dashboard.financial.report', [
+            return $this->redirect($this->generateUrl('dashboard.financial.report.sales', [
                 'startDate' => $startDate->format('Y-m-d'),
                 'endDate' => $endDate->format('Y-m-d'),
             ]));
         }
 
-        $startDateParam = $request->query->get('startDate');
-        $endDateParam = $request->query->get('endDate');
-
-        $startDate = $startDateParam ? new \DateTime($startDateParam) : new \DateTime('-30 days');
-        $endDate = $endDateParam ? new \DateTime($endDateParam) : new \DateTime();
-
+        [ $startDate, $endDate ] = $this->financialReportService->getStartAndEndDate($request);
 
         $sales = $this->financialReportService->generateSalesReportByPeriod($startDate, $endDate, $company);
         $salesByDayChart = $this->financialReportService->generateSalesChartByDay($startDate, $endDate, $company);
@@ -66,4 +63,33 @@ class FinancialReportController extends AbstractController
 
         return $this->render('dashboard/financial_report/index.html.twig', $data);
     }
+
+    #[Route('/sales/by/period/download', name: 'dashboard.financial.report.sales.download', methods: ['GET'])]
+    public function exportSalesReport(Request $request): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        $company = $this->getUser()->getCompany();
+
+        [ $startDate, $endDate ] = $this->financialReportService->getStartAndEndDate($request);
+
+        $sales = $this->financialReportService->generateSalesReportByPeriod($startDate, $endDate, $company);
+
+        $data = [
+            'invoices' => $sales['invoices'],
+            'totalAmountHT' => $sales['totalAmountHT'],
+            'totalAmountTTC' => $sales['totalAmountTTC'],
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y/m/d'),
+        ];
+
+        $filename = 'sales_report_from_'.$startDate->format('Y-m-d').'_to_'.$endDate->format('Y-m-d');
+        $twigTemplate = $this->renderView('dashboard/financial_report/sales_report/pdf/export_template.html.twig', $data);
+
+        return $this->pdfGeneratorService->downloadPdf($twigTemplate, $filename);
+    }
+
+    
 }

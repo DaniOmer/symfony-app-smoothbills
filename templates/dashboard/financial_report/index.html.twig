@@ -29,7 +29,10 @@
                 <div>
                     <div class="flex justify-between mb-3">
                         <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
-                        <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {{ invoices|length == 0 ? "pointer-events-none opacity-60" : " "}}">
+                        <twig:MenuItem 
+                            href="{{ path('dashboard.financial.report.sales.download', {'startDate': startDate, 'endDate': endDate} )}}" 
+                            additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {{ invoices|length == 0 ? "pointer-events-none opacity-60" : " "}}"
+                        >
                             <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
                             <span class="hidden sm:inline-block">Télécharger</span>
                         </twig:MenuItem>

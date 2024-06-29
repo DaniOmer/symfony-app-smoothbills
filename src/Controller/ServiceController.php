@@ -175,11 +175,9 @@ class ServiceController extends AbstractController
         $company = $this->getUser()->getCompany();
 
         $services = $serviceRepository->findBy(['company' => $company]);
-        
-        $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
+        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {
             return [
-                $service->getId(),
                 $service->getName(),
                 $service->getPrice(),
                 $service->getEstimatedDuration(),

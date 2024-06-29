@@ -6,6 +6,9 @@ use App\Entity\Company;
 use App\Entity\Vente;
 use App\Repository\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class FinancialReportService
 {
@@ -13,13 +16,15 @@ class FinancialReportService
     private $invoiceRepository;
     private $invoiceService;
     private $chartJsService;
+    private $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService)
+    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
         $this->chartJsService = $chartJsService;
+        $this->validator = $validator;
     }
 
     public function generateSalesReportByPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Company $company)
@@ -102,4 +107,41 @@ class FinancialReportService
 
         return $chart;
     }
+
+    private function validateDate($date, ValidatorInterface $validator)
+    {
+        $constraints = new Assert\Date();
+        $violations = $validator->validate($date, $constraints);
+
+        if ($date == null) {
+            return null;
+        }
+
+        if (count($violations) > 0) {
+            return null;
+        }
+
+        try {
+            return new \DateTime($date);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getStartAndEndDate(Request $request): array
+    {
+        $startDateParam = $request->query->get('startDate');
+        $endDateParam = $request->query->get('endDate');
+
+        $startDate = $this->validateDate($startDateParam, $this->validator);
+        $endDate = $this->validateDate($endDateParam, $this->validator);
+
+        if (!$startDate || !$endDate) {
+            $startDate = new \DateTime('-30 days');
+            $endDate = new \DateTime();
+        }
+
+        return [ $startDate, $endDate ];
+    }
+
 }
