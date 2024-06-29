@@ -27,6 +27,12 @@ class FinancialReportController extends AbstractController
         $this->pdfGeneratorService = $pdfGeneratorService;
     }
 
+    #[Route('/', name: 'dashboard.financial.report')]
+    public function index(): Response
+    {
+        return $this->render('dashboard/financial_report/index.html.twig');
+    }
+
     #[Route('/sales/by/period', name: 'dashboard.financial.report.sales', methods: ['GET', 'POST'])]
     public function getSalesReport(Request $request): Response
     {
@@ -61,7 +67,7 @@ class FinancialReportController extends AbstractController
             'chart' => $salesByDayChart,
         ];
 
-        return $this->render('dashboard/financial_report/index.html.twig', $data);
+        return $this->render('dashboard/financial_report/sales_report/index.html.twig', $data);
     }
 
     #[Route('/sales/by/period/download', name: 'dashboard.financial.report.sales.download', methods: ['GET'])]

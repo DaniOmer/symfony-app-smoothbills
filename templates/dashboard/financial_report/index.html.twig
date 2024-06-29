@@ -2,75 +2,34 @@
 
 {% block title %}Rapports financiers{% endblock %}
 
-{% set rowClasses = "py-3 px-4" %}
-
 {% block body %}
     <section>
         <header class="mb-10 flex flex-col gap-4 lg:flex-row md:justify-between">
-            <div class="">
-                <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
-                <p class="text-xs">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
-            </div>
-            <div class="sm:flex sm:justify-start">
-                {{ include('dashboard/financial_report/sales_report/_form.html.twig', {'form': form}) }}
+            <div>
+                <h1 class="text-subtitle font-title font-semibold">Rapports Financiers</h1>
+                <p class="text-xs">Sélectionnez un rapport pour afficher les détails.</p>
             </div>
         </header>
-        
+
         <article>
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                    <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length > 0 ? invoices|length : 0 }}"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ invoices|length > 0 ? totalAmountHT|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total TVA" kpi_value="{{ invoices|length > 0 ? (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ invoices|length > 0 ? totalAmountTTC|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
-                </div>
-
-                <div class="mb-16">{{ render_chart(chart, {'class': 'my-chart'}) }}</div>
-
-                <div>
-                    <div class="flex justify-between mb-3">
-                        <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
-                        <twig:MenuItem 
-                            href="{{ path('dashboard.financial.report.sales.download', {'startDate': startDate, 'endDate': endDate} )}}" 
-                            additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {{ invoices|length == 0 ? "pointer-events-none opacity-60" : " "}}"
-                        >
-                            <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
-                            <span class="hidden sm:inline-block">Télécharger</span>
-                        </twig:MenuItem>
-                    </div>
-                    <div class="overflow-x-auto max-w-full border bg-white">
-                        <div class="box-border table min-w-full text-left pb-5">
-                            <div class="table-header-group bg-background">
-                                <div class="table-row font-semibold">
-                                    <div class="{{ rowClasses }} table-cell text-left">Numéro de facture</div>
-                                    <div class="{{ rowClasses }} table-cell text-left">Client</div>
-                                    <div class="{{ rowClasses }} table-cell text-left">Montant HT</div>
-                                    <div class="{{ rowClasses }} table-cell text-left">Montant TTC</div>
-                                    <div class="{{ rowClasses }} table-cell text-left">Date</div>
-                                </div>
-                            </div>
-                            <div class="table-row-group">
-                            {% if invoices|length > 0 %}
-                                {% for invoice in invoices %}
-                                    <div class="table-row">
-                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
-                                            <a href={{ path('dashboard.invoice.show', {uid : invoice.uid}) }}>
-                                                {{ invoice.invoice_number }}
-                                            </a>
-                                        </div>
-                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.client }}</div>
-                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ht|number_format(2, ',', ' ') }}</div>
-                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</div>
-                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.invoice_date|date('d/m/Y') }}</div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                            </div>
-                        </div>
-                        {% if invoices|length == 0 %}
-                            <div class="w-full py-10 text-center"> Vous n'avez réalisé aucune vente sur la période sélectionnée.</div>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                <a href="{{ path('dashboard.financial.report.sales') }}" class="flex flex-col justify-center items-center p-5 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    <h2 class="text-lg font-semibold mb-2">Rapport des Ventes</h2>
+                    <p class="text-sm">Voir les détails des ventes pour une période spécifiée.</p>
+                </a>
+                <a href="#" class="flex flex-col justify-center items-center p-5 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    <h2 class="text-lg font-semibold mb-2">Performance des services</h2>
+                    <p class="text-sm">Identifier les services qui se vendent le mieux et lesquels nécessitent des améliorations.</p>
+                </a>
+                <a href="#" class="flex flex-col justify-center items-center p-5 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    <h2 class="text-lg font-semibold mb-2">Performance des clients</h2>
+                    <p class="text-sm">Comprendre les clients les plus rentables et les segments de marché les plus actifs.</p>
+                </a>
+                <a href="#" class="flex flex-col justify-center items-center p-5 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    <h2 class="text-lg font-semibold mb-2">Rapport de recouvrements</h2>
+                    <p class="text-sm">Suivre les paiements en attente et améliorer le recouvrement des créances.</p>
+                </a>
+            </div>
         </article>
     </section>
 {% endblock %}
