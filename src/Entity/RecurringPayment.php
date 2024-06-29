@@ -30,10 +30,6 @@ class RecurringPayment
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $endDate = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Payment $payment = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -91,17 +87,6 @@ class RecurringPayment
     public function setEndDate(\DateTimeInterface $endDate): static
     {
         $this->endDate = $endDate;
-        return $this;
-    }
-
-    public function getPayment(): ?Payment
-    {
-        return $this->payment;
-    }
-
-    public function setPayment(?Payment $payment): static
-    {
-        $this->payment = $payment;
         return $this;
     }
 }

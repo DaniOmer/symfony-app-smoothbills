@@ -44,15 +44,13 @@ class PaymentController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'payments' => $paginatePayments,
-            'actions' => [
-                ['route' => 'dashboard.payment.show', 'label' => 'Afficher'],
-            ]
+            'actions' => []
         ];
 
         return $this->render('dashboard/payment/index.html.twig', $config);
     }
 
-    #[Route('/new', name: 'app_payment_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'dashboard.payment.new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $payment = new Payment();
@@ -72,15 +70,7 @@ class PaymentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_payment_show', methods: ['GET'])]
-    public function show(Payment $payment): Response
-    {
-        return $this->render('payment/show.html.twig', [
-            'payment' => $payment,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_payment_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'dashboard.payment.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Payment $payment, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(PaymentType::class, $payment);
@@ -96,16 +86,5 @@ class PaymentController extends AbstractController
             'payment' => $payment,
             'form' => $form,
         ]);
-    }
-
-    #[Route('/{id}', name: 'app_payment_delete', methods: ['POST'])]
-    public function delete(Request $request, Payment $payment, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$payment->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($payment);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_payment_index', [], Response::HTTP_SEE_OTHER);
     }
 }

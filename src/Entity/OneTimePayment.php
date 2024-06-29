@@ -24,10 +24,6 @@ class OneTimePayment
     #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $stripeInvoiceId = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Payment $payment = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -63,17 +59,6 @@ class OneTimePayment
     public function setStripeInvoiceId(string $stripeInvoiceId): static
     {
         $this->stripeInvoiceId = $stripeInvoiceId;
-        return $this;
-    }
-
-    public function getPayment(): ?Payment
-    {
-        return $this->payment;
-    }
-
-    public function setPayment(?Payment $payment): static
-    {
-        $this->payment = $payment;
         return $this;
     }
 }

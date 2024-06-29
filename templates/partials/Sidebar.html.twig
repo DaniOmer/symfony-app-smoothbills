@@ -52,7 +52,7 @@
             </li>
             <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
-                    href="#" 
+                    href="{{ path('dashboard.payment.index') }}" 
                     alt="Paiement" 
                     additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('solar:hand-money-linear') }}

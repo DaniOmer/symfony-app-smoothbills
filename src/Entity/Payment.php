@@ -33,6 +33,12 @@ class Payment
     #[ORM\JoinColumn(name: "invoice_id", referencedColumnName: "id", nullable: false)]
     private ?Invoice $invoice = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?OneTimePayment $oneTimePayment = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?RecurringPayment $recurringPayment = null;
+
     public function __construct()
     {
         $this->UuidConstruct();
@@ -84,6 +90,30 @@ class Payment
     public function setInvoice(?Invoice $invoice): static
     {
         $this->invoice = $invoice;
+        return $this;
+    }
+
+    public function getOneTimePayment(): ?OneTimePayment
+    {
+        return $this->oneTimePayment;
+    }
+
+    public function setOneTimePayment(?OneTimePayment $oneTimePayment): static
+    {
+        $this->oneTimePayment = $oneTimePayment;
+
+        return $this;
+    }
+
+    public function getRecurringPayment(): ?RecurringPayment
+    {
+        return $this->recurringPayment;
+    }
+
+    public function setRecurringPayment(?RecurringPayment $recurringPayment): static
+    {
+        $this->recurringPayment = $recurringPayment;
+
         return $this;
     }
 }
