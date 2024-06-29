@@ -17,12 +17,11 @@
         </header>
         
         <article>
-            {% if invoices|length > 0 %}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                    <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length }}"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ totalAmountHT|number_format(2, ',', ' ') }} €"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total TVA" kpi_value="{{ (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') }} €"></twig:KpiCard>
-                    <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ totalAmountTTC|number_format(2, ',', ' ') }} €"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Nombre de vente" kpi_value="{{ invoices|length > 0 ? invoices|length : 0 }}"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total HT" kpi_value="{{ invoices|length > 0 ? totalAmountHT|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total TVA" kpi_value="{{ invoices|length > 0 ? (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
+                    <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ invoices|length > 0 ? totalAmountTTC|number_format(2, ',', ' ') : 0 }} €"></twig:KpiCard>
                 </div>
 
                 <div class="mb-16">{{ render_chart(chart, {'class': 'my-chart'}) }}</div>
@@ -30,13 +29,13 @@
                 <div>
                     <div class="flex justify-between mb-3">
                         <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
-                        <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                        <twig:MenuItem href="#" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {{ invoices|length == 0 ? "pointer-events-none opacity-60" : " "}}">
                             <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
                             <span class="hidden sm:inline-block">Télécharger</span>
                         </twig:MenuItem>
                     </div>
-                    <div class="overflow-x-auto max-w-full">
-                        <div class="border box-border table min-w-full text-left pb-5 bg-white">
+                    <div class="overflow-x-auto max-w-full border bg-white">
+                        <div class="box-border table min-w-full text-left pb-5">
                             <div class="table-header-group bg-background">
                                 <div class="table-row font-semibold">
                                     <div class="{{ rowClasses }} table-cell text-left">Numéro de facture</div>
@@ -47,6 +46,7 @@
                                 </div>
                             </div>
                             <div class="table-row-group">
+                            {% if invoices|length > 0 %}
                                 {% for invoice in invoices %}
                                     <div class="table-row">
                                         <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
@@ -60,12 +60,14 @@
                                         <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ invoice.invoice_date|date('d/m/Y') }}</div>
                                     </div>
                                 {% endfor %}
+                            {% endif %}
                             </div>
                         </div>
+                        {% if invoices|length == 0 %}
+                            <div class="w-full py-10 text-center"> Vous n'avez réalisé aucune vente sur la période sélectionnée.</div>
+                        {% endif %}
                     </div>
                 </div>
-            {% else %}
-                <div> Vous n'avez réalisé aucune vente sur la période sélectionnée.</div>
-            {% endif %}
         </article>
+    </section>
 {% endblock %}

@@ -65,13 +65,14 @@
                 <div class="hidden md:block">
                     {% include "partials/Sidebar.html.twig" %}
                 </div>
-                <main class="box-border flex basis-full flex-col w-1/4 max-w-full">
+                <div class="box-border flex basis-full flex-col w-1/4 max-w-full">
                     <div class="md:overflow-y-auto h-full">
-                        <div class="w-full px-3 lg:px-6 py-8 max-w-[1200px] mx-auto">
+                        <main class="w-full px-3 lg:px-6 py-8 max-w-[1200px] mx-auto">
                             {% block body %}{% endblock %}
-                        </div>
+                        </main>
+                        {{ include('partials/DashboardFooter.html.twig') }}
                     </div>
-                </main>
+                </div>
             </div>
         </div>
     </body>
