@@ -9,16 +9,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/dashboard/financial/report')]
 class FinancialReportController extends AbstractController
 {
-    private $salesReportService;
+    private $financialReportService;
     private $invoiceService;
+    private $chartBuilder;
 
     public function __construct(FinancialReportService $financialReportService, InvoiceService $invoiceService)
     {
-        $this->salesReportService = $financialReportService;
+        $this->financialReportService = $financialReportService;
         $this->invoiceService = $invoiceService;
     }
 
@@ -35,6 +37,7 @@ class FinancialReportController extends AbstractController
             $startDate = $data['startDate'];
             $endDate = $data['endDate'];
 
+            // dd($data);
             return $this->redirect($this->generateUrl('dashboard.financial.report', [
                 'startDate' => $startDate->format('Y-m-d'),
                 'endDate' => $endDate->format('Y-m-d'),
@@ -47,7 +50,9 @@ class FinancialReportController extends AbstractController
         $startDate = $startDateParam ? new \DateTime($startDateParam) : new \DateTime('-30 days');
         $endDate = $endDateParam ? new \DateTime($endDateParam) : new \DateTime();
 
-        $sales = $this->salesReportService->generateSalesReportByPeriod($startDate, $endDate, $company);
+
+        $sales = $this->financialReportService->generateSalesReportByPeriod($startDate, $endDate, $company);
+        $salesByDayChart = $this->financialReportService->generateSalesChartByDay($startDate, $endDate, $company);
 
         $data = [
             'invoices' => $sales['invoices'],
@@ -55,9 +60,8 @@ class FinancialReportController extends AbstractController
             'totalAmountTTC' => $sales['totalAmountTTC'],
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y/m/d'),
-            'rawStartDate' => $startDate->format('d/m/Y'),
-            'rawEndDate' => $endDate->format('d/m/Y'),
-            'form' => $form->createView(),
+            'form' => $form,
+            'chart' => $salesByDayChart,
         ];
 
         return $this->render('dashboard/financial_report/index.html.twig', $data);

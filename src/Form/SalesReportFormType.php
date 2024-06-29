@@ -15,13 +15,11 @@ class SalesReportFormType extends AbstractType
         $builder
             ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
-                'years' => range(date('2023'), date('Y')),
                 'html5' => false,
                 'attr' => ['id' => 'startDate'],
             ])
             ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
-                'years' => range(date('2023'), date('Y')),
                 'html5' => false,
                 'attr' => ['id' => 'endDate'],
                 'constraints' => [

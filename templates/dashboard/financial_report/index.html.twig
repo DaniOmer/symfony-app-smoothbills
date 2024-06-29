@@ -25,6 +25,8 @@
                     <twig:KpiCard kpi_name="Montant total TTC" kpi_value="{{ totalAmountTTC|number_format(2, ',', ' ') }} €"></twig:KpiCard>
                 </div>
 
+                <div class="mb-16">{{ render_chart(chart, {'class': 'my-chart'}) }}</div>
+
                 <div>
                     <div class="flex justify-between mb-3">
                         <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des Ventes</h2>
