@@ -1,0 +1,69 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Rapports financiers - Performance des services{% endblock %}
+
+{% set rowClasses = "py-3 px-4" %}
+
+{% block body %}
+    <section>
+        <header class="mb-10 flex flex-col gap-4 lg:flex-row md:justify-between">
+            <div class="">
+                <h1 class="text-subtitle font-title font-semibold">Ventes par période</h1>
+                <p class="text-xs">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+            </div>
+            <div class="sm:flex sm:justify-start">
+                {{ include('dashboard/financial_report/_form.html.twig', {'form': form}) }}
+            </div>
+        </header>
+        
+        <article>
+                <div>
+                    <div class="flex justify-between mb-3">
+                        <h2 class="text-subtitle font-title font-semibold mb-3">Récapitulatif des services</h2>
+                        <twig:MenuItem 
+                            href="{{ path('dashboard.financial.report.sales.download', {'startDate': startDate, 'endDate': endDate} )}}" 
+                            additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75 {{ services|length == 0 ? "pointer-events-none opacity-60" : " "}}"
+                        >
+                            <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
+                            <span class="hidden sm:inline-block">Télécharger</span>
+                        </twig:MenuItem>
+                    </div>
+                    <div class="overflow-x-auto max-w-full border bg-white">
+                        <div class="box-border table min-w-full text-left pb-5">
+                            <div class="table-header-group bg-background">
+                                <div class="table-row font-semibold">
+                                    <div class="{{ rowClasses }} table-cell text-left">Nom</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Prix HT</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Prix TTC</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Nombre de vente</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Revenue HT</div>
+                                    <div class="{{ rowClasses }} table-cell text-left">Revenue TTC</div>
+                                </div>
+                            </div>
+                            <div class="table-row-group">
+                            {% if services|length > 0 %}
+                                {% for service in services %}
+                                    <div class="table-row">
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap text-primary">
+                                            <a href={{ path('dashboard.service.show', {uid : service.uid}) }}>
+                                                {{ service.name }}
+                                            </a>
+                                        </div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ service.price|number_format(2, ',', ' ') }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ service.priceWithTax|number_format(2, ',', ' ') }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ service.quantity }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ service.revenueHT|number_format(2, ',', ' ') }}</div>
+                                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">{{ service.revenueTTC|number_format(2, ',', ' ') }}</div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                        </div>
+                        {% if services|length == 0 %}
+                            <div class="w-full py-10 text-center"> Vous n'avez vendu aucun service sur la période sélectionnée.</div>
+                        {% endif %}
+                    </div>
+                </div>
+        </article>
+    </section>
+{% endblock %}

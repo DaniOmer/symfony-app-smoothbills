@@ -77,18 +77,21 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function generateDailySalesReport(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company)
+    public function getMostlySalesServices(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company)
     {
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('i.created_at as date, SUM(i.amount_ht) as totalAmountHT')
-            ->from(Invoice::class, 'i')
+        return $this->createQueryBuilder('i')
+            ->select('s.uid, s.name, s.price, SUM(qhs.price_without_tax * qhs.quantity) as revenueHT, SUM(qhs.price_with_tax * qhs.quantity) as revenueTTC, SUM(qhs.quantity) AS quantity')
+            ->join('i.quotation', 'q')
+            ->join('q.quotationHasServices', 'qhs')
+            ->join('qhs.service', 's')
             ->where('i.company = :company')
-            ->andWhere('i.invoice_date BETWEEN :startDate AND :endDate')
-            ->groupBy('date')
+            ->andWhere('i.created_at BETWEEN :startDate AND :endDate')
+            ->groupBy('s.id')
+            ->orderBy('quantity', 'DESC')
             ->setParameter('company', $company)
             ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate);
-
-        return $qb->getQuery()->getResult();
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getResult();
     }
 }

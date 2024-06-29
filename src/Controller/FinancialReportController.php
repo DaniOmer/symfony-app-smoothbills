@@ -97,5 +97,38 @@ class FinancialReportController extends AbstractController
         return $this->pdfGeneratorService->downloadPdf($twigTemplate, $filename);
     }
 
+
+    #[Route('/product/performance', name: 'dashboard.financial.report.services', methods: ['GET', 'POST'])]
+    public function generateServicePerformanceReport(Request $request): Response
+    {
+        $form = $this->createForm(SalesReportFormType::class);
+        $form->handleRequest($request);
+
+        $company = $this->getUser()->getCompany();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $startDate = $data['startDate'];
+            $endDate = $data['endDate'];
+
+            return $this->redirect($this->generateUrl('dashboard.financial.report.services', [
+                'startDate' => $startDate->format('Y-m-d'),
+                'endDate' => $endDate->format('Y-m-d'),
+            ]));
+        }
+
+        [ $startDate, $endDate ] = $this->financialReportService->getStartAndEndDate($request);
+
+        $services = $this->financialReportService->generateServicePerformanceReport($startDate, $endDate, $company);
+
+        $data = [
+            'services' => $services,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y/m/d'),
+            'form' => $form,
+        ];
+
+        return $this->render('dashboard/financial_report/services_report/index.html.twig', $data);
+    }
     
 }

@@ -1,6 +1,6 @@
 {% extends 'base/base_dashboard.html.twig' %}
 
-{% block title %}Rapports financiers{% endblock %}
+{% block title %}Rapports financiers - Vente par période{% endblock %}
 
 {% set rowClasses = "py-3 px-4" %}
 
@@ -12,7 +12,7 @@
                 <p class="text-xs">Période : <span class="text-primary">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
             </div>
             <div class="sm:flex sm:justify-start">
-                {{ include('dashboard/financial_report/sales_report/_form.html.twig', {'form': form}) }}
+                {{ include('dashboard/financial_report/_form.html.twig', {'form': form}) }}
             </div>
         </header>
         

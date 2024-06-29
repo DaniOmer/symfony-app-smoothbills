@@ -17,14 +17,16 @@ class FinancialReportService
     private $invoiceService;
     private $chartJsService;
     private $validator;
+    private $taxService;
 
-    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService, ValidatorInterface $validator, TaxService $taxService)
     {
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
         $this->chartJsService = $chartJsService;
         $this->validator = $validator;
+        $this->taxService = $taxService;
     }
 
     public function generateSalesReportByPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Company $company)
@@ -142,6 +144,17 @@ class FinancialReportService
         }
 
         return [ $startDate, $endDate ];
+    }
+
+    public function generateServicePerformanceReport(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company): array
+    {
+        $services = $this->invoiceRepository->getMostlySalesServices($startDate, $endDate, $company);
+
+        foreach ($services as &$service){
+            $service['priceWithTax'] = $this->taxService->applyTva($service['price']);
+        }
+
+        return $services;
     }
 
 }
