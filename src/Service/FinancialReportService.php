@@ -6,22 +6,20 @@ use App\Entity\Company;
 use App\Entity\Vente;
 use App\Repository\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Symfony\UX\Chartjs\Model\Chart;
 
 class FinancialReportService
 {
     private $entityManager;
     private $invoiceRepository;
     private $invoiceService;
-    private $chartBuilder;
+    private $chartJsService;
 
-    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartBuilderInterface $chartBuilder)
+    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService)
     {
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
-        $this->chartBuilder = $chartBuilder;
+        $this->chartJsService = $chartJsService;
     }
 
     public function generateSalesReportByPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Company $company)
@@ -64,10 +62,12 @@ class FinancialReportService
                 $groupedInvoices[$date] = [
                     'date' => $date,
                     'totalAmountHT' => 0,
+                    'totalAmountTTC' => 0,
                     'invoices' => []
                 ];
             }
             $groupedInvoices[$date]['totalAmountHT'] += $invoice['amount_ht'];
+            $groupedInvoices[$date]['totalAmountTTC'] += $invoice['amount_ttc'];
             $groupedInvoices[$date]['invoices'][] = $invoice;
         }
         
@@ -83,15 +83,13 @@ class FinancialReportService
             new \DateInterval('P1D'),
             (clone $endDate)->modify('+1 day')
         );
-
+        $chartType = 'TYPE_LINE';
+        $labelTitle = 'Ventes journalières TTC (€)';
         $labels = [];
         $data = [];
 
         foreach ($salesData as $daySales) {
-            // $labels[] = $daySales['date'];
-            // $data[] = $daySales['totalAmountHT'];
-            // dd($daySales['date'], $daySales['totalAmountHT']);
-            $salesByDate[$daySales['date']] = $daySales['totalAmountHT'];
+            $salesByDate[$daySales['date']] = $daySales['totalAmountTTC'];
         }
 
         foreach ($period as $date) {
@@ -100,27 +98,7 @@ class FinancialReportService
             $data[] = $salesByDate[$formattedDate] ?? 0;
         }
 
-        $chart = $this->chartBuilder->createChart(Chart::TYPE_LINE);
-        $chart->setData([
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Ventes journalières',
-                    'backgroundColor' => 'rgb(72, 88, 208)',
-                    'borderColor' => 'rgb(72, 88, 208)',
-                    'data' => $data,
-                ],
-            ],
-        ]);
-
-        $chart->setOptions([
-            'scales' => [
-                'y' => [
-                    'suggestedMin' => 0,
-                    'suggestedMax' => max($data) + 1000,
-                ],
-            ],
-        ]);
+        $chart = $this->chartJsService->createChart($labelTitle, $labels, $data, $chartType);
 
         return $chart;
     }
