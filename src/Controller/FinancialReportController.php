@@ -119,10 +119,20 @@ class FinancialReportController extends AbstractController
 
         [ $startDate, $endDate ] = $this->financialReportService->getStartAndEndDate($request);
 
-        $services = $this->financialReportService->generateServicePerformanceReport($startDate, $endDate, $company);
+        [
+            'services' => $services,
+            'mostSoldService' => $mostSoldService,
+            'highestRevenueService' => $highestRevenueService,
+            'leastSoldService' => $leastSoldService,
+            'lowestRevenueService' => $lowestRevenueService,
+        ] = $this->financialReportService->generateServicePerformanceReport($startDate, $endDate, $company);
 
         $data = [
             'services' => $services,
+            'mostSoldService' => $mostSoldService,
+            'highestRevenueService' => $highestRevenueService,
+            'leastSoldService' => $leastSoldService,
+            'lowestRevenueService' => $lowestRevenueService,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y/m/d'),
             'form' => $form,

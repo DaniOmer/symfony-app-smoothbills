@@ -154,7 +154,51 @@ class FinancialReportService
             $service['priceWithTax'] = $this->taxService->applyTva($service['price']);
         }
 
-        return $services;
+        $data = [
+            'services' => $services,
+            'mostSoldService' => $this->getMostSoldService($services),
+            'highestRevenueService' => $this->getHighestRevenueService($services),
+            'leastSoldService' => $this->getLeastSoldService($services),
+            'lowestRevenueService' => $this->getLowestRevenueService($services),
+        ];
+
+        return $data;
+    }
+
+    public function getMostSoldService($services)
+    {
+        usort($services, function($a, $b) {
+            return $b['sales'] <=> $a['sales'];
+        });
+
+        return reset($services);
+    }
+
+    public function getHighestRevenueService($services)
+    {
+        usort($services, function($a, $b) {
+            return $b['revenueHT'] <=> $a['revenueHT'];
+        });
+
+        return reset($services);
+    }
+
+    public function getLeastSoldService($services)
+    {
+        usort($services, function($a, $b) {
+            return $a['sales'] <=> $b['sales'];
+        });
+
+        return reset($services);
+    }
+
+    public function getLowestRevenueService($services)
+    {
+        usort($services, function($a, $b) {
+            return $a['revenueHT'] <=> $b['revenueHT'];
+        });
+
+        return reset($services);
     }
 
 }
