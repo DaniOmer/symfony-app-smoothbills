@@ -140,4 +140,39 @@ class FinancialReportController extends AbstractController
 
         return $this->render('dashboard/financial_report/services_report/index.html.twig', $data);
     }
+
+    #[Route('/product/performance/download', name: 'dashboard.financial.report.services.download', methods: ['GET'])]
+    public function exportServicePerformanceReport(Request $request): Response
+    {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
+        $company = $this->getUser()->getCompany();
+
+        [ $startDate, $endDate ] = $this->financialReportService->getStartAndEndDate($request);
+
+        [
+            'services' => $services,
+            'mostSoldService' => $mostSoldService,
+            'highestRevenueService' => $highestRevenueService,
+            'leastSoldService' => $leastSoldService,
+            'lowestRevenueService' => $lowestRevenueService,
+        ] = $this->financialReportService->generateServicePerformanceReport($startDate, $endDate, $company);
+
+        $data = [
+            'services' => $services,
+            'mostSoldService' => $mostSoldService,
+            'highestRevenueService' => $highestRevenueService,
+            'leastSoldService' => $leastSoldService,
+            'lowestRevenueService' => $lowestRevenueService,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y/m/d'),
+        ];
+
+        $filename = 'services_performance_from_'.$startDate->format('Y-m-d').'_to_'.$endDate->format('Y-m-d');
+        $twigTemplate = $this->renderView('dashboard/financial_report/services_report/pdf/export_template.html.twig', $data);
+
+        return $this->pdfGeneratorService->downloadPdf($twigTemplate, $filename);
+    }
 }

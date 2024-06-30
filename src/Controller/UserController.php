@@ -90,8 +90,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['GET', 'POST'])]
-    public function addUserByInvitation(Request $request, JWTService $jWTService): Response
+    #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['POST'])]
+    public function addUserByInvitation(Request $request, JWTService $jWTService): Response 
     {
         $invitation = new Invitation();
         $form = $this->createForm(InvitationType::class, $invitation);
