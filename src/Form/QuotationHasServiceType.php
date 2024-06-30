@@ -64,7 +64,6 @@ class QuotationHasServiceType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => QuotationHasService::class,
-            // 'user' => null,
         ]);
     }
 }
