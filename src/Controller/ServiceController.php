@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\SubscriptionService;
 
 #[Route('/dashboard/service')]
 class ServiceController extends AbstractController
@@ -22,13 +23,16 @@ class ServiceController extends AbstractController
     private $serviceService;
     private $userRegistrationChecker;
     private $csvExporter;
+    private $subscriptionService;
 
-    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter)
+    public function __construct(ServiceService $serviceService, UserRegistrationChecker $userRegistrationChecker, CsvExporter $csvExporter, SubscriptionService $subscriptionService)
     {
         $this->serviceService = $serviceService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
+        $this->subscriptionService = $subscriptionService;
     }
+
     #[Route('/', name: 'dashboard.service.index', methods: ['GET'])]
     public function index(ServiceRepository $serviceRepository, Request $request): Response
     {
@@ -37,9 +41,9 @@ class ServiceController extends AbstractController
         }
 
         $statusColors = [
-            'Actif' => 'bg-green-100 text-green-800',
-            'Inactif' => 'bg-red-100 text-red-800',
-            'En attente' => 'bg-yellow-100 text-yellow-800',
+            'Active' => 'bg-green-100 text-green-800',
+            'Inactive' => 'bg-red-100 text-red-800',
+            'Pending' => 'bg-yellow-100 text-yellow-800',
         ];
 
         $user = $this->getUser();
@@ -55,8 +59,8 @@ class ServiceController extends AbstractController
         $totalServices = $serviceRepository->countTotalServicesByCompany($user);
 
         $statusCounts = [
-            'active' => $serviceRepository->countServicesByStatus('Actif', $companyId),
-            'inactive' => $serviceRepository->countServicesByStatus('Inactif', $companyId),
+            'active' => $serviceRepository->countServicesByStatus('Active', $companyId),
+            'inactive' => $serviceRepository->countServicesByStatus('Inactive', $companyId),
         ];
 
         $headersTopTransaction = ['id' => 'ID', 'service' => 'Service', 'date' => 'Date', 'price' => 'Prix'];
@@ -110,16 +114,22 @@ class ServiceController extends AbstractController
         $form = $this->createForm(ServiceType::class, $service);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->serviceService->createService($form, $service, $user);
-            $this->addFlash('success', 'Le service a été créé avec succès.');
-            return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
-        }
+        try {
 
-        return $this->render('dashboard/service/new.html.twig', [
-            'service' => $service,
-            'form' => $form,
-        ]);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->serviceService->createService($form, $service, $user);
+                $this->addFlash('success', 'Le service a été créé avec succès.');
+                return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->render('dashboard/service/new.html.twig', [
+                'service' => $service,
+                'form' => $form,
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la création du service.');
+            return $this->redirectToRoute('dashboard.service.index');
+        }
     }
 
     #[Route('/{uid}', name: 'dashboard.service.show', methods: ['GET'])]
@@ -172,6 +182,15 @@ class ServiceController extends AbstractController
     #[Route('/export/all', name: 'dashboard.service.export_all', methods: ['GET'])]
     public function exportAllServices(ServiceRepository $serviceRepository): Response
     {
+
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+        if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
+            $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
+            return $this->redirectToRoute('dashboard.service.index');
+        }
+
         $services = $serviceRepository->findAll();
         $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {

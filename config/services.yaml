@@ -42,3 +42,9 @@ services:
 
     App\Service\CsvExporter:
         public: true
+    
+    App\Twig\AppExtension:
+        arguments:
+            $companySubscriptionRepository: '@App\Repository\CompanySubscriptionRepository'
+            $security: '@security.helper'
+        tags: ['twig.extension']

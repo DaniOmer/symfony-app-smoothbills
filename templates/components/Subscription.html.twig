@@ -1,0 +1,45 @@
+{# templates/components/Subscription.html.twig #}
+{% props plans = [] %}
+
+<div class="flex flex-wrap justify-between">
+    {% for plan in plans %}
+    <article class="flex flex-col justify-between p-6 bg-white rounded-xl border border-gray-300 shadow-md max-w-full max-w-[500px] m-2">
+        <div>
+            <header class="flex justify-between items-center border-b border-gray-300 pb-4 mb-4">
+                <h2 class="text-2xl font-bold text-black">{{ plan.name }}</h2>
+                <h3 class="text-xl font-semibold text-gray-700">{{ plan.price }}</h3>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {% for feature in plan.features %}
+                    <div class="flex items-start gap-3">
+                        {% if feature.active %}
+                            <div class="w-6 h-6 text-green-500">
+                                {{ ux_icon('skill-icons:active-icon') }}
+                            </div>
+                        {% else %}
+                            <div class="w-6 h-6 text-red-500">
+                                {{ ux_icon('skill-icons:inactive-icon') }}
+                            </div>
+                        {% endif %}
+                        <div class="{{ feature.active ? 'text-gray-900' : 'text-gray-400' }}">{{ feature.text }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="flex justify-center mt-4">
+            {% if plan.isCurrentPlan %}
+                <button class="py-2 px-4 text-lg font-semibold text-white bg-primary rounded-xl border border-primary">
+                    {{ 'button.current_subscription'|trans }}
+                </button>
+            {% else %}
+                <a
+                    href="{{ path('dashboard.settings.subscriptions.change', {subscriptionId: plan.id}) }}"
+                    class="py-2 px-4 text-lg font-semibold text-primary bg-white rounded-xl border border-primary hover:bg-primary hover:text-white transition ease-in-out delay-75"
+                >
+                    {{ 'button.change_subscription'|trans }}
+                </a>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</div>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'invoice.title'|trans({'%invoice_number%': invoice.invoice_number}) }}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+</head>
+<body class="m-8">
+    <header class="flex justify-between mb-8">
+        <div>
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12">
+            <div class="mt-4">
+                <h3 class="text-lg font-semibold">{{ 'company.info'|trans }}</h3>
+                <p>{{ company.name }}</p>
+                <p>{{ company.address }}</p>
+                <p>{{ company.zip_code }} {{ company.city }}</p>
+                <p>{{ company.country }}</p>
+                <p>{{ 'company.phone'|trans }}: {{ company.phone }}</p>
+                <p>{{ 'company.email'|trans }}: {{ company.email }}</p>
+                <p class="mt-2">{{ 'company.capital'|trans }}</p>
+                <p>{{ 'company.siret'|trans }}: 414 217 802 00068</p>
+                <p>{{ 'company.vat'|trans }}: FR 95 414 217 802</p>
+                <p>{{ 'company.ics'|trans }}: FR 56 ZZZ 530 562</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <h3 class="text-xl font-semibold">{{ 'invoice'|trans }}</h3>
+            <p>{{ 'invoice.number'|trans }}: {{ invoice.invoice_number }}</p>
+            <p>{{ 'invoice.date'|trans }}: {{ invoice.quotation.sending_date|date('d/m/Y') }}</p>
+            <p>{{ 'client.name'|trans }}: {{ invoice.quotation.customer.name }}</p>
+            <p>{{ 'client.code'|trans }}: {{ invoice.quotation.customer.code }}</p>
+            {% if invoice.quotation.customer.vat_number %}
+                <p>{{ 'client.vat'|trans }}: {{ invoice.quotation.customer.vat_number }}</p>
+            {% endif %}
+            <p class="mt-4">{{ invoice.quotation.customer.address }}</p>
+            <p>{{ invoice.quotation.customer.zip_code }} {{ invoice.quotation.customer.city }}</p>
+            <p>{{ invoice.quotation.customer.country }}</p>
+        </div>
+    </header>
+
+    <main>
+        <table class="min-w-full bg-white border-collapse mb-8">
+            <thead>
+                <tr>
+                    <th class="border py-2 px-4">{{ 'designation'|trans }}</th>
+                    <th class="border py-2 px-4">{{ 'quantity'|trans }}</th>
+                    <th class="border py-2 px-4">{{ 'price_ht'|trans }}</th>
+                    <th class="border py-2 px-4">{{ 'price_ttc'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in invoice.quotation.quotationHasServices %}
+                    <tr>
+                        <td class="border py-2 px-4">{{ service.service.name }}</td>
+                        <td class="border py-2 px-4 text-center">{{ service.quantity }}</td>
+                        <td class="border py-2 px-4 text-right">{{ service.price_without_tax|number_format(2, ',', ' ') }} €</td>
+                        <td class="border py-2 px-4 text-right">{{ service.price_with_tax|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="2" class="border py-2 px-4"></td>
+                    <td class="border py-2 px-4 text-right font-semibold">{{ 'total_ht'|trans }}</td>
+                    <td class="border py-2 px-4 text-right font-semibold">{{ invoice.quotation.getTotalPriceWithoutTax()|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="border py-2 px-4"></td>
+                    <td class="border py-2 px-4 text-right font-semibold">{{ 'vat'|trans }}</td>
+                    <td class="border py-2 px-4 text-right font-semibold">{{ invoice.quotation.getTotalVAT()|number_format(2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="border py-2 px-4"></td>
+                    <td class="border py-2 px-4 text-right font-bold">{{ 'total_ttc'|trans }}</td>
+                    <td class="border py-2 px-4 text-right font-bold">{{ invoice.quotation.getTotalPriceWithTax()|number_format(2, ',', ' ') }} €</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="text-center mt-12 text-xs">
+        <p>{{ 'footer.first'|trans }}</p>
+        <p>{{ 'footer.second'|trans }}</p>
+        <p>{{ 'footer.third'|trans }}</p>
+        <p class="font-bold">{{ 'footer.iban'|trans }}</p>
+        <p>{{ 'footer.vat'|trans }}</p>
+        <p>{{ 'footer.address'|trans }} - {{ 'footer.phone'|trans }}</p>
+        <p>{{ 'footer.siret'|trans }}</p>
+        <div class="flex justify-center mt-4">
+            <img src="{{ asset('images/ISO9001-logo.jpg') }}" alt="ISO 9001" class="h-20 mx-2">
+            <img src="{{ asset('images/ISO14001-logo.jpg') }}" alt="ISO 14001" class="h-20 mx-2">
+        </div>
+    </footer>
+</body>
+</html>
