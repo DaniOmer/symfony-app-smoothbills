@@ -87,6 +87,7 @@ class QuotationController extends AbstractController
             return $redirectResponse;
         }
 
+        $user = $this->getUser();
         $quotation = new Quotation();
         $form = $this->createForm(QuotationType::class, $quotation);
         $form->handleRequest($request);
