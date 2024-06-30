@@ -23,18 +23,22 @@ class Quotation
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le type de devis ne doit pas être vide.")]
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le statut du devis ne doit pas être vide.")]
     private ?QuotationStatus $quotation_status = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "L'entreprise ne doit pas être vide.")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le client ne doit pas être vide.")]
     private ?Customer $customer = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
