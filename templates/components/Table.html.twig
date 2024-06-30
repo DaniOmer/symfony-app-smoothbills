@@ -1,10 +1,10 @@
 {# templates/components/table.html.twig #}
 {% set rowClasses = "py-3 px-4" %}
-<section class="bg-white border w-full rounded-md">
+<section class="bg-white border w-full max-w-full rounded-md">
     <h1 class="font-bold ml-4 py-4">{{ title }}</h1>
     
-    <div>
-        <div class="border-t table w-full text-left">
+    <div class="overflow-x-auto">
+        <div class="border-t table min-w-full text-left pb-5">
             <div class="table-header-group bg-background">
                 <div class="table-row font-semibold">
                     {% for header in headers %}
@@ -70,7 +70,7 @@
     {% endif %}
 
     {% if paginatedData is defined %}
-        <div class="w-full flex justify-center mt-6 mb-3">
+        <div class="w-full flex justify-center my-6">
             {{ knp_pagination_render(paginatedData) }}
         </div>
     {% endif %}

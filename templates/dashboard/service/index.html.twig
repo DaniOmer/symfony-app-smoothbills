@@ -20,29 +20,30 @@
                 >
                     {{ 'crud.create_new'|trans }}
                 </a>
+
                 {% if subscriptionName != 'Freemium' %}
-                <twig:MenuItem href="{{ path('dashboard.service.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                    <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
-                    {{ 'crud.export_all'|trans }}
-                </twig:MenuItem>
+                    <twig:MenuItem href="{{ path('dashboard.service.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                        <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
+                        {{ 'crud.export_all'|trans }}
+                    </twig:MenuItem>
                 {% endif %}
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="grid grid-rows-2 gap-4">
+        <div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 lg:hidden xl:grid xl:grid-cols-1 xl:grid-rows-2 gap-4">
                 <twig:KpiCard kpi_name="Total Services" kpi_value="{{ totalServices }}" icon_name="mdi:handshake"></twig:KpiCard>
                 <twig:KpiCard kpi_name="Services Actifs" kpi_value="{{ statusCounts.active }}" icon_name="mdi:handshake"></twig:KpiCard>
             </div>
-            <div>
-                <twig:TopTransaction header_title="Top Transactions" header_icon="mdi:handshake" transactions="{{ topTransactionsData|raw }}" headersTopTransaction="{{ headersTopTransaction|raw }}"
-                ></twig:TopTransaction>
+            <div class="">
+                <twig:TopTransaction header_title="Top Transactions" header_icon="mdi:handshake" transactions="{{ topTransactionsData|raw }}" headersTopTransaction="{{ headersTopTransaction|raw }}"></twig:TopTransaction>
             </div>
             <div>
                 <twig:TopService header_title="Top Services" header_icon="mdi:handshake" services="{{ topServicesData|raw }}"></twig:TopService>
             </div>
         </div>
-
-        {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors }) }}
+        <div class="">
+            {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors }) }}
+        </div>
     </section>
 {% endblock %}

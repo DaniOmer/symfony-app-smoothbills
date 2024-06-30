@@ -43,7 +43,7 @@ class ServiceController extends AbstractController
         $statusColors = [
             'Active' => 'bg-green-100 text-green-800',
             'Inactive' => 'bg-red-100 text-red-800',
-            'Pendding' => 'bg-yellow-100 text-yellow-800',
+            'Pending' => 'bg-yellow-100 text-yellow-800',
         ];
 
         $user = $this->getUser();
@@ -71,7 +71,7 @@ class ServiceController extends AbstractController
                 'date' => $transaction['date']->format('d M'),
                 'price' => number_format($transaction['price'], 2) . '€'
             ];
-        }, $serviceRepository->getTop3TransactionsByHighestPrice());
+        }, $serviceRepository->getTop3TransactionsByHighestPrice($company));
 
         $topServicesData = array_map(function ($service) {
             return [
@@ -79,7 +79,7 @@ class ServiceController extends AbstractController
                 'sales' => $service['sales'],
                 'revenue' => number_format($service['revenue'], 2) . '€'
             ];
-        }, $serviceRepository->getTop3ServicesBySales());
+        }, $serviceRepository->getTop3ServicesBySales($company));
 
         $config = [
             'statusCounts' => $statusCounts,
@@ -105,15 +105,16 @@ class ServiceController extends AbstractController
     #[Route('/new', name: 'dashboard.service.new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        try {
-            if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
-                return $redirectResponse;
-            }
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
 
-            $user = $this->getUser();
-            $service = new Service();
-            $form = $this->createForm(ServiceType::class, $service);
-            $form->handleRequest($request);
+        $user = $this->getUser();
+        $service = new Service();
+        $form = $this->createForm(ServiceType::class, $service);
+        $form->handleRequest($request);
+
+        try {
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $this->serviceService->createService($form, $service, $user);
