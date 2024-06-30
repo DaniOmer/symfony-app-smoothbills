@@ -57,7 +57,7 @@ class HomeController extends AbstractController
             'graphicChart' => $quotationDetails['graphicChart'],
         ];
 
-        if ($quotationStatus !== 'En attente') {
+        if ($quotationStatus !== 'Pending') {
             return $this->render('site/home/validation/quotation.html.twig', $config);
         }
 

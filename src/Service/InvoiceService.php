@@ -57,10 +57,10 @@ class InvoiceService
 
         try {
             $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'Pending']);
-            $invoiceNumber = $this->generateInvoiceNumber();
             $company = $quotation->getCompany();
-            $invoice = new Invoice();
+            $invoiceNumber = $this->generateInvoiceNumber($company->getId());
 
+            $invoice = new Invoice();
             $invoice->setQuotation($quotation);
             $invoice->setCompany($company);
             $invoice->setInvoiceStatus($invoiceStatus);
@@ -78,20 +78,20 @@ class InvoiceService
         }
     }
 
-    private function generateInvoiceNumber(): string
+    private function generateInvoiceNumber(int $companyId): string
     {
-        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
+        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumberForCompany($companyId);
 
         $year = date('Y');
         $month = date('m');
-        $nextInvoiceNumber = $lastInvoiceNumber + 1;
+        $nextInvoiceNumber = $lastInvoiceNumber ? $lastInvoiceNumber + 1 : 1;
 
         return 'FA' . $year . $month . str_pad((string) $nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
     {
-        $paginateInvoices = $this->invoiceRepository->paginateInvoicesByCompagny($user, $page);
+        $paginateInvoices = $this->invoiceRepository->paginateInvoicesByCompany($user, $page);
 
         return $paginateInvoices;
     }
@@ -107,7 +107,6 @@ class InvoiceService
             $amountTtc = 0;
 
             foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-
                 $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
                 $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
             }
@@ -119,7 +118,7 @@ class InvoiceService
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
-                'status' => $this->translator->trans('invoice.status.' . $invoice->getInvoiceStatus()->getName()),
+                'status' =>  $invoice->getInvoiceStatus()->getName(),
                 'client' => $customerName,
             ];
         }

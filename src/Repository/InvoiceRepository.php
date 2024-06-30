@@ -22,21 +22,18 @@ class InvoiceRepository extends ServiceEntityRepository
         $this->entityManager = $entityManager;
     }
 
-    public function getLastInvoiceNumber(): int
+    public function getLastInvoiceNumberForCompany(int $companyId): ?int
     {
         $lastInvoice = $this->createQueryBuilder('i')
             ->select('i.invoice_number')
+            ->where('i.company = :company')
+            ->setParameter('company', $companyId)
             ->orderBy('i.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
-        if ($lastInvoice) {
-            $lastInvoiceNumber = (int) substr($lastInvoice['invoice_number'], -4);
-            return $lastInvoiceNumber + 1;
-        }
-
-        return 1;
+        return $lastInvoice ? (int) substr($lastInvoice['invoice_number'], -4) : null;
     }
 
     public function countInvoicesByStatus(string $statusName, int $companyId): int
@@ -52,7 +49,7 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function paginateInvoicesByCompagny(User $user, int $page): PaginationInterface
+    public function paginateInvoicesByCompany(User $user, int $page): PaginationInterface
     {
         return $this->paginator->paginate(
             $this->createQueryBuilder('q')

@@ -101,7 +101,7 @@ invoice:
     invoice_pending: "Factures en attente"
     invoice_details: "Détails de la facture"
     status:
-        paid: "Payée"
-        unpaid: "Non payée"
-        pending: "En attente"
-        cancelled: "Annulée"
+        Paid: "Payée"
+        Unpaid: "Non payée"
+        Pending: "En attente"
+        Canceled: "Annulée"
