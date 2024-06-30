@@ -137,10 +137,10 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         $freemium->setDuration(30); // 30 days for example
 
         $optionsFreemium = [
-            ['name' => 'Création et envoi de facture (5 par mois)', 'isActive' => true],
-            ['name' => 'Création et envoi de devis (5 par mois)', 'isActive' => true],
-            ['name' => 'Ajout d\'autres utilisateurs', 'isActive' => false],
-            ['name' => 'Personnalisation du dashboard', 'isActive' => false],
+            ['name' => 'Création et envoi de facture (10 par mois)', 'isActive' => true],
+            ['name' => 'Création et envoi de devis (10 par mois)', 'isActive' => true],
+            ['name' => 'Ajout d\'autres utilisateurs', 'isActive' => true],
+            ['name' => 'Ajout des clients (5 par mois)', 'isActive' => true],
             ['name' => 'Personnalisation du shart graphique', 'isActive' => false],
             ['name' => 'Relance automatique des factures', 'isActive' => false],
             ['name' => 'Personnalisation des rapports', 'isActive' => false],
@@ -170,7 +170,7 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
             ['name' => 'Personnalisation du dashboard', 'isActive' => true],
             ['name' => 'Support client premium', 'isActive' => true],
             ['name' => 'Export de données en format CSV', 'isActive' => true],
-            ['name' => 'Automatisation du flux de travail', 'isActive' => true],
+            ['name' => 'Ajout des clients (illimité)', 'isActive' => true],
             ['name' => 'Rapports avancés', 'isActive' => false]
         ];
 

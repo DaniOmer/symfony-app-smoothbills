@@ -3,15 +3,18 @@
 {% block title %}{{ 'quotation.index_title'|trans }}{% endblock %}
 
 {% set statusColors = {
-    'Accepté': 'bg-green-100 text-green-800',
-    'Refusé': 'bg-red-100 text-red-800',
-    'En attente': 'bg-yellow-100 text-yellow-800'
+    'Accepted': 'bg-green-100 text-green-800',
+    'Rejected': 'bg-red-100 text-red-800',
+    'Pending': 'bg-yellow-100 text-yellow-800'
 } %}
 
 {% block body %}
     <section class="flex flex-col gap-10">
         {% for flash_success in app.flashes('success') %}
             <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+       {% for flash_error in app.flashes('error') %}
+            <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
         {% endfor %}
 
         <header class="w-full flex justify-between">
@@ -22,10 +25,12 @@
                     <span class="text-xl">{{ ux_icon('tabler:cloud-upload') }}</span>
                     {{ 'crud.upload'|trans }}
                 </twig:MenuItem>
-                <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                    <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
-                    {{ 'crud.export_all'|trans }}
-                </twig:MenuItem>
+                 {% if subscriptionName != 'Freemium' %}
+                    <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                        <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
+                        {{ 'crud.export_all'|trans }}
+                    </twig:MenuItem>
+                {% endif %}
             </div>
         </header>
         <div class="grid grid-cols-4 gap-6">

@@ -32,6 +32,7 @@ class ServiceController extends AbstractController
         $this->csvExporter = $csvExporter;
         $this->subscriptionService = $subscriptionService;
     }
+
     #[Route('/', name: 'dashboard.service.index', methods: ['GET'])]
     public function index(ServiceRepository $serviceRepository, Request $request): Response
     {
@@ -104,25 +105,30 @@ class ServiceController extends AbstractController
     #[Route('/new', name: 'dashboard.service.new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
-            return $redirectResponse;
+        try {
+            if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+                return $redirectResponse;
+            }
+
+            $user = $this->getUser();
+            $service = new Service();
+            $form = $this->createForm(ServiceType::class, $service);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->serviceService->createService($form, $service, $user);
+                $this->addFlash('success', 'Le service a été créé avec succès.');
+                return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->render('dashboard/service/new.html.twig', [
+                'service' => $service,
+                'form' => $form,
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la création du service.');
+            return $this->redirectToRoute('dashboard.service.index');
         }
-
-        $user = $this->getUser();
-        $service = new Service();
-        $form = $this->createForm(ServiceType::class, $service);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->serviceService->createService($form, $service, $user);
-            $this->addFlash('success', 'Le service a été créé avec succès.');
-            return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('dashboard/service/new.html.twig', [
-            'service' => $service,
-            'form' => $form,
-        ]);
     }
 
     #[Route('/{uid}', name: 'dashboard.service.show', methods: ['GET'])]
@@ -180,7 +186,7 @@ class ServiceController extends AbstractController
             return $redirectResponse;
         }
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
-            $this->addFlash('error', 'Vous devez être abonné à un plan Starter pour exporter les services.');
+            $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.service.index');
         }
 
