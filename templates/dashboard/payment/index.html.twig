@@ -4,14 +4,25 @@
 
 {% set statusColors = {
     'paid': 'bg-green-100 text-green-800',
+    'Paid': 'bg-green-100 text-green-800',
     'unpaid': 'bg-red-100 text-red-800',
+    'Unpaid': 'bg-red-100 text-red-800',
     'pending': 'bg-yellow-100 text-yellow-800',
+    'Pending': 'bg-yellow-100 text-yellow-800',
 } %}
 
 {% block body %}
     <section>
         <header class="w-full flex justify-between mb-4">
             <h1 class="text-title font-title font-semibold">{{ 'payment.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <a
+                    href="{{ path('dashboard.payment.new') }}"
+                    class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
+                >
+                    {{ 'crud.create_new'|trans }}
+                </a>
+            </div>
         </header>
     </section>
 

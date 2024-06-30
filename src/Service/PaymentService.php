@@ -3,12 +3,15 @@
 namespace App\Service;
 
 use App\Entity\OneTimePayment;
+use App\Entity\Payment;
 use App\Entity\RecurringPayment;
 use App\Entity\User;
 use App\Repository\PaymentRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Form\FormInterface;
 
 class PaymentService
 {
@@ -17,14 +20,16 @@ class PaymentService
     private $adminEmail;
     private $csvExporter;
     private $invoiceService;
+    private $entityManager;
 
-    public function __construct(PaymentRepository $paymentRepository, MailerInterface $mailer, #[Autowire('%admin_email%')] string $adminEmail, CsvExporter $csvExporter, InvoiceService $invoiceService)
+    public function __construct(PaymentRepository $paymentRepository, MailerInterface $mailer, #[Autowire('%admin_email%')] string $adminEmail, CsvExporter $csvExporter, InvoiceService $invoiceService, EntityManagerInterface $entityManager)
     {
         $this->paymentRepository = $paymentRepository;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
         $this->invoiceService = $invoiceService;
+        $this->entityManager = $entityManager;
     }
 
     public function getPaginatedPayments(User $user, $page): PaginationInterface
@@ -57,12 +62,20 @@ class PaymentService
             $paymentDate = null;
 
             if ($type === 'OneTime') {
-                $status = $payment->getOneTimePayment()->getStatus();
-                $paymentDate = $payment->getOneTimePayment()->getPaymentDate();
+                $oneTimePayment = $payment->getOneTimePayment();
+                if ($oneTimePayment) {
+                    $status = $oneTimePayment->getStatus();
+                    $paymentDate = $oneTimePayment->getPaymentDate();
+                }
             } elseif ($type === 'Recurring') {
-                $status = $payment->getRecurrungPayment()->getStatus();
-                $paymentDate = $payment->getRecurrungPayment()->getPaymentDate();
+                $recurringPayment = $payment->getRecurringPayment();
+                if ($recurringPayment) {
+                    $status = $recurringPayment->getStatus();
+                    $paymentDate = $recurringPayment->getPaymentDate();
+                }
             }
+            
+            $paymentDateFormatted = $paymentDate ? $paymentDate->format('Y-m-d H:i:s') : null;
             
             $rows[] = [
                 'id' => $payment->getId(),
@@ -72,10 +85,51 @@ class PaymentService
                 'amountHt' => $amountHt,
                 'amountTtc' => $amountTtc,
                 'status' => $status,
-                'paymentDate' => $paymentDate->format('Y-m-d H:i:s'),
+                'paymentDate' => $paymentDateFormatted,
             ];
         }
 
         return $rows;
+    }
+
+    public function createPayment(FormInterface $form, Payment $payment): void
+    {
+        $invoice = $form->get('invoice')->getData();
+
+        if ($invoice) {
+            $amountDetails = $this->invoiceService->getInvoiceDetails($invoice);
+            if ($amountDetails) {
+                $amountHt = $amountDetails['amount_ht'];
+                $payment->setAmount($amountHt);
+            }
+
+            $quotation = $invoice->getQuotation();
+            $type = $quotation->getType();
+
+            $now = new \DateTime();
+
+            if ($type === 'OneTime') {
+                $oneTimePayment = $payment->getOneTimePayment();
+                if (!$oneTimePayment) {
+                    $oneTimePayment = new OneTimePayment();
+                    $payment->setOneTimePayment($oneTimePayment);
+                }
+                $oneTimePayment->setStatus('pending');
+                $oneTimePayment->setPaymentDate($now);
+            } elseif ($type === 'Recurring') {
+                $recurringPayment = $payment->getRecurringPayment();
+                if (!$recurringPayment) {
+                    $recurringPayment = new RecurringPayment();
+                    $payment->setRecurringPayment($recurringPayment);
+                }
+                $recurringPayment->setStatus('pending');
+                $recurringPayment->setPaymentDate($now);
+                $recurringPayment->setStartDate($now);
+                $recurringPayment->setEndDate($now->add(new \DateInterval('P1M')));
+            }
+        }
+
+        $this->entityManager->persist($payment);
+        $this->entityManager->flush();
     }
 }

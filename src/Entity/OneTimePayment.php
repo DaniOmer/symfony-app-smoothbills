@@ -21,7 +21,7 @@ class OneTimePayment
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $paymentDate = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $stripeInvoiceId = null;
 
     public function getId(): ?int
@@ -56,7 +56,7 @@ class OneTimePayment
         return $this->stripeInvoiceId;
     }
 
-    public function setStripeInvoiceId(string $stripeInvoiceId): static
+    public function setStripeInvoiceId(?string $stripeInvoiceId): static
     {
         $this->stripeInvoiceId = $stripeInvoiceId;
         return $this;

@@ -23,10 +23,10 @@ class Payment
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?float $amount = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripePaymentMethod = null;
 
-    #[ORM\Column(length: 4)]
+    #[ORM\Column(length: 4, nullable: true)]
     private ?string $stripeLastDigits = null;
 
     #[ORM\ManyToOne(targetEntity: Invoice::class)]
@@ -65,7 +65,7 @@ class Payment
         return $this->stripePaymentMethod;
     }
 
-    public function setStripePaymentMethod(string $stripePaymentMethod): static
+    public function setStripePaymentMethod(?string $stripePaymentMethod): static
     {
         $this->stripePaymentMethod = $stripePaymentMethod;
         return $this;
@@ -76,7 +76,7 @@ class Payment
         return $this->stripeLastDigits;
     }
 
-    public function setStripeLastDigits(string $stripeLastDigits): static
+    public function setStripeLastDigits(?string $stripeLastDigits): static
     {
         $this->stripeLastDigits = $stripeLastDigits;
         return $this;

@@ -53,18 +53,26 @@ class PaymentController extends AbstractController
     #[Route('/new', name: 'dashboard.payment.new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
+            return $redirectResponse;
+        }
+
         $payment = new Payment();
         $form = $this->createForm(PaymentType::class, $payment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->paymentService->createPayment($form, $payment);
+
+            $this->addFlash('success', 'Le paiement a été créé avec succès.');
+            
             $entityManager->persist($payment);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_payment_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard.payment.index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('payment/new.html.twig', [
+        return $this->render('dashboard/payment/new.html.twig', [
             'payment' => $payment,
             'form' => $form,
         ]);

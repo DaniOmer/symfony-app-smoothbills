@@ -14,19 +14,10 @@ class PaymentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('amount')
-            ->add('stripePaymentMethod')
-            ->add('stripeLastDigits')
-            ->add('uid')
-            ->add('created_at', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updated_at', null, [
-                'widget' => 'single_text',
-            ])
             ->add('invoice', EntityType::class, [
                 'class' => Invoice::class,
-                'choice_label' => 'id',
+                'choice_label' => 'invoice_number',
+                'label' => false,
             ])
         ;
     }
