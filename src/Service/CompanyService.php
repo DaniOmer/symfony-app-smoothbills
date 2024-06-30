@@ -59,7 +59,7 @@ class CompanyService
                 $companySubscription->setStartDate(new \DateTime());
                 $companySubscription->setEndDate((new \DateTime())->modify('+30 days'));
 
-                $companySubscription->setStripeStatus('pending');
+                $companySubscription->setStripeStatus('Pending');
                 $companySubscription->setStripePaymentMethod('none');
                 $companySubscription->setStripeLastDigits('0000');
                 $companySubscription->setStripeSubscriptionId('none');

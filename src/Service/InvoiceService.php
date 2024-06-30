@@ -56,7 +56,7 @@ class InvoiceService
         $this->entityManager->beginTransaction();
 
         try {
-            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'pending']);
+            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'Pending']);
             $invoiceNumber = $this->generateInvoiceNumber();
             $company = $quotation->getCompany();
             $invoice = new Invoice();

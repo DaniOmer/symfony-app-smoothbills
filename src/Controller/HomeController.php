@@ -57,11 +57,11 @@ class HomeController extends AbstractController
             'graphicChart' => $quotationDetails['graphicChart'],
         ];
 
-        if($quotationStatus !== 'En attente'){
+        if ($quotationStatus !== 'En attente') {
             return $this->render('site/home/validation/quotation.html.twig', $config);
         }
 
-        if($request->isMethod('POST')){
+        if ($request->isMethod('POST')) {
             $action = $request->request->get('action');
             $tokenId = $action === 'accept' ? 'accepted_action' : 'rejected_action';
             $submittedToken = $request->getPayload()->get('_csrf_token');
@@ -70,17 +70,17 @@ class HomeController extends AbstractController
                 throw $this->createAccessDeniedException('Invalid CSRF token');
             }
 
-            if($action === 'accept'){
-                $quotationService->validateQuotation($quotation, "Accepté");
+            if ($action === 'accept') {
+                $quotationService->validateQuotation($quotation, "Accepted");
                 $invoice = $invoiceService->createInvoice($quotation);
-                
+
                 if ($invoice) {
                     $this->addFlash('success', 'Votre devis a bien été validé.');
                     $invoiceService->sendInvoiceByEmail($invoice);
                 } else {
                     $this->addFlash('error', 'Une erreur est survenue lors de la création de la facture. Veuillez réessayer.');
                 }
-            }elseif($action=== 'reject'){
+            } elseif ($action === 'reject') {
                 $quotationService->validateQuotation($quotation, "Refusé");
                 $this->addFlash('success', 'Votre devis a bien été rejeté.');
             }
