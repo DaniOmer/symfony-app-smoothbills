@@ -142,7 +142,7 @@ class InvoiceService
 
         $invoiceDetails = [
             'id' => $invoice->getId(),
-            'uid' => $quotation->getUid(),
+            'uid' => $invoice->getUid(),
             'invoice_number' => $invoice->getInvoiceNumber(),
             'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
             'amount_ht' => $amountHt,

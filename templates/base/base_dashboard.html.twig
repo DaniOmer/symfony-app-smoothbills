@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
@@ -40,7 +41,7 @@
         } %}
     </head>
     <body>
-        <div class="relative h-screen flex flex-col">
+        <div class="relative h-screen w-screen flex flex-col">
             {% if not isRegistrationComplete and app.current_route != 'dashboard.settings.company' %}
                 <div class="absolute top-0 left-0 right-0 z-10">
                     <twig:Banner>
@@ -57,12 +58,16 @@
                     </twig:Banner>
                 </div>
             {% endif %}
+
             {% include "partials/DashboardHeader.html.twig" %}
-            <div class="flex h-[calc(100vh_-_60px)] flex-1 bg-background relative text-content">
-                {% include "partials/Sidebar.html.twig" %}
-                <main class="box-border flex basis-full flex-col">
-                    <div class="px-6 py-8 overflow-auto h-full">
-                        <div class="max-w-[1132px] mx-auto">
+
+            <div class="flex md:h-[calc(100vh_-_60px)] flex-1 bg-background relative text-content mt-[60px] md:mt-0">
+                <div class="hidden md:block">
+                    {% include "partials/Sidebar.html.twig" %}
+                </div>
+                <main class="box-border flex basis-full flex-col w-1/4 max-w-full">
+                    <div class="md:overflow-y-auto h-full">
+                        <div class="w-full px-3 lg:px-6 py-8 max-w-[1200px] mx-auto">
                             {% block body %}{% endblock %}
                         </div>
                     </div>

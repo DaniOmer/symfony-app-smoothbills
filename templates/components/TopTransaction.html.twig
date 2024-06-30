@@ -16,13 +16,13 @@
     {% if transactions is empty %}
         <p class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{{ 'service.not_data'|trans }}</p>
     {% else %}
-    <div>
+    <div class="overflow-x-auto">
         <div class="table w-full text-left">
-            <div class="table-header-group text-xs font-medium py-4 bg-backgroundIcon">
+            <div class="table-header-group text-xs font-medium px-0 py-4 bg-backgroundIcon">
                 <div class="table-row font-semibold">
                     <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.id }}</div>
                     <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.service }}</div>
-                    <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.date }}</div>
+                    <div class="{{ rowClasses }} hidden sm:table-cell text-left">{{ headersTopTransaction.date }}</div>
                     <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.price }}</div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                         <div class="{{ rowClasses }} table-cell whitespace-nowrap">
                             <div>{{ transaction.service }}</div>
                         </div>
-                        <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                        <div class="{{ rowClasses }} hidden sm:table-cell whitespace-nowrap">
                             <time datetime="{{ transaction.date }}">{{ transaction.date|date('d M') }}</time>
                         </div>
                         <div class="{{ rowClasses }} table-cell whitespace-nowrap">
