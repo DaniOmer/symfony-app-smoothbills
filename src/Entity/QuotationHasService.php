@@ -19,9 +19,13 @@ class QuotationHasService
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le prix HT ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le prix HT doit être positif.")]
     private ?string $price_without_tax = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le prix TTC ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le prix TTC doit être positif.")]
     private ?string $price_with_tax = null;
 
     #[ORM\Column]
@@ -34,10 +38,12 @@ class QuotationHasService
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le service ne doit pas être vide.")]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le devis ne doit pas être vide.")]
     private ?Quotation $quotation = null;
 
     public function getId(): ?int
