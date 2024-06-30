@@ -89,8 +89,9 @@ class InvoiceRepository extends ServiceEntityRepository
     public function findOverdueInvoices(\DateTime $date): array
     {
         return $this->createQueryBuilder('i')
+            ->innerJoin('i.invoiceStatus', 's')
             ->where('i.due_date < :date')
-            ->andWhere('i.invoiceStatus.name != :paid')
+            ->andWhere('s.name != :paid')
             ->setParameter('date', $date)
             ->setParameter('paid', 'Paid')
             ->getQuery()

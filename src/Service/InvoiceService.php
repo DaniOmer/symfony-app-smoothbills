@@ -245,10 +245,11 @@ class InvoiceService
 
     public function sendInvoiceReminder(Invoice $invoice): void
     {
-        $customer = $invoice->getQuotation()->getCustomer();
         $company = $invoice->getCompany();
+        $customer = $invoice->getQuotation()->getCustomer();
+
         $data = $this->getInvoiceDataForPdf($invoice);
-        $twigTemplate = $this->twig->render('dashboard/invoice/mail/invoice_reminder.html.twig', $data);
+        $twigTemplate = $this->twig->render('dashboard/invoice/pdf/invoice_template.html.twig', $data);
         $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
         $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
@@ -256,14 +257,21 @@ class InvoiceService
             ->from(new Address($this->adminEmail, $company->getDenomination()))
             ->to($customer->getMail())
             ->subject('Rappel de facture')
-            ->htmlTemplate('dashboard/invoice/mail/invoice_reminder.html.twig')
+            ->attach($invoicePdf, $filename, 'application/pdf')
             ->context([
-                'invoice_number' => $invoice->getInvoiceNumber(),
-                'customer_name' => $customer->getName(),
-                'company_name' => $invoice->getCompany()->getDenomination(),
-                'sending_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+                'invoice' => [
+                    'invoice_number' => $invoice->getInvoiceNumber(),
+                    'sending_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+                ],
+                'company' => [
+                    'name' => $company->getDenomination()
+                ],
+                'customer' => [
+                    'name' => $customer->getName()
+                ]
             ])
-            ->attach($invoicePdf, $filename, 'application/pdf');
+            ->htmlTemplate('dashboard/invoice/mail/invoice_reminder.html.twig');
+
 
         $this->mailer->send($email);
     }
