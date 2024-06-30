@@ -116,6 +116,7 @@ class InvoiceService
                 'uid' => $invoice->getUid(),
                 'invoice_number' => $invoice->getInvoiceNumber(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+                'due_date' => $invoice->getDueDate()->format('d-m-Y'), // 'due_date' => 'date d\'échéance
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
                 'status' =>  $invoice->getInvoiceStatus()->getName(),
