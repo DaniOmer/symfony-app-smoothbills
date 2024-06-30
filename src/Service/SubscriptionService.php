@@ -82,7 +82,7 @@ class SubscriptionService
         $company = $user ? $user->getCompany() : null;
         if ($company && $this->isCurrentSubscription('Freemium')) {
             $quotationsThisMonth = $this->quotationRepository->countQuotationsForCompanyThisMonth($company->getId());
-            return $quotationsThisMonth < 1;
+            return $quotationsThisMonth < 10;
         }
         return true;
     }
