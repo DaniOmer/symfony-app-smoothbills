@@ -48,7 +48,7 @@ class SubscriptionService
             $subscriptionData[] = [
                 'id' => $subscription->getId(),
                 'name' => $subscription->getName(),
-                'price' => $subscription->getPrice(),
+                'price' => $subscription->getPrice() . '€ / mois',
                 'features' => $features,
                 'isCurrentPlan' => $currentSubscriptionId === $subscription->getId(),
             ];
