@@ -140,5 +140,4 @@ class FinancialReportController extends AbstractController
 
         return $this->render('dashboard/financial_report/services_report/index.html.twig', $data);
     }
-    
 }

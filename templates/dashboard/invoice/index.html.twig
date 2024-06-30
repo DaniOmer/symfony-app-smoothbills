@@ -19,7 +19,7 @@
             <h1 class="text-title font-title font-semibold">{{ 'invoice.title'|trans }}</h1>
         </header>
 
-        <div class="flex justify-between items-center gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_paid'|trans }}" kpi_value="{{ statusCounts['paid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_unpaid'|trans }}" kpi_value="{{ statusCounts['unpaid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_pending'|trans }}" kpi_value="{{ statusCounts['pending'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
