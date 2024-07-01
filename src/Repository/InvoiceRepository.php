@@ -74,6 +74,21 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function generateDailySalesReport(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company)
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('i.created_at as date, SUM(i.amount_ht) as totalAmountHT')
+            ->from(Invoice::class, 'i')
+            ->where('i.company = :company')
+            ->andWhere('i.invoice_date BETWEEN :startDate AND :endDate')
+            ->groupBy('date')
+            ->setParameter('company', $company)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        return $qb->getQuery()->getResult();
+    }
+    
     public function findOverdueInvoices(\DateTime $date): array
     {
         return $this->createQueryBuilder('i')

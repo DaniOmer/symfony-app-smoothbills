@@ -137,10 +137,9 @@ class QuotationService
     public function exportAllQuotations(): Response
     {
         $quotations = $this->quotationRepository->findAll();
-        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
-        $dataExtractor = function (Quotation $quotation) {
+        $headers = ['N° de Devis', 'Status', 'Client', 'Envoyé le'];
+        $dataExtractor = function(Quotation $quotation) {
             return [
-                $quotation->getId(),
                 $quotation->getUid(),
                 $quotation->getQuotationStatus()->getName(),
                 $quotation->getCustomer()->getName(),

@@ -182,20 +182,21 @@ class ServiceController extends AbstractController
     #[Route('/export/all', name: 'dashboard.service.export_all', methods: ['GET'])]
     public function exportAllServices(ServiceRepository $serviceRepository): Response
     {
-
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
+        
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
             $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.service.index');
         }
 
-        $services = $serviceRepository->findAll();
-        $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
+        $company = $this->getUser()->getCompany();
+        $services = $serviceRepository->findBy(['company' => $company]);
+
+        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {
             return [
-                $service->getId(),
                 $service->getName(),
                 $service->getPrice(),
                 $service->getEstimatedDuration(),
