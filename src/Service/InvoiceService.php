@@ -69,8 +69,10 @@ class InvoiceService
 
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
-
             $this->entityManager->commit();
+
+            // $this->paymentService->createPayment($invoice);
+
             return $invoice;
         } catch (Exception | OptimisticLockException $e) {
             $this->entityManager->rollback();

@@ -29,6 +29,7 @@ class QuotationService
     private $jWTService;
     private $pdfGeneratorService;
     private $twig;
+    private $paymentService;
 
     public function __construct(
         Environment $twig,
@@ -41,6 +42,7 @@ class QuotationService
         TaxService $taxService,
         JWTService $jWTService,
         PdfGeneratorService $pdfGeneratorService,
+        PaymentService $paymentService,
     ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
@@ -52,6 +54,7 @@ class QuotationService
         $this->taxService = $taxService;
         $this->jWTService = $jWTService;
         $this->pdfGeneratorService = $pdfGeneratorService;
+        $this->paymentService = $paymentService;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -215,7 +218,11 @@ class QuotationService
         $quotationStatus = $quotation->getQuotationStatus()->getName();
 
         if ($quotationStatus === 'Accepted') {
-            $this->invoiceService->createInvoice($quotation);
+            $invoice = $this->invoiceService->createInvoice($quotation);
+            
+            if($invoice){
+                $this->paymentService->createPayment($invoice);
+            }
         }
     }
 

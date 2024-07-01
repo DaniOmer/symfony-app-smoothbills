@@ -92,51 +92,34 @@ class PaymentService
         return $rows;
     }
 
-    public function createPayment(FormInterface $form, Payment $payment, EntityManagerInterface $entityManager): void
+    public function createPayment($invoice): void
     {
-        $status = $form->get('status')->getData();
-        $invoice = $form->get('invoice')->getData();
         $now = new \DateTime();
+        $payment = new Payment();
+        $status = 'Pending';
 
-        if ($invoice) {
-            $amountDetails = $this->invoiceService->getInvoiceDetails($invoice);
-            if ($amountDetails) {
-                $amountHt = $amountDetails['amount_ht'];
-                $payment->setAmount($amountHt);
-            }
+        $amountDetails = $this->invoiceService->getInvoiceDetails($invoice);
+        $amountHt = $amountDetails['amount_ht'];
+        $quotation = $invoice->getQuotation();
+        $type = $quotation->getType();
 
-            $quotation = $invoice->getQuotation();
-            $type = $quotation->getType();
+        $payment->setAmount($amountHt);
+        $payment->setInvoice($invoice);
 
-            if ($type === 'OneTime') {
-                $this->setOneTimePayment($payment, $status, $now);
-            } elseif ($type === 'Recurring') {
-                $this->setRecurringPayment($payment, $status, $now);
-            }
-
-            if ($status === 'Paid') {
-                $invoice->getInvoiceStatus()->setName('Paid');
-                $entityManager->persist($invoice);
-            }
-        } else {
-            if ($status === 'Paid') {
-                $this->setOneTimePayment($payment, $status, $now);
-            } else {
-                $this->setRecurringPayment($payment, 'Pending', $now);
-            }
+        if ($type === 'OneTime') {
+            $this->setOneTimePayment($payment, $status, $now);
+        } elseif ($type === 'Recurring') {
+            $this->setRecurringPayment($payment, $status, $now);
         }
 
-        $entityManager->persist($payment);
-        $entityManager->flush();
+        $this->entityManager->persist($payment);
+        $this->entityManager->flush();
     }
 
     private function setOneTimePayment(Payment $payment, string $status, \DateTime $now): void
     {
-        $oneTimePayment = $payment->getOneTimePayment();
-        if (!$oneTimePayment) {
-            $oneTimePayment = new OneTimePayment();
-            $payment->setOneTimePayment($oneTimePayment);
-        }
+        $oneTimePayment = new OneTimePayment();
+        $payment->setOneTimePayment($oneTimePayment);
         $oneTimePayment->setStatus($status);
         $oneTimePayment->setPaymentDate($now);
 
@@ -145,11 +128,8 @@ class PaymentService
 
     private function setRecurringPayment(Payment $payment, string $status, \DateTime $now): void
     {
-        $recurringPayment = $payment->getRecurringPayment();
-        if (!$recurringPayment) {
-            $recurringPayment = new RecurringPayment();
-            $payment->setRecurringPayment($recurringPayment);
-        }
+        $recurringPayment = new RecurringPayment();
+        $payment->setRecurringPayment($recurringPayment);
         $recurringPayment->setStatus($status);
         $recurringPayment->setPaymentDate($now);
         $recurringPayment->setStartDate($now);

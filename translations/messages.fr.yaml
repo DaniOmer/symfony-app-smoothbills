@@ -70,7 +70,6 @@ service:
     estimatedDuration: "Durée estimée"
     not_data: "Aucune donnée"
 
-
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
     general: "Une erreur s'est produite. Veuillez réessayer plus tard."
@@ -93,7 +92,7 @@ quotation:
     invoice_rejected: "Devis rejetés"
     details: "Services"
 
-invoice: 
+invoice:
     title: "Factures"
     table_title: "Toutes les factures"
     invoice_paid: "Factures payées"
@@ -109,7 +108,7 @@ invoice:
 payment:
     title: "Paiements"
     table_title: "Tous les paiements"
-        Paid: "Payée"
-        Unpaid: "Non payée"
-        Pending: "En attente"
-        Canceled: "Annulée"
+    Paid: "Payée"
+    Unpaid: "Non payée"
+    Pending: "En attente"
+    Canceled: "Annulée"
