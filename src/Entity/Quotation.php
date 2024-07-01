@@ -33,7 +33,6 @@ class Quotation
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "L'entreprise ne doit pas être vide.")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotations')]
