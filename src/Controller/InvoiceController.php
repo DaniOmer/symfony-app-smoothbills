@@ -44,7 +44,7 @@ class InvoiceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $companyId = $company->getId();
         $paginateInvoices = $this->invoiceService->getPaginatedInvoices($user, $page);
-        $headers = ['Numéro Facture', 'Date Facture', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
+        $headers = ['Numéro Facture', 'Date Facture', 'Date d\'echéance', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
         $rows = $this->invoiceService->getInvoicesRows($user, $page);
 
         $statusCounts = [];
@@ -97,6 +97,28 @@ class InvoiceController extends AbstractController
         $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
 
         return $this->pdfGeneratorService->downloadPdf($twigTemplate, $filename);
+    }
+
+    #[Route('/export/all', name: 'dashboard.invoice.export_all', methods: ['GET'])]
+    public function exportAllInvoices(InvoiceRepository $invoiceRepository): Response
+    {
+        $company = $this->getUser()->getCompany();
+        $invoices = $invoiceRepository->findBy(['company' => $company]);
+
+        $headers = ['Numéro Facture', 'Date Facture', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
+
+        $dataExtractor = function (Invoice $invoice) {
+            $invoiceDetails = $this->invoiceService->getInvoiceDetails($invoice);
+            return [
+                $invoiceDetails['invoice_number'],
+                $invoiceDetails['invoice_date'],
+                $invoiceDetails['amount_ht'],
+                $invoiceDetails['amount_ttc'],
+                $invoiceDetails['client'],
+            ];
+        };
+
+        return $this->csvExporter->exportEntities($invoices, $headers, $dataExtractor, 'all_invoices');
     }
 
 }

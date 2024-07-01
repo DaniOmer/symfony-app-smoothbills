@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
+use App\Utils\NumberGenerator;
 
 class QuotationService
 {
@@ -29,19 +30,23 @@ class QuotationService
     private $jWTService;
     private $pdfGeneratorService;
     private $twig;
+    private $paymentService;
+    private $numberGenerator;
 
     public function __construct(
-        Environment $twig, 
+        Environment $twig,
         EntityManagerInterface $entityManager,
         QuotationRepository $quotationRepository,
         InvoiceService $invoiceService,
-        MailerInterface $mailer, 
-        #[Autowire('%admin_email%')] string $adminEmail, 
+        MailerInterface $mailer,
+        #[Autowire('%admin_email%')] string $adminEmail,
         CsvExporter $csvExporter,
         TaxService $taxService,
         JWTService $jWTService,
         PdfGeneratorService $pdfGeneratorService,
-    ){
+        PaymentService $paymentService,
+        NumberGenerator $numberGenerator
+    ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
         $this->quotationRepository = $quotationRepository;
@@ -52,6 +57,8 @@ class QuotationService
         $this->taxService = $taxService;
         $this->jWTService = $jWTService;
         $this->pdfGeneratorService = $pdfGeneratorService;
+        $this->paymentService = $paymentService;
+        $this->numberGenerator = $numberGenerator;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -61,7 +68,7 @@ class QuotationService
         return $paginateQuotations;
     }
 
-    public function getQuotationsRows(User $user, $page): Array
+    public function getQuotationsRows(User $user, $page): array
     {
         $rows = [];
 
@@ -69,7 +76,7 @@ class QuotationService
             $rows[] = [
                 'id' => $quotation->getId(),
                 'uid' => $quotation->getUid(),
-                'name' => $quotation->getUid(),
+                'quotation_numbber' => $quotation->getQuotationNumber(),
                 'status' => $quotation->getQuotationStatus()->getName(),
                 'client' => $quotation->getCustomer()->getName(),
                 'sendingDate' => $quotation->getSendingDate() ? $quotation->getSendingDate()->format('Y-m-d H:i:s') : '',
@@ -86,9 +93,9 @@ class QuotationService
 
         $data = $this->getQuotationDataForPdf($quotation);
         $twigTemplate = $this->twig->render('dashboard/quotation/pdf/quotation_template.html.twig', $data);
-        $filename = 'quotation_' . $quotation->getUid() . '.pdf';
+        $filename = 'quotation_' . $quotation->getQuotationNumber() . '.pdf';
 
-        $invoicePdf =$this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+        $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
         $email = (new TemplatedEmail())
             ->from(new Address($this->adminEmail, $company->getDenomination()))
@@ -137,10 +144,9 @@ class QuotationService
     public function exportAllQuotations(): Response
     {
         $quotations = $this->quotationRepository->findAll();
-        $headers = ['ID', 'Nom', 'Status', 'Client', 'Envoyé le'];
-        $dataExtractor = function(Quotation $quotation) {
+        $headers = ['N° de Devis', 'Status', 'Client', 'Envoyé le'];
+        $dataExtractor = function (Quotation $quotation) {
             return [
-                $quotation->getId(),
                 $quotation->getUid(),
                 $quotation->getQuotationStatus()->getName(),
                 $quotation->getCustomer()->getName(),
@@ -158,12 +164,12 @@ class QuotationService
         $totalPriceWithTax = 0;
         $company = $quotation->getCompany();
         $graphicChart = $this->entityManager->getRepository(GraphicChart::class)->findOneBy(['company' => $company]);
-    
+
         foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
             $quantity = $quotationHasService->getQuantity();
             $priceWithoutTax = $quotationHasService->getPriceWithoutTax();
             $priceWithTax = $quotationHasService->getPriceWithTax();
-    
+
             $quotationDetails[] = [
                 'quotation' => $quotation,
                 'priceWithoutTax' => $priceWithoutTax,
@@ -172,11 +178,11 @@ class QuotationService
                 'serviceName' => $quotationHasService->getService()->getName(),
                 'company' => $quotationHasService->getService()->getCompany()->getDenomination(),
             ];
-            
+
             $totalPriceWithoutTax += $priceWithoutTax * $quantity;
             $totalPriceWithTax += $priceWithTax * $quantity;
         }
-    
+
         return [
             'quotationDetails' => $quotationDetails,
             'totalPriceWithoutTax' => $totalPriceWithoutTax,
@@ -187,7 +193,7 @@ class QuotationService
 
     public function processQuotation(Quotation $quotation, $form, $company): void
     {
-        foreach($quotation->getQuotationHasServices() as $quotationHasService) {
+        foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
             $priceWithoutTax = $quotationHasService->getService()->getPrice();
             $priceWithTax = $this->taxService->applyTva($priceWithoutTax);
 
@@ -195,13 +201,16 @@ class QuotationService
             $quotationHasService->setPriceWithTax($priceWithTax);
             $this->entityManager->persist($quotationHasService);
         }
-        
+
         $sendOption = $form->get('sendOption')->getData();
         if ($sendOption === 'Maintenant') {
             $quotation->setSendingDate(new \DateTime());
         } else {
             $quotation->setSendingDate(null);
         }
+
+        $quotationNumber = $this->generateQuotationNumber($company->getId());
+        $quotation->setQuotationNumber($quotationNumber);
 
         $quotation->setCompany($company);
 
@@ -211,12 +220,26 @@ class QuotationService
         $this->createInvoiceFromQuotation($quotation);
     }
 
+    private function generateQuotationNumber(int $companyId): string
+    {
+        $prefix = 'DE';
+        $lastQuotationNumber = $this->quotationRepository->getLastQuotationNumberForCompany($companyId);
+
+        $quotationNumber = $this->numberGenerator->generateDocumentNumber($lastQuotationNumber, $prefix);
+
+        return $quotationNumber;
+    }
+
     public function createInvoiceFromQuotation($quotation): void
     {
         $quotationStatus = $quotation->getQuotationStatus()->getName();
 
-        if($quotationStatus === 'Accepté'){
-            $this->invoiceService->createInvoice($quotation);
+        if ($quotationStatus === 'Accepted') {
+            $invoice = $this->invoiceService->createInvoice($quotation);
+
+            if ($invoice) {
+                $this->paymentService->createPayment($invoice);
+            }
         }
     }
 
@@ -239,7 +262,7 @@ class QuotationService
         $company = $user->getCompany();
         $companyId = $company->getId();
 
-        return $this->quotationRepository->countQuotationsByStatus('Accepté', $companyId);
+        return $this->quotationRepository->countQuotationsByStatus('Accepted', $companyId);
     }
 
     public function getQuotationRejectedCount(User $user): int
@@ -247,14 +270,14 @@ class QuotationService
         $company = $user->getCompany();
         $companyId = $company->getId();
 
-        return $this->quotationRepository->countQuotationsByStatus('Refusé', $companyId);;
+        return $this->quotationRepository->countQuotationsByStatus('Refused', $companyId);;
     }
 
     public function getConversionRate(User $user): float
     {
         $quotationTotal = $this->getQuotationTotalCount($user);
         $quotationAccepted = $this->getQuotationAcceptedCount($user);
-        
+
         if ($quotationTotal === 0) {
             return 0.00;
         }
@@ -266,7 +289,7 @@ class QuotationService
 
     public function getQuotationValidityDate($sendingDate): DateTime | String
     {
-        if ($sendingDate === null){
+        if ($sendingDate === null) {
             return "Non définis";
         }
         return (clone $sendingDate)->modify('+30 days');

@@ -12,7 +12,7 @@
         <h2 class='w-full bg-white font-semibold text-subtitle text-center py-[18px] shadow-sm mb-5'>{{ 'login.title'|trans }}</h2>
         <div class='px-[20px]'>
             <div class='pb-8 mb-5 border-b border-tertiary/50 relative'>
-                <a href='site.register.sso' class=' w-full flex justify-center items-center gap-4 text-primary border border-tertiary hover:border-primary px-4 py-2'>
+                <a href='#' class=' w-full flex justify-center items-center gap-4 text-primary border border-tertiary hover:border-primary px-4 py-2'>
                     {{ ux_icon('devicon:google') }}
                     <span>{{ 'login.google'|trans }}</span>
                 </a>
@@ -49,6 +49,10 @@
                     required
                 >
 
+                <div class="text-right">
+                    <a href="{{ path('site.forgot_password') }}" class="text-primary text-sm hover:underline">{{ 'login.forgot_password'|trans }}</a>
+                </div>
+
                 <input type="hidden" name="_csrf_token"
                     value="{{ csrf_token('authenticate') }}"
                 >
@@ -70,14 +74,11 @@
 
                  <div class='text-[14px] mt-2'>
                     <span class='text-tertiary/60'>{{ 'login.create'|trans }}</span>
-                    <a href={{path('site.register')}} class='text-primary'>{{ 'login.register'|trans }}</a>
+                    <a href={{ path('site.register') }} class='text-primary'>{{ 'login.register'|trans }}</a>
                 </div>
             </form>
         </div>
     </div>
-    <div class='w-fit mx-auto mt-10'>
-        <span class='font-semiboled'>&copy; {{ "now"|date('Y') }} Smoothbill -</span>
-        <a href={{ path('site.legal_notice')}} class='text-primary underline'>{{ 'login.legal_notice'|trans }}</a>
-    </div>
+    {{ include('partials/DashboardFooter.html.twig') }}
 </div>
 {% endblock %}

@@ -22,7 +22,7 @@ export default class extends Controller {
     if (link && link.classList.contains("pointer-events-none")) {
       const tooltip = document.createElement("div");
       tooltip.className =
-        "tooltip absolute -top-1 left-full -ml-16 w-72 border border-secondary bg-secondary text-white text-sm text-center py-1 rounded-md z-20";
+        "tooltip absolute -top-1 left-full -ml-36 w-40 border border-secondary bg-secondary text-white text-sm text-center py-1 rounded-md z-20";
       tooltip.textContent = "Complétez votre profil pour continuer.";
       container.appendChild(tooltip);
 

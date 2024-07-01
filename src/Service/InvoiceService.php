@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
+use App\Service\PdfGeneratorService;
+use App\Utils\NumberGenerator;
 
 class InvoiceService
 {
@@ -29,17 +31,19 @@ class InvoiceService
     private $twig;
     private $mailer;
     private $adminEmail;
+    private $numberGenerator;
 
     public function __construct(
-        Environment $twig, 
-        InvoiceRepository $invoiceRepository, 
-        InvoiceStatusRepository $invoiceStatusRepository, 
-        TranslatorInterface $translator, 
-        EntityManagerInterface $entityManager, 
+        Environment $twig,
+        InvoiceRepository $invoiceRepository,
+        InvoiceStatusRepository $invoiceStatusRepository,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager,
         PdfGeneratorService $pdfGeneratorService,
-        MailerInterface $mailer, 
-        #[Autowire('%admin_email%')] string $adminEmail, 
-    ){
+        MailerInterface $mailer,
+        #[Autowire('%admin_email%')] string $adminEmail,
+        NumberGenerator $numberGenerator,
+    ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
@@ -48,6 +52,7 @@ class InvoiceService
         $this->translator = $translator;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
+        $this->numberGenerator = $numberGenerator;
     }
 
     public function createInvoice(Quotation $quotation): Invoice
@@ -55,42 +60,41 @@ class InvoiceService
         $this->entityManager->beginTransaction();
 
         try {
-            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'pending']);
-            $invoiceNumber = $this->generateInvoiceNumber();
+            $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => 'Pending']);
             $company = $quotation->getCompany();
-            $invoice = new Invoice();
+            $invoiceNumber = $this->generateInvoiceNumber($company->getId());
 
+            $invoice = new Invoice();
             $invoice->setQuotation($quotation);
             $invoice->setCompany($company);
             $invoice->setInvoiceStatus($invoiceStatus);
             $invoice->setInvoiceNumber($invoiceNumber);
+            $invoice->setDueDate((new \DateTime())->modify('+30 days'));
 
             $this->entityManager->persist($invoice);
             $this->entityManager->flush();
-
             $this->entityManager->commit();
 
             return $invoice;
-        } catch (Exception |  OptimisticLockException $e) {
+        } catch (Exception | OptimisticLockException $e) {
             $this->entityManager->rollback();
             throw $e;
         }
     }
 
-    private function generateInvoiceNumber(): string
+    private function generateInvoiceNumber(int $companyId): string
     {
-        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumber();
+        $prefix = 'FA';
+        $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumberForCompany($companyId);
 
-        $year = date('Y');
-        $month = date('m');
-        $nextInvoiceNumber = $lastInvoiceNumber + 1;
+        $invoiceNumber = $this->numberGenerator->generateDocumentNumber($lastInvoiceNumber, $prefix);
 
-        return 'FA' . $year . $month . str_pad((string) $nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
+        return $invoiceNumber;
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
     {
-        $paginateInvoices = $this->invoiceRepository->paginateInvoicesByCompagny($user, $page);
+        $paginateInvoices = $this->invoiceRepository->paginateInvoicesByCompany($user, $page);
 
         return $paginateInvoices;
     }
@@ -106,7 +110,6 @@ class InvoiceService
             $amountTtc = 0;
 
             foreach ($quotation->getQuotationHasServices() as $quotationHasService) {
-
                 $amountHt += $quotationHasService->getPriceWithoutTax() * $quotationHasService->getQuantity();
                 $amountTtc += $quotationHasService->getPriceWithTax() * $quotationHasService->getQuantity();
             }
@@ -116,9 +119,10 @@ class InvoiceService
                 'uid' => $invoice->getUid(),
                 'invoice_number' => $invoice->getInvoiceNumber(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+                'due_date' => $invoice->getDueDate()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
-                'status' => $this->translator->trans('invoice.status.' . $invoice->getInvoiceStatus()->getName()),
+                'status' =>  $invoice->getInvoiceStatus()->getName(),
                 'client' => $customerName,
             ];
         }
@@ -231,7 +235,7 @@ class InvoiceService
         $twigTemplate = $this->twig->render('dashboard/invoice/pdf/invoice_template.html.twig', $data);
         $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
 
-        $invoicePdf =$this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+        $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
         $email = (new TemplatedEmail())
             ->from(new Address($this->adminEmail, $company->getDenomination()))
@@ -239,6 +243,39 @@ class InvoiceService
             ->subject('Nouvelle facture créé')
             ->html('<h1>Nouvelle facture crée</h1><p>Merci pour votre confiance</p>')
             ->attach($invoicePdf, $filename, 'application/pdf');
+
+        $this->mailer->send($email);
+    }
+
+    public function sendInvoiceReminder(Invoice $invoice): void
+    {
+        $company = $invoice->getCompany();
+        $customer = $invoice->getQuotation()->getCustomer();
+
+        $data = $this->getInvoiceDataForPdf($invoice);
+        $twigTemplate = $this->twig->render('dashboard/invoice/pdf/invoice_template.html.twig', $data);
+        $filename = 'invoice_' . $invoice->getInvoiceNumber() . '.pdf';
+        $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
+
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->adminEmail, $company->getDenomination()))
+            ->to($customer->getMail())
+            ->subject('Rappel de facture')
+            ->attach($invoicePdf, $filename, 'application/pdf')
+            ->context([
+                'invoice' => [
+                    'invoice_number' => $invoice->getInvoiceNumber(),
+                    'sending_date' => $invoice->getCreatedAt()->format('d-m-Y'),
+                ],
+                'company' => [
+                    'name' => $company->getDenomination()
+                ],
+                'customer' => [
+                    'name' => $customer->getName()
+                ]
+            ])
+            ->htmlTemplate('dashboard/invoice/mail/invoice_reminder.html.twig');
+
 
         $this->mailer->send($email);
     }

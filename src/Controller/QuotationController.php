@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Service\SubscriptionService;
 
 #[Route('/dashboard/quotation')]
 class QuotationController extends AbstractController
@@ -26,15 +27,18 @@ class QuotationController extends AbstractController
     private $quotationService;
     private $userRegistrationChecker;
     private $csvExporter;
+    private $subscriptionService;
 
     public function __construct(
-        QuotationService $quotationService, 
+        QuotationService $quotationService,
         UserRegistrationChecker $userRegistrationChecker,
-        CsvExporter $csvExporter
-    ){
+        CsvExporter $csvExporter,
+        SubscriptionService $subscriptionService
+    ) {
         $this->quotationService = $quotationService;
         $this->userRegistrationChecker = $userRegistrationChecker;
         $this->csvExporter = $csvExporter;
+        $this->subscriptionService = $subscriptionService;
     }
 
     #[Route('/', name: 'dashboard.quotation.index', methods: ['GET'])]
@@ -53,13 +57,27 @@ class QuotationController extends AbstractController
         $rejectedQuotation = $this->quotationService->getQuotationRejectedCount($user);
         $conversionRate = $this->quotationService->getConversionRate($user);
 
-        $headers = ['Nom', 'Status', 'Client', 'Envoyé le'];
+        $headers = ['N° devis', 'Status', 'Client', 'Envoyé le'];
         $rows = $this->quotationService->getQuotationsRows($user, $page);
 
         $statusCounts = [
             'accepted' => $acceptedQuotation,
             'rejected' => $rejectedQuotation,
         ];
+
+        $actions = [
+            ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
+            ['route' => 'dashboard.quotation.export', 'label' => 'Exporter'],
+        ];
+
+        foreach ($rows as &$row) {
+            if ($row['status'] !== 'Accepted') {
+                $actions[] = ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'];
+            }
+            if ($row['sendingDate'] === '') {
+                $actions[] = ['route' => 'dashboard.quotation.send', 'label' => 'Envoyer'];
+            }
+        }
 
         $config = [
             'statusCounts' => $statusCounts,
@@ -68,11 +86,7 @@ class QuotationController extends AbstractController
             'quotations' => $paginateQuotations,
             'totalQuotation' => $totalQuotation,
             'conversionRate' => $conversionRate,
-            'actions' => [
-                ['route' => 'dashboard.quotation.show', 'label' => 'Afficher'],
-                ['route' => 'dashboard.quotation.edit', 'label' => 'Modifier'],
-                ['route' => 'dashboard.quotation.export', 'label' => 'Exporter'],
-            ],
+            'actions' => $actions,
             'deleteFormTemplate' => 'dashboard/quotation/_delete_form.html.twig',
             'deleteRoute' => 'dashboard.quotation.delete',
         ];
@@ -80,11 +94,17 @@ class QuotationController extends AbstractController
         return $this->render('dashboard/quotation/index.html.twig', $config);
     }
 
+
     #[Route('/new', name: 'dashboard.quotation.new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
+        }
+
+        if (!$this->subscriptionService->canCreateQuotation()) {
+            $this->addFlash('error_quotation', 'Vous avez atteint la limite de devis pour votre abonnement actuel.');
+            return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
         $quotation = new Quotation();
@@ -98,19 +118,24 @@ class QuotationController extends AbstractController
         $service = $entityManager->getRepository(Service::class)->findOneBy(['company' => $company]);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->quotationService->processQuotation($quotation, $form, $company);
+            try {
 
-            $sendOption = $form->get('sendOption')->getData();
-            if ($sendOption === 'Maintenant') {
-                $token = $this->quotationService->generateQuotationValidationToken($quotation);
-                $encodedToken = base64_encode($token);
-                $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
+                $this->quotationService->processQuotation($quotation, $form, $company);
 
-                $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
+                $sendOption = $form->get('sendOption')->getData();
+                if ($sendOption === 'Maintenant') {
+                    $token = $this->quotationService->generateQuotationValidationToken($quotation);
+                    $encodedToken = base64_encode($token);
+                    $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
+
+                    $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
+                }
+
+                $this->addFlash('success_quotation', 'Le devis a été créé avec succès.');
+                return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error_quotation', 'Une erreur est survenue lors de la création du devis.');
             }
-
-            $this->addFlash('success', 'Le devis a été créé avec succès.');
-            return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('dashboard/quotation/new.html.twig', [
@@ -141,8 +166,9 @@ class QuotationController extends AbstractController
     #[Route('/{uid}/edit', name: 'dashboard.quotation.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Quotation $quotation, EntityManagerInterface $entityManager): Response
     {
-        if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
-            return $redirectResponse;
+        if ($quotation->getQuotationStatus()->getName() === 'Accepted') {
+            $this->addFlash('error_quotation', 'Vous ne pouvez pas modifier une quotation acceptée.');
+            return $this->redirectToRoute('dashboard.quotation.index');
         }
 
         $form = $this->createForm(QuotationType::class, $quotation);
@@ -150,6 +176,7 @@ class QuotationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $this->addFlash('success_quotation', 'Le devis a été modifié avec succès.');
 
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
@@ -162,12 +189,14 @@ class QuotationController extends AbstractController
         ]);
     }
 
+
     #[Route('/{id}', name: 'dashboard.quotation.delete', methods: ['POST'])]
     public function delete(Request $request, Quotation $quotation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$quotation->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $quotation->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($quotation);
             $entityManager->flush();
+            $this->addFlash('success_quotation', 'Le devis a été supprimé avec succès.');
         }
 
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
@@ -176,6 +205,10 @@ class QuotationController extends AbstractController
     #[Route('/{uid}/export', name: 'dashboard.quotation.export', methods: ['GET'])]
     public function exportQuotation(Quotation $quotation): Response
     {
+        if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
+            $this->addFlash('error_quotation', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
+            return $this->redirectToRoute('dashboard.quotation.index');
+        }
         $csvData = $this->csvExporter->exportQuotation($quotation);
 
         return new Response($csvData, 200, [
@@ -188,5 +221,24 @@ class QuotationController extends AbstractController
     public function exportAllQuotations(): Response
     {
         return $this->quotationService->exportAllQuotations();
+    }
+
+    #[Route('/{uid}/send', name: 'dashboard.quotation.send', methods: ['GET'])]
+    public function sendQuotation(Quotation $quotation, EntityManagerInterface $entityManager): Response
+    {
+        if ($quotation->getSendingDate() === null) {
+            $token = $this->quotationService->generateQuotationValidationToken($quotation);
+            $encodedToken = base64_encode($token);
+            $quotationValidationUrl = $this->generateUrl('site.home.validation.quotation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
+
+            $quotation->setSendingDate(new \DateTime());
+            $entityManager->flush();
+
+            $this->addFlash('success_quotation', 'Le devis a été envoyé avec succès.');
+        }
+
+        return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
     }
 }

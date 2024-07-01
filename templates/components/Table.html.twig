@@ -1,9 +1,9 @@
 {# templates/components/table.html.twig #}
 {% set rowClasses = "py-3 px-4" %}
-<section class="bg-white border w-full max-w-full rounded-md">
+<section class="bg-white border w-full max-w-full rounded-md overflow-x-auto">
     <h1 class="font-bold ml-4 py-4">{{ title }}</h1>
     
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto lg:overflow-x-visible">
         <div class="border-t table min-w-full text-left pb-5">
             <div class="table-header-group bg-background">
                 <div class="table-row font-semibold">
@@ -30,8 +30,11 @@
                                     </div>   
                                 {% endif %}
                             {% endfor %}
-                            <div data-controller="actions" class="relative text-center">
-                                <button class="actions-button" data-action="click->actions#showModal">
+                            <div data-controller="actions" class="relative flex justify-center items-center gap-2">
+                                {% if null != deleteRoute %}
+                                    <div class="hover:bg-primary/10 text-lg justify-center items-start">{{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}</div>
+                                {% endif %}
+                                <button class="actions-button flex text-lg justify-center items-start" data-action="click->actions#showModal">
                                     {{ ux_icon('charm:menu-kebab') }}
                                 </button>
                                 <div id="actions-modal" class="modal min-w-40 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
@@ -41,17 +44,14 @@
                                         </div>
                                         <nav id="actions-list" class="flex flex-col">
                                             {% for action in actions %}
-                                                <a 
+                                                <a
                                                     href="{{ path(action.route, {'uid': row.uid}) }}"
                                                     id="show-link"
-                                                    class="hover:bg-primary/10 px-4 py-2"
+                                                    class="hover:bg-primary/10 px-4 py-2 text-center"
                                                 >
                                                     {{ action.label }}
                                                 </a>
                                             {% endfor %}
-                                            {% if null != deleteRoute %}
-                                                {{ include('dashboard/customer/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': row}) }}
-                                            {% endif %}
                                         </nav>
                                     </div>
                                 </div>
@@ -62,6 +62,7 @@
             {% endif %}
         </div>
     </div>
+    <div>
     
     {% if rows|length == 0 %}
         <div class="w-full py-10 text-center">
