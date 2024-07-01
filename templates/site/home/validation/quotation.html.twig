@@ -29,7 +29,7 @@
         }) }}
     </div>
 
-    {% if quotationStatus == 'En attente' %}
+    {% if quotationStatus == 'Pending' %}
         <div class='w-full flex gap-4 items-center justify-end mt-10'>
             <form action="{{ path('site.home.validation.quotation', {'token': token}) }}" method="post">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('accepted_action') }}">
