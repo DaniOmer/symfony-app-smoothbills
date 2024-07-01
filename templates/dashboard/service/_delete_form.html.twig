@@ -1,9 +1,27 @@
-{# templates/dashboard/service/_delete_form.html.twig #}
-<form method="post" action="{{ path('dashboard.service.delete', {'id': entity.id}) }}" onsubmit="return confirm(`{{ 'crud.delete_confirmation'|trans }}`);">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
-    <button
-      class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75"
-    >
-        {{ 'crud.delete'|trans }}
-    </button>
-</form>
+{# templates/modal/delete_confirmation_modal.html.twig #}
+
+<div data-controller="delete">
+    <div class="fixed inset-0 z-10 hidden" id="delete-confirmation-modal" role="dialog" aria-modal="true" data-delete-target="modal">
+        <div class="flex items-center justify-center min-h-screen p-4 text-center">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <div class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+                <div class="p-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">Confirmation de suppression</h3>
+                    <p class="text-sm text-gray-500">Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+                    <div class="mt-4 flex justify-end">
+                        <button type="button" class="border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-100 transition ease-in-out delay-75" data-action="click->delete#cancel">Annuler</button>
+                        <form id="delete-form" method="post" style="display: inline;" data-delete-target="form">
+                            <input type="hidden" name="_token" id="delete-token" data-delete-target="token">
+                            <button type="submit" class="ml-2 bg-red-600 border border-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition ease-in-out delay-75">Confirmer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="{{ path('dashboard.service.delete', {'id': entity.id}) }}" data-action="submit->delete#openModal">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
+        <button type="submit" class="hover:bg-red-100 px-4 py-2 w-full rounded-b-md text-red-600">{{ 'crud.delete'|trans }}</button>
+    </form>
+</div>

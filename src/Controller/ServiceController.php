@@ -174,6 +174,7 @@ class ServiceController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $service->getId(), $request->request->get('_token'))) {
             $entityManager->remove($service);
             $entityManager->flush();
+            $this->addFlash('success', 'Le service a été supprimé avec succès.');
         }
 
         return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
