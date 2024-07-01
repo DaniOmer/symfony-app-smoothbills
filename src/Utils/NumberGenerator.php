@@ -10,6 +10,6 @@ class NumberGenerator
         $month = date('m');
         $nextNumber = $lastNumber ? $lastNumber + 1 : 1;
 
-        return 'FA' . $year . $month . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . $year . $month . str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

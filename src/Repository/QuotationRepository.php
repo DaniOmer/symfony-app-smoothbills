@@ -71,6 +71,20 @@ class QuotationRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function getLastQuotationNumberForCompany(int $companyId): ?int
+    {
+        $lastQuotation = $this->createQueryBuilder('q')
+            ->select('q.quotation_number')
+            ->where('q.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('q.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $lastQuotation ? (int) substr($lastQuotation['quotation_number'], -4) : null;
+    }
+
     //    /**
     //     * @return Quotation[] Returns an array of Quotation objects
     //     */

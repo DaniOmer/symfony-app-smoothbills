@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
+use App\Utils\NumberGenerator;
 
 class QuotationService
 {
@@ -30,6 +31,7 @@ class QuotationService
     private $pdfGeneratorService;
     private $twig;
     private $paymentService;
+    private $numberGenerator;
 
     public function __construct(
         Environment $twig,
@@ -43,6 +45,7 @@ class QuotationService
         JWTService $jWTService,
         PdfGeneratorService $pdfGeneratorService,
         PaymentService $paymentService,
+        NumberGenerator $numberGenerator
     ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
@@ -55,6 +58,7 @@ class QuotationService
         $this->jWTService = $jWTService;
         $this->pdfGeneratorService = $pdfGeneratorService;
         $this->paymentService = $paymentService;
+        $this->numberGenerator = $numberGenerator;
     }
 
     public function getPaginatedQuotations(User $user, $page): PaginationInterface
@@ -72,7 +76,7 @@ class QuotationService
             $rows[] = [
                 'id' => $quotation->getId(),
                 'uid' => $quotation->getUid(),
-                'name' => $quotation->getUid(),
+                'quotation_numbber' => $quotation->getQuotationNumber(),
                 'status' => $quotation->getQuotationStatus()->getName(),
                 'client' => $quotation->getCustomer()->getName(),
                 'sendingDate' => $quotation->getSendingDate() ? $quotation->getSendingDate()->format('Y-m-d H:i:s') : '',
@@ -141,7 +145,7 @@ class QuotationService
     {
         $quotations = $this->quotationRepository->findAll();
         $headers = ['N° de Devis', 'Status', 'Client', 'Envoyé le'];
-        $dataExtractor = function(Quotation $quotation) {
+        $dataExtractor = function (Quotation $quotation) {
             return [
                 $quotation->getUid(),
                 $quotation->getQuotationStatus()->getName(),
@@ -205,6 +209,9 @@ class QuotationService
             $quotation->setSendingDate(null);
         }
 
+        $quotationNumber = $this->generateQuotationNumber($company->getId());
+        $quotation->setQuotationNumber($quotationNumber);
+
         $quotation->setCompany($company);
 
         $this->entityManager->persist($quotation);
@@ -213,14 +220,24 @@ class QuotationService
         $this->createInvoiceFromQuotation($quotation);
     }
 
+    private function generateQuotationNumber(int $companyId): string
+    {
+        $prefix = 'DE';
+        $lastQuotationNumber = $this->quotationRepository->getLastQuotationNumberForCompany($companyId);
+
+        $quotationNumber = $this->numberGenerator->generateDocumentNumber($lastQuotationNumber, $prefix);
+
+        return $quotationNumber;
+    }
+
     public function createInvoiceFromQuotation($quotation): void
     {
         $quotationStatus = $quotation->getQuotationStatus()->getName();
 
         if ($quotationStatus === 'Accepted') {
             $invoice = $this->invoiceService->createInvoice($quotation);
-            
-            if($invoice){
+
+            if ($invoice) {
                 $this->paymentService->createPayment($invoice);
             }
         }
