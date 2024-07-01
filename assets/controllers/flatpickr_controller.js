@@ -7,12 +7,12 @@ export default class extends Controller {
 
   connect() {
     flatpickr(this.startDateTarget, {
-      dateFormat: "d/m/Y",
+      dateFormat: "Y-m-d",
       defaultDate: this.startDateTarget.value || null,
     });
 
     flatpickr(this.endDateTarget, {
-      dateFormat: "d/m/Y",
+      dateFormat: "Y-m-d",
       defaultDate: this.endDateTarget.value || null,
     });
   }

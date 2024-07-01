@@ -75,9 +75,6 @@
             </form>
         </div>
     </div>
-    <div class='w-fit mx-auto mt-10'>
-        <span class='font-semiboled'>&copy; {{ "now"|date('Y') }} Smoothbill -</span>
-        <a href={{ path('site.legal_notice')}} class='text-primary underline'>{{ 'login.legal_notice'|trans }}</a>
-    </div>
+    {{ include('partials/DashboardFooter.html.twig') }}
 </div>
 {% endblock %}

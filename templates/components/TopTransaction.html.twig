@@ -18,7 +18,7 @@
     {% else %}
     <div class="overflow-x-auto">
         <div class="table w-full text-left">
-            <div class="table-header-group text-xs font-medium px-0 py-4 bg-backgroundIcon">
+            <div class="table-header-group text-sm font-medium px-0 py-4 bg-backgroundIcon">
                 <div class="table-row font-semibold">
                     <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.id }}</div>
                     <div class="{{ rowClasses }} table-cell text-left">{{ headersTopTransaction.service }}</div>
@@ -29,7 +29,7 @@
 
             <div class="table-row-group">
                 {% for transaction in transactions %}
-                    <div class="table-row text-xs font-medium leading-7 {% if loop.index is even %}bg-backgroundIcon{% else %}bg-white{% endif %} rounded-lg">
+                    <div class="table-row text-sm font-medium leading-7 {% if loop.index is even %}bg-backgroundIcon{% else %}bg-white{% endif %} rounded-lg">
                         <div class="{{ rowClasses }} table-cell whitespace-nowrap">
                             <div>{{ transaction.id }}</div>
                         </div>

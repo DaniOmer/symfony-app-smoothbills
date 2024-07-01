@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="">
-            {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors }) }}
+            {{ component('Table', { services: services, headers: headers, rows: rows, title: 'service.table_title'|trans, actions: actions, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, statusColors: statusColors, paginatedData: services }) }}
         </div>
     </section>
 {% endblock %}

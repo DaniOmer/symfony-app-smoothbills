@@ -39,7 +39,6 @@
 
     <div class="flex justify-center mt-6 gap-4">
         <a href="{{ path('dashboard.service.edit', { 'uid': service.uid }) }}" class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">Modifier</a>
-        {{ include('dashboard/service/_delete_form.html.twig', { entity: service }) }}
     </div>
 </section>
 {% endblock %}

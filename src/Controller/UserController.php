@@ -90,14 +90,16 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['GET', 'POST'])]
-    public function addUserByInvitation(Request $request, JWTService $jWTService): Response
+    #[Route('/invite', name: 'dashboard.settings.user.invite', methods: ['POST'])]
+    public function addUserByInvitation(Request $request, JWTService $jWTService): Response 
     {
         $invitation = new Invitation();
         $form = $this->createForm(InvitationType::class, $invitation);
         $form->handleRequest($request);
         
         $user = $this->getUser();
+        $ownerId = $user->getId();
+
         $company = $user->getCompany();
         $companyId = $company->getId();
 
@@ -114,7 +116,7 @@ class UserController extends AbstractController
                 return $this->json(['error' => 'Une invitation a déjà été envoyée à cet utilisateur.'], Response::HTTP_CONFLICT);
             }
 
-            $token = $jWTService->createToken(['email' => $email, 'companyId' => $companyId], 86400);
+            $token = $jWTService->createToken(['email' => $email, 'companyId' => $companyId, 'ownerId' => $ownerId], 86400);
             $encodedToken = base64_encode($token);
             $inviteUrl = $this->generateUrl('site.register.by.invitation', ['token' => $encodedToken], UrlGeneratorInterface::ABSOLUTE_URL);
 
