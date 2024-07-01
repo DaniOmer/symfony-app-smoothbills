@@ -23,7 +23,7 @@
             </twig:MenuItem>
         </header>
 
-        <div class="flex justify-between items-center gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_paid'|trans }}" kpi_value="{{ statusCounts['Paid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_unpaid'|trans }}" kpi_value="{{ statusCounts['Unpaid'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>
             <twig:KpiCard kpi_name="{{ 'invoice.invoice_pending'|trans }}" kpi_value="{{ statusCounts['Pending'] }}" icon_name="la:file-invoice-dollar"></twig:KpiCard>

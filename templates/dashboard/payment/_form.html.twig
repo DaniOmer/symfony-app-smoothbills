@@ -1,0 +1,26 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <div id="payment_info" class="grid grid-cols-2 gap-x-5">
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Numéro du paiement</h2>
+                    {{ form_row(form.invoice) }}
+                    <h2 class="text-sm font-title mb-1 font-medium">Status</h2>
+                    {{ form_row(form.status) }}
+                </div>
+            </div>
+        </article>
+        <div class="flex justify-start gap-5 mt-10">
+            <a 
+                href="{{ path('dashboard.payment.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                Annuler
+            </a>
+            <button class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

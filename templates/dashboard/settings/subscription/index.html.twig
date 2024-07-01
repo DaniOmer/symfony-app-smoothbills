@@ -4,13 +4,12 @@
 
 {% block body %}
 <section class="">
-       {% for flash_success in app.flashes('success') %}
+       {% for flash_success in app.flashes('success_subscription') %}
        <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">
               {{ flash_success }}
        </div>
        {% endfor %}
-       
-       {% for flash_error in app.flashes('error') %}
+       {% for flash_error in app.flashes('error_subscription') %}
               <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
        {% endfor %}
        <header class="mb-5">

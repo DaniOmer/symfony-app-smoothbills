@@ -6,6 +6,7 @@ use App\Repository\AddressRepository;
 use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 class Address
@@ -18,15 +19,23 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message: "Le code postal ne doit pas être vide.")]
+    #[Assert\Regex(pattern: "/^[0-9]{5}$/", message: "Le code postal doit être composé de 5 chiffres.")]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La ville ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "La ville ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le pays ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le pays ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "L'adresse ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $address = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]

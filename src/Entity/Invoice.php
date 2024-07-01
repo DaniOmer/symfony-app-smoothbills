@@ -34,7 +34,7 @@ class Invoice
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Quotation $quotation = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]

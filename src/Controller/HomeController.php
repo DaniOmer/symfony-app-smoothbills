@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Quotation;
 use App\Service\InvoiceService;
 use App\Service\JWTService;
+use App\Service\PaymentService;
 use App\Service\QuotationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +25,7 @@ class HomeController extends AbstractController
     }
 
     #[Route('/quotation/validation/{token}', name: 'site.home.validation.quotation', methods: ['GET', 'POST'])]
-    public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService, InvoiceService $invoiceService): Response
+    public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService, InvoiceService $invoiceService, PaymentService $paymentService): Response
     {
         $decodedToken = base64_decode($token);
         $jwtData = $jWTService->parseToken($decodedToken);
@@ -77,6 +78,7 @@ class HomeController extends AbstractController
                 if ($invoice) {
                     $this->addFlash('success', 'Votre devis a bien été validé.');
                     $invoiceService->sendInvoiceByEmail($invoice);
+                    $paymentService->createPayment($invoice);
                 } else {
                     $this->addFlash('error', 'Une erreur est survenue lors de la création de la facture. Veuillez réessayer.');
                 }

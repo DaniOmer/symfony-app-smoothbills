@@ -33,7 +33,7 @@ class SubscriptionController extends AbstractController
         $subscriptionId = $request->query->get('subscriptionId');
 
         if (!$subscriptionId) {
-            $this->addFlash('error', 'Abonnement non trouvé.');
+            $this->addFlash('error_subscription', 'Abonnement non trouvé.');
             return $this->redirectToRoute('dashboard.settings.subscriptions.index');
         }
 
@@ -41,9 +41,9 @@ class SubscriptionController extends AbstractController
 
         if ($newSubscription) {
             $companyService->changeSubscription($company, $newSubscription);
-            $this->addFlash('success', 'Abonnement changé avec succès.');
+            $this->addFlash('success_subscription', 'Abonnement changé avec succès.');
         } else {
-            $this->addFlash('error', 'Abonnement non trouvé.');
+            $this->addFlash('error_subscription', 'Abonnement non trouvé.');
         }
 
         return $this->redirectToRoute('dashboard.settings.subscriptions.index');
