@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
@@ -24,30 +25,53 @@ class Company
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La dénomination ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "La dénomination ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $denomination = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro SIREN ne doit pas être vide.")]
+    #[Assert\Length(exactly: 9, exactMessage: "Le numéro SIREN doit contenir exactement {{ limit }} chiffres.")]
+    #[Assert\Regex(pattern: "/^\d{9}$/", message: "Le numéro SIREN doit contenir exactement 9 chiffres.")]
     private ?string $siren = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro SIRET ne doit pas être vide.")]
+    #[Assert\Length(exactly: 14, exactMessage: "Le numéro SIRET doit contenir exactement {{ limit }} chiffres.")]
+    #[Assert\Regex(pattern: "/^\d{14}$/", message: "Le numéro SIRET doit contenir exactement 14 chiffres.")]
     private ?string $siret = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro de TVA ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le numéro de TVA ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[A-Z]{2}[A-Z0-9]+$/", message: "Le numéro de TVA doit commencer par deux lettres suivies de chiffres.")]
     private ?string $tva_number = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro RCS ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le numéro RCS ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $rcs_number = null;
 
     #[ORM\Column(length: 65)]
+    #[Assert\NotBlank(message: "Le numéro de téléphone ne doit pas être vide.")]
+    #[Assert\Length(max: 65, maxMessage: "Le numéro de téléphone ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^\+?[0-9\s\-()]{10,65}$/", message: "Le numéro de téléphone doit être valide.")]
     private ?string $phone_number = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse e-mail ne doit pas être vide.")]
+    #[Assert\Email(message: "L'adresse e-mail '{{ value }}' n'est pas valide.")]
+    #[Assert\Length(max: 255, maxMessage: "L'adresse e-mail ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $mail = null;
 
+    #[Assert\NotBlank(message: "La date de création ne doit pas être vide.")]
+    #[Assert\Date(message: "La date de création doit être une date valide.")]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creation_date = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le capital social ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le capital social doit être un nombre positif.")]
     private ?int $registered_social = null;
 
     #[ORM\Column(length: 255)]
