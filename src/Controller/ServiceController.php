@@ -185,6 +185,7 @@ class ServiceController extends AbstractController
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
+        
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
             $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.service.index');
@@ -192,8 +193,8 @@ class ServiceController extends AbstractController
 
         $company = $this->getUser()->getCompany();
         $services = $serviceRepository->findBy(['company' => $company]);
-        
-        $headers = ['ID', 'Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
+
+        $headers = ['Nom', 'Prix', 'Durée estimée', 'Statut', 'Description'];
         $dataExtractor = function (Service $service) {
             return [
                 $service->getName(),
