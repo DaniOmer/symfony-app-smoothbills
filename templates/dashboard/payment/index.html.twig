@@ -10,10 +10,17 @@
 
 {% block body %}
     <section>
+        {% for flash_success in app.flashes('success_payment') %}
+            <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+        {% for flash_error in app.flashes('error_payment') %}
+            <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
+        {% endfor %}
         <header class="w-full flex justify-between mb-4">
             <h1 class="text-title font-title font-semibold">{{ 'payment.title'|trans }}</h1>
         </header>
     </section>
+       
 
     <section class="mt-8">
        {{ component('Table', { payments: payments, headers: headers, rows: rows, title: 'payment.table_title'|trans, actions: actions, paginatedData: payments, statusColors: statusColors, deleteFormTemplate: null, deleteRoute: null}) }}

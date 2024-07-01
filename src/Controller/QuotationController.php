@@ -103,7 +103,7 @@ class QuotationController extends AbstractController
         }
 
         if (!$this->subscriptionService->canCreateQuotation()) {
-            $this->addFlash('error', 'Vous avez atteint la limite de devis pour votre abonnement actuel.');
+            $this->addFlash('error_quotation', 'Vous avez atteint la limite de devis pour votre abonnement actuel.');
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -131,10 +131,10 @@ class QuotationController extends AbstractController
                     $this->quotationService->sendQuotationMail($quotation, $quotationValidationUrl);
                 }
 
-                $this->addFlash('success', 'Le devis a été créé avec succès.');
+                $this->addFlash('success_quotation', 'Le devis a été créé avec succès.');
                 return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
-                $this->addFlash('error', $e->getMessage());
+                $this->addFlash('error_quotation', 'Une erreur est survenue lors de la création du devis.');
             }
         }
 
@@ -167,7 +167,7 @@ class QuotationController extends AbstractController
     public function edit(Request $request, Quotation $quotation, EntityManagerInterface $entityManager): Response
     {
         if ($quotation->getQuotationStatus()->getName() === 'Accepted') {
-            $this->addFlash('error', 'Vous ne pouvez pas modifier une quotation acceptée.');
+            $this->addFlash('error_quotation', 'Vous ne pouvez pas modifier une quotation acceptée.');
             return $this->redirectToRoute('dashboard.quotation.index');
         }
 
@@ -176,7 +176,7 @@ class QuotationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            $this->addFlash('success', 'Le devis a été modifié avec succès.');
+            $this->addFlash('success_quotation', 'Le devis a été modifié avec succès.');
 
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
@@ -196,7 +196,7 @@ class QuotationController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $quotation->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($quotation);
             $entityManager->flush();
-            $this->addFlash('success', 'Le devis a été supprimé avec succès.');
+            $this->addFlash('success_quotation', 'Le devis a été supprimé avec succès.');
         }
 
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
@@ -206,7 +206,7 @@ class QuotationController extends AbstractController
     public function exportQuotation(Quotation $quotation): Response
     {
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
-            $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
+            $this->addFlash('error_quotation', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.quotation.index');
         }
         $csvData = $this->csvExporter->exportQuotation($quotation);
@@ -236,9 +236,7 @@ class QuotationController extends AbstractController
             $quotation->setSendingDate(new \DateTime());
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le devis a été envoyé avec succès.');
-        } else {
-            $this->addFlash('error', 'Le devis a déjà été envoyé.');
+            $this->addFlash('success_quotation', 'Le devis a été envoyé avec succès.');
         }
 
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);

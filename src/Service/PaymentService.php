@@ -13,6 +13,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Form\FormInterface;
 use App\Utils\NumberGenerator;
+use App\Service\InvoiceService;
+use App\Entity\InvoiceStatus;
 
 class PaymentService
 {
@@ -25,14 +27,14 @@ class PaymentService
     private $numberGenerator;
 
     public function __construct(
-        PaymentRepository $paymentRepository, 
-        MailerInterface $mailer, 
-        #[Autowire('%admin_email%')] string $adminEmail, 
-        CsvExporter $csvExporter, 
-        InvoiceService $invoiceService, 
-        EntityManagerInterface $entityManager, 
+        PaymentRepository $paymentRepository,
+        MailerInterface $mailer,
+        #[Autowire('%admin_email%')] string $adminEmail,
+        CsvExporter $csvExporter,
+        InvoiceService $invoiceService,
+        EntityManagerInterface $entityManager,
         NumberGenerator $numberGenerator
-    ){
+    ) {
         $this->paymentRepository = $paymentRepository;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
@@ -49,7 +51,7 @@ class PaymentService
         return $paginateQuotations;
     }
 
-    public function getPaymentsRows(User $user, $page): Array
+    public function getPaymentsRows(User $user, $page): array
     {
         $rows = [];
 
@@ -84,9 +86,9 @@ class PaymentService
                     $paymentDate = $recurringPayment->getPaymentDate();
                 }
             }
-            
+
             $paymentDateFormatted = $paymentDate ? $paymentDate->format('Y-m-d H:i:s') : null;
-            
+
             $rows[] = [
                 'id' => $payment->getId(),
                 'uid' => $payment->getUid(),
@@ -164,14 +166,14 @@ class PaymentService
     {
         $oneTimePayment = $payment->getOneTimePayment();
 
-        if(!$oneTimePayment){
+        if (!$oneTimePayment) {
             $oneTimePayment = new OneTimePayment();
         }
 
-        if($status === 'Paid'){
+        if ($status === 'Paid') {
             $oneTimePayment->setPaymentDate($now);
         }
-        
+
         $oneTimePayment->setStatus($status);
 
         $this->entityManager->persist($oneTimePayment);
@@ -183,20 +185,35 @@ class PaymentService
     {
         $recurringPayment = $payment->getRecurringPayment();
 
-        if (!$recurringPayment){
+        if (!$recurringPayment) {
             $recurringPayment = new RecurringPayment();
         }
 
-        if($status === 'Paid'){
+        if ($status === 'Paid') {
             $recurringPayment->setPaymentDate($now);
             $recurringPayment->setStartDate($now);
             $recurringPayment->setEndDate($now->add(new \DateInterval('P1M')));
         }
-        
+
         $recurringPayment->setStatus($status);
-        
+
         $this->entityManager->persist($recurringPayment);
 
         return $recurringPayment;
+    }
+
+    public function updateInvoiceStatus(Payment $payment, $status): void
+    {
+        $invoice = $payment->getInvoice();
+        $invoiceStatus = $this->entityManager->getRepository(InvoiceStatus::class)->findOneBy(['name' => $status]);
+
+        if ($invoiceStatus) {
+            $invoice->setInvoiceStatus($invoiceStatus);
+        } else {
+            throw new \Exception('Invalid invoice status');
+        }
+
+        $this->entityManager->persist($invoice);
+        $this->entityManager->flush();
     }
 }

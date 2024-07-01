@@ -66,8 +66,16 @@ class PaymentController extends AbstractController
 
             $payment = $entityManager->getRepository(Payment::class)->findOneBy(['uid' => $uid]);
             $status = $form->get('status')->getData();
-            
-            $this->paymentService->updatePaymentStatus($payment, $status);
+
+            try {
+                $this->paymentService->updatePaymentStatus($payment, $status);
+                $this->paymentService->updateInvoiceStatus($payment, $status);
+                $this->addFlash('success_payment', 'Le paiement a été mis à jour avec succès.');
+                return $this->redirectToRoute('dashboard.payment.index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error_payment', 'Une erreur est survenue lors de la mise à jour du paiement.');
+                return $this->redirectToRoute('dashboard.payment.index');
+            }
 
             return $this->redirectToRoute('dashboard.payment.index', [], Response::HTTP_SEE_OTHER);
         }
