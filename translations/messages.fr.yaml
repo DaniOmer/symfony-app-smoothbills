@@ -55,6 +55,8 @@ button:
     download: "Exporter"
     export: "Exporter"
     export_all: "Tout exporter"
+    change_subscription: "Changer d'abonnement"
+    current_subscription: "Abonnement actuel"
 
 service:
     title: "Services"
@@ -67,7 +69,6 @@ service:
     description: "Description"
     estimatedDuration: "Durée estimée"
     not_data: "Aucune donnée"
-
 
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
@@ -91,7 +92,7 @@ quotation:
     invoice_rejected: "Devis rejetés"
     details: "Services"
 
-invoice: 
+invoice:
     title: "Factures"
     table_title: "Toutes les factures"
     invoice_paid: "Factures payées"
@@ -99,11 +100,7 @@ invoice:
     invoice_pending: "Factures en attente"
     invoice_details: "Détails de la facture"
     status:
-        paid: "Payée"
-        unpaid: "Non payée"
-        pending: "En attente"
-        cancelled: "Annulée"
-
-payment:
-    title: "Paiements"
-    table_title: "Tous les paiements"
+        Paid: "Payée"
+        Unpaid: "Non payée"
+        Pending: "En attente"
+        Canceled: "Annulée"

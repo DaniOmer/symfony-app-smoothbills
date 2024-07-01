@@ -58,6 +58,19 @@ class QuotationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function countQuotationsForCompanyThisMonth($companyId): int
+    {
+        $qb = $this->createQueryBuilder('q')
+            ->select('COUNT(q.id)')
+            ->andWhere('q.company = :company')
+            ->andWhere('q.sending_date BETWEEN :start AND :end')
+            ->setParameter('company', $companyId)
+            ->setParameter('start', new \DateTime('first day of this month'))
+            ->setParameter('end', new \DateTime('last day of this month'));
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Quotation[] Returns an array of Quotation objects
     //     */

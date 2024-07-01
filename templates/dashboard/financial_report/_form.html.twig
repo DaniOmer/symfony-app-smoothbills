@@ -4,10 +4,10 @@
     <div class="flex flex-col sm:flex-row justify-center items-center sm:gap-x-3 w-full">
         <div class="flex justify-between min-w-full sm:min-w-fit sm:justify-center gap-x-4">
             <div>
-                {{ form_row(form.startDate, {'attr': {'data-flatpickr-target': 'startDate', 'value': rawStartDate}, 'label' : 'Date de Début'}) }}
+                {{ form_row(form.startDate, {'attr': {'data-flatpickr-target': 'startDate', 'value': startDate}, 'label' : 'Date de Début'}) }}
             </div>
             <div>
-                {{ form_row(form.endDate, {'attr': {'data-flatpickr-target': 'endDate', 'value': rawEndDate}, 'label' : 'Date de Fin'}) }}
+                {{ form_row(form.endDate, {'attr': {'data-flatpickr-target': 'endDate', 'value': endDate}, 'label' : 'Date de Fin'}) }}
             </div>
         </div>
         <button 

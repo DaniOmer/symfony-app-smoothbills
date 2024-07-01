@@ -115,7 +115,6 @@ class RegistrationController extends AbstractController
         }
     }
 
-
     #[Route('/resend/verification/email', name: 'site.resend.verification.email')]
     public function resendVerificationEmail(Request $request, SessionInterface $session): Response
     {
@@ -150,6 +149,9 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $company = $this->entityManager->getRepository(Company::class)->find($jwtData['companyId']);
+            $owner = $this->entityManager->getRepository(User::class)->find($jwtData['ownerId']);
+
             $user = new User();
             $user->setEmail($invitation->getEmail());
             $user->setFirstName($form->get('firstName')->getData());
@@ -162,8 +164,9 @@ class RegistrationController extends AbstractController
             );
             $user->setRoles([$invitation->getRole()]);
 
-            $company = $this->entityManager->getRepository(Company::class)->find($jwtData['companyId']);
             $user->setCompany($company);
+            $user->setOwner($owner);
+            $user->setVerified(true);
 
             $this->entityManager->persist($user);
             $this->entityManager->remove($invitation);

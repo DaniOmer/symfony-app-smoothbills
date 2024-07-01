@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport de vente du {{ startDate|date('d/m/Y') }} au {{ endDate|date('d/m/Y') }}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1.2em' font-size='96'>⚫️</text><text y='1.3em' x='0.2em' font-size='76' fill='#fff'>sf</text></svg>">
+</head>
+<body>
+    <section style="font-family: Arial, sans-serif;">
+        <header style="margin-bottom: 20px;">
+            <h1 style="font-size: 24px; font-weight: bold;">Rapport de ventes par période</h1>
+            <p style="font-size: 12px;">Période : <span style="color: #4858D0;">{{ startDate|date('d/m/Y') }} - {{ endDate|date('d/m/Y') }}</span></p>
+            <div style="margin-bottom: 26px;">
+                Ce rapport de ventes fournit une vue d'ensemble détaillée des performances commerciales de notre entreprise 
+                pour la période sélectionnée. Il inclut des indicateurs clés de performance (<strong>KPI</strong>) tels que le nombre total 
+                de ventes, le montant total hors taxes (<strong>HT</strong>), le montant total de la TVA, et le montant total toutes taxes 
+                comprises (<strong>TTC</strong>). Ces métriques essentielles nous permettent de mesurer notre efficacité commerciale et 
+                d'identifier les tendances de vente.
+            </div>
+        </header>
+
+        <article>
+            <div style="margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;">
+                        <strong>Nombre de vente</strong> : 
+                        {{ invoices|length > 0 ? invoices|length : 0 }}
+                    </div>
+                    <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;">
+                        <strong>Montant total HT</strong> : 
+                        {{ invoices|length > 0 ? totalAmountHT|number_format(2, ',', ' ') ~ ' €' : '0 €' }}
+                    </div>
+                    <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;">
+                        <strong>Montant total TVA</strong> : 
+                        {{ invoices|length > 0 ? (totalAmountTTC - totalAmountHT)|number_format(2, ',', ' ') ~ ' €' : '0 €' }}
+                    </div>
+                    <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;">
+                        <strong>Montant total TTC</strong> : 
+                        {{ invoices|length > 0 ? totalAmountTTC|number_format(2, ',', ' ') ~ ' €' : '0 €' }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div style="margin-bottom: 10px;">
+                    <h2 style="font-size: 20px; font-weight: bold;">Récapitulatif des Ventes</h2>
+                </div>
+                <div style="overflow-x: auto; border: 1px solid #ccc; background-color: #fff; max-width: 100%;">
+
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background-color: #f0f0f0;">
+                            <tr style="display: table-row; font-weight: bold;">
+                                <th style="padding: 10px;">Numéro de facture</th>
+                                <th style="padding: 10px;">Client</th>
+                                <th style="padding: 10px;">Montant HT</th>
+                                <th style="padding: 10px;">Montant TTC</th>
+                                <th style="padding: 10px;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody style="display: table-row-group;">
+                            {% if invoices|length > 0 %}
+                                {% for invoice in invoices %}
+                                    <tr style="display: table-row;">
+                                        <td style="padding: 10px; white-space: nowrap; color: #4858D0;">{{ invoice.invoice_number }}</td>
+                                        <td style="padding: 10px; white-space: nowrap;">{{ invoice.client }}</td>
+                                        <td style="padding: 10px; white-space: nowrap;">{{ invoice.amount_ht|number_format(2, ',', ' ') }}</td>
+                                        <td style="padding: 10px; white-space: nowrap;">{{ invoice.amount_ttc|number_format(2, ',', ' ') }}</td>
+                                        <td style="padding: 10px; white-space: nowrap;">{{ invoice.invoice_date|date('d/m/Y') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <div style="width: 100%; padding: 10px; text-align: center;"> Vous n'avez réalisé aucune vente sur la période sélectionnée.</div>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </article>
+        <div style="width:100%; text-align: center; margin-top:80px">
+            <p>Merci pour votre confiance. </br>Pour toute question, contactez-nous <a href="mailto:contact@smoothbill.com" style="color: #4858D0;">contact@smoothbill.com</a>.</p>
+            L'équipe <strong>SMOOTHBILL</strong>
+        </div>
+    </section>
+</body>
+</html>

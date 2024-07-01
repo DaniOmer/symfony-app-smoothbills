@@ -51,6 +51,7 @@
         "symfony/translation": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
         "symfony/uid": "6.4.*",
+        "symfony/ux-chartjs": "^2.18",
         "symfony/ux-dropzone": "^2.18",
         "symfony/ux-icons": "^2.17",
         "symfony/ux-live-component": "^2.17",

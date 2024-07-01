@@ -9,7 +9,7 @@ use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Trait\UuidTypeTrait;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
@@ -25,15 +25,27 @@ class Service
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom du service ne doit pas être vide.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le nom du service ne doit pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: "Le prix ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le prix doit être un nombre positif.")]
     private ?string $price = null;
 
     #[ORM\Column(length: 45)]
+    #[Assert\NotBlank(message: "La durée estimée ne doit pas être vide.")]
+    #[Assert\Length(
+        max: 45,
+        maxMessage: "La durée estimée ne doit pas dépasser {{ limit }} caractères."
+    )]
     private ?string $estimated_duration = null;
 
     #[ORM\ManyToOne]
@@ -42,6 +54,7 @@ class Service
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le statut du service ne doit pas être vide.")]
     private ?ServiceStatus $service_status = null;
 
     /**
