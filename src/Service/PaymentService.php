@@ -90,7 +90,7 @@ class PaymentService
             $rows[] = [
                 'id' => $payment->getId(),
                 'uid' => $payment->getUid(),
-                'invoice_number' => $invoice->getInvoiceNumber(),
+                'payment_number' => $payment->getPaymentNumber(),
                 'type' => $type,
                 'amountHt' => $amountHt,
                 'amountTtc' => $amountTtc,
@@ -114,15 +114,36 @@ class PaymentService
         $amountHt = $amountDetails['amount_ht'];
         $quotation = $invoice->getQuotation();
         $type = $quotation->getType();
+        $paymentNumber = $this->generatePaymentNumber($company->getId());
 
         $payment->setAmount($amountHt);
         $payment->setInvoice($invoice);
-        $payment->setPaymentNumber($this->generatePaymentNumber($company->getId()));
+        $payment->setPaymentNumber($paymentNumber);
 
         if ($type === 'OneTime') {
-            $this->setOneTimePayment($payment, $status, $now);
+            $oneTimePayment = $this->setOneTimePayment($payment, $status, $now);
+            $payment->setOneTimePayment($oneTimePayment);
         } elseif ($type === 'Recurring') {
-            $this->setRecurringPayment($payment, $status, $now);
+            $recurringPayment = $this->setRecurringPayment($payment, $status, $now);
+            $payment->setRecurringPayment($recurringPayment);
+        }
+
+        $this->entityManager->persist($payment);
+        $this->entityManager->flush();
+    }
+
+    public function updatePaymentStatus(Payment $payment, $status): void
+    {
+        $quotation = $payment->getInvoice()->getQuotation();
+        $type = $quotation->getType();
+        $now = new \DateTime();
+
+        if ($type === 'OneTime') {
+            $oneTimePayment = $this->setOneTimePayment($payment, $status, $now);
+            $payment->setOneTimePayment($oneTimePayment);
+        } elseif ($type === 'Recurring') {
+            $recurringPayment = $this->setRecurringPayment($payment, $status, $now);
+            $payment->setRecurringPayment($recurringPayment);
         }
 
         $this->entityManager->persist($payment);
@@ -139,25 +160,43 @@ class PaymentService
         return $paymentNumber;
     }
 
-    private function setOneTimePayment(Payment $payment, string $status, \DateTime $now): void
+    private function setOneTimePayment(Payment $payment, string $status, \DateTime $now): OneTimePayment
     {
-        $oneTimePayment = new OneTimePayment();
-        $payment->setOneTimePayment($oneTimePayment);
+        $oneTimePayment = $payment->getOneTimePayment();
+
+        if(!$oneTimePayment){
+            $oneTimePayment = new OneTimePayment();
+        }
+
+        if($status === 'Paid'){
+            $oneTimePayment->setPaymentDate($now);
+        }
+        
         $oneTimePayment->setStatus($status);
-        $oneTimePayment->setPaymentDate($now);
 
         $this->entityManager->persist($oneTimePayment);
+
+        return $oneTimePayment;
     }
 
-    private function setRecurringPayment(Payment $payment, string $status, \DateTime $now): void
+    private function setRecurringPayment(Payment $payment, string $status, \DateTime $now): RecurringPayment
     {
-        $recurringPayment = new RecurringPayment();
-        $payment->setRecurringPayment($recurringPayment);
-        $recurringPayment->setStatus($status);
-        $recurringPayment->setPaymentDate($now);
-        $recurringPayment->setStartDate($now);
-        $recurringPayment->setEndDate($now->add(new \DateInterval('P1M')));
+        $recurringPayment = $payment->getRecurringPayment();
 
+        if (!$recurringPayment){
+            $recurringPayment = new RecurringPayment();
+        }
+
+        if($status === 'Paid'){
+            $recurringPayment->setPaymentDate($now);
+            $recurringPayment->setStartDate($now);
+            $recurringPayment->setEndDate($now->add(new \DateInterval('P1M')));
+        }
+        
+        $recurringPayment->setStatus($status);
+        
         $this->entityManager->persist($recurringPayment);
+
+        return $recurringPayment;
     }
 }

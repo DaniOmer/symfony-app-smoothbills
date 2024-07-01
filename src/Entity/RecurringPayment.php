@@ -18,16 +18,16 @@ class RecurringPayment
     #[ORM\Column(type: Types::STRING, length: 100)]
     private ?string $status = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $paymentDate = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $stripeSubscriptionId = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $startDate = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $endDate = null;
 
     public function getId(): ?int

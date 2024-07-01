@@ -44,14 +44,16 @@ class PaymentController extends AbstractController
             'headers' => $headers,
             'rows' => $rows,
             'payments' => $paginatePayments,
-            'actions' => []
+            'actions' => [
+                ['route' => 'dashboard.payment.edit', 'label' => 'Modifier'],
+            ]
         ];
 
         return $this->render('dashboard/payment/index.html.twig', $config);
     }
 
-    #[Route('/{id}/edit', name: 'dashboard.payment.edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Payment $payment, EntityManagerInterface $entityManager): Response
+    #[Route('/{uid}/edit', name: 'dashboard.payment.edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, $uid, Payment $payment, EntityManagerInterface $entityManager): Response
     {
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
@@ -61,12 +63,16 @@ class PaymentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+
+            $payment = $entityManager->getRepository(Payment::class)->findOneBy(['uid' => $uid]);
+            $status = $form->get('status')->getData();
+            
+            $this->paymentService->updatePaymentStatus($payment, $status);
 
             return $this->redirectToRoute('dashboard.payment.index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('payment/edit.html.twig', [
+        return $this->render('dashboard/payment/edit.html.twig', [
             'payment' => $payment,
             'form' => $form,
         ]);
