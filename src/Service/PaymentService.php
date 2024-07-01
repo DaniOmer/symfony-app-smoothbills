@@ -12,6 +12,7 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Form\FormInterface;
+use App\Utils\NumberGenerator;
 
 class PaymentService
 {
@@ -21,15 +22,24 @@ class PaymentService
     private $csvExporter;
     private $invoiceService;
     private $entityManager;
+    private $numberGenerator;
 
-    public function __construct(PaymentRepository $paymentRepository, MailerInterface $mailer, #[Autowire('%admin_email%')] string $adminEmail, CsvExporter $csvExporter, InvoiceService $invoiceService, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        PaymentRepository $paymentRepository, 
+        MailerInterface $mailer, 
+        #[Autowire('%admin_email%')] string $adminEmail, 
+        CsvExporter $csvExporter, 
+        InvoiceService $invoiceService, 
+        EntityManagerInterface $entityManager, 
+        NumberGenerator $numberGenerator
+    ){
         $this->paymentRepository = $paymentRepository;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
         $this->csvExporter = $csvExporter;
         $this->invoiceService = $invoiceService;
         $this->entityManager = $entityManager;
+        $this->numberGenerator = $numberGenerator;
     }
 
     public function getPaginatedPayments(User $user, $page): PaginationInterface
@@ -98,6 +108,8 @@ class PaymentService
         $payment = new Payment();
         $status = 'Pending';
 
+        $company = $invoice->getCompany();
+
         $amountDetails = $this->invoiceService->getInvoiceDetails($invoice);
         $amountHt = $amountDetails['amount_ht'];
         $quotation = $invoice->getQuotation();
@@ -105,6 +117,7 @@ class PaymentService
 
         $payment->setAmount($amountHt);
         $payment->setInvoice($invoice);
+        $payment->setPaymentNumber($this->generatePaymentNumber($company->getId()));
 
         if ($type === 'OneTime') {
             $this->setOneTimePayment($payment, $status, $now);
@@ -114,6 +127,16 @@ class PaymentService
 
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
+    }
+
+    private function generatePaymentNumber(int $companyId): string
+    {
+        $prefix = 'PA';
+        $lastPaymentNumber = $this->paymentRepository->getLastPaymentNumberForCompany($companyId);
+
+        $paymentNumber = $this->numberGenerator->generateDocumentNumber($lastPaymentNumber, $prefix);
+
+        return $paymentNumber;
     }
 
     private function setOneTimePayment(Payment $payment, string $status, \DateTime $now): void

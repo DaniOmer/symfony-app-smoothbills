@@ -19,6 +19,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Twig\Environment;
 use App\Service\PdfGeneratorService;
+use App\Utils\NumberGenerator;
 
 class InvoiceService
 {
@@ -30,6 +31,7 @@ class InvoiceService
     private $twig;
     private $mailer;
     private $adminEmail;
+    private $numberGenerator;
 
     public function __construct(
         Environment $twig,
@@ -40,6 +42,7 @@ class InvoiceService
         PdfGeneratorService $pdfGeneratorService,
         MailerInterface $mailer,
         #[Autowire('%admin_email%')] string $adminEmail,
+        NumberGenerator $numberGenerator,
     ) {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
@@ -49,6 +52,7 @@ class InvoiceService
         $this->translator = $translator;
         $this->mailer = $mailer;
         $this->adminEmail = $adminEmail;
+        $this->numberGenerator = $numberGenerator;
     }
 
     public function createInvoice(Quotation $quotation): Invoice
@@ -71,8 +75,6 @@ class InvoiceService
             $this->entityManager->flush();
             $this->entityManager->commit();
 
-            // $this->paymentService->createPayment($invoice);
-
             return $invoice;
         } catch (Exception | OptimisticLockException $e) {
             $this->entityManager->rollback();
@@ -82,13 +84,12 @@ class InvoiceService
 
     private function generateInvoiceNumber(int $companyId): string
     {
+        $prefix = 'FA';
         $lastInvoiceNumber = $this->invoiceRepository->getLastInvoiceNumberForCompany($companyId);
 
-        $year = date('Y');
-        $month = date('m');
-        $nextInvoiceNumber = $lastInvoiceNumber ? $lastInvoiceNumber + 1 : 1;
+        $invoiceNumber = $this->numberGenerator->generateDocumentNumber($lastInvoiceNumber, $prefix);
 
-        return 'FA' . $year . $month . str_pad((string) $nextInvoiceNumber, 4, '0', STR_PAD_LEFT);
+        return $invoiceNumber;
     }
 
     public function getPaginatedInvoices(User $user, $page): PaginationInterface
@@ -118,7 +119,7 @@ class InvoiceService
                 'uid' => $invoice->getUid(),
                 'invoice_number' => $invoice->getInvoiceNumber(),
                 'invoice_date' => $invoice->getCreatedAt()->format('d-m-Y'),
-                'due_date' => $invoice->getDueDate()->format('d-m-Y'), // 'due_date' => 'date d\'échéance
+                'due_date' => $invoice->getDueDate()->format('d-m-Y'),
                 'amount_ht' => $amountHt,
                 'amount_ttc' => $amountTtc,
                 'status' =>  $invoice->getInvoiceStatus()->getName(),
