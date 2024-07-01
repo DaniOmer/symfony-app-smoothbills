@@ -19,17 +19,14 @@ class QuotationHasService
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: "Le prix HT ne doit pas être vide.")]
-    #[Assert\Positive(message: "Le prix HT doit être positif.")]
     private ?string $price_without_tax = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: "Le prix TTC ne doit pas être vide.")]
-    #[Assert\Positive(message: "Le prix TTC doit être positif.")]
     private ?string $price_with_tax = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'La quantité ne doit pas être vide.')]
+    #[Assert\Positive(message: 'La quantité doit être un nombre positif.')]
     #[Assert\Regex(
         pattern: '/^\+?[0-9\s\-]+$/',
         message: 'La quantité saisie n\'est pas valide.'
