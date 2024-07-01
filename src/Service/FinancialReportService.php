@@ -17,14 +17,16 @@ class FinancialReportService
     private $invoiceService;
     private $chartJsService;
     private $validator;
+    private $taxService;
 
-    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, InvoiceRepository $invoiceRepository, InvoiceService $invoiceService, ChartJsService $chartJsService, ValidatorInterface $validator, TaxService $taxService)
     {
         $this->entityManager = $entityManager;
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
         $this->chartJsService = $chartJsService;
         $this->validator = $validator;
+        $this->taxService = $taxService;
     }
 
     public function generateSalesReportByPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate, Company $company)
@@ -142,6 +144,61 @@ class FinancialReportService
         }
 
         return [ $startDate, $endDate ];
+    }
+
+    public function generateServicePerformanceReport(\DateTimeInterface $startDate, \DateTimeInterface $endDate, $company): array
+    {
+        $services = $this->invoiceRepository->getMostlySalesServices($startDate, $endDate, $company);
+
+        foreach ($services as &$service){
+            $service['priceWithTax'] = $this->taxService->applyTva($service['price']);
+        }
+
+        $data = [
+            'services' => $services,
+            'mostSoldService' => $this->getMostSoldService($services),
+            'highestRevenueService' => $this->getHighestRevenueService($services),
+            'leastSoldService' => $this->getLeastSoldService($services),
+            'lowestRevenueService' => $this->getLowestRevenueService($services),
+        ];
+
+        return $data;
+    }
+
+    public function getMostSoldService($services)
+    {
+        usort($services, function($a, $b) {
+            return $b['sales'] <=> $a['sales'];
+        });
+
+        return reset($services);
+    }
+
+    public function getHighestRevenueService($services)
+    {
+        usort($services, function($a, $b) {
+            return $b['revenueHT'] <=> $a['revenueHT'];
+        });
+
+        return reset($services);
+    }
+
+    public function getLeastSoldService($services)
+    {
+        usort($services, function($a, $b) {
+            return $a['sales'] <=> $b['sales'];
+        });
+
+        return reset($services);
+    }
+
+    public function getLowestRevenueService($services)
+    {
+        usort($services, function($a, $b) {
+            return $a['revenueHT'] <=> $b['revenueHT'];
+        });
+
+        return reset($services);
     }
 
 }

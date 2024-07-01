@@ -6,22 +6,31 @@ use App\Entity\Customer;
 use App\Entity\Quotation;
 use App\Entity\QuotationStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\EntityRepository;
 
 class QuotationType extends AbstractType
 {
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $user = $this->security->getUser();
+
         $builder
             ->add('type', ChoiceType::class, [
                 'choices' => [
@@ -57,6 +66,11 @@ class QuotationType extends AbstractType
                         'message' => 'Veuillez choisir un client enregistré.',
                     ]),
                 ],
+                'query_builder' => function (EntityRepository $er) use ($user) {
+                    return $er->createQueryBuilder('s')
+                        ->where('s.company = :company')
+                        ->setParameter('company', $user->getCompany());
+                },
                 'required' => true,
             ])
             ->add('sendOption', ChoiceType::class, [

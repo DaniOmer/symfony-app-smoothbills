@@ -21,11 +21,6 @@
             <h1 class="text-title font-title font-semibold">{{ 'quotation.title'|trans }}</h1>
             <div class="flex gap-4 items-center">
                 <a class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
-                <twig:MenuItem href="#" additionalClasses="hidden md:flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
-                    <span class="text-xl">{{ ux_icon('tabler:cloud-upload') }}</span>
-                    {{ 'crud.upload'|trans }}
-                </twig:MenuItem>
-
                  {% if subscriptionName != 'Freemium' %}
                     <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                         <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>

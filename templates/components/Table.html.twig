@@ -50,7 +50,7 @@
                                                 </a>
                                             {% endfor %}
                                             {% if null != deleteRoute %}
-                                                {{ include('dashboard/customer/_delete_form.html.twig', {'deleteRoute': deleteRoute, 'entity': row}) }}
+                                                <div class="hover:bg-primary/10 px-4 py-2">{{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}</div>
                                             {% endif %}
                                         </nav>
                                     </div>

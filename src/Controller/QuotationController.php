@@ -122,6 +122,7 @@ class QuotationController extends AbstractController
 
                 $this->addFlash('success', 'Le devis a été créé avec succès.');
                 return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
+                
             } catch (\Exception $e) {
                 $this->addFlash('error', $e->getMessage());
             }

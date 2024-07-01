@@ -37,25 +37,25 @@ class UserService
     {
         $rows = [];
 
-        $roles = $user->getRoles();
+        foreach ($this->getPaginatedUsers($user, $page) as $addedUser) {
+            $roles = $addedUser->getRoles();
 
-        if (in_array('ROLE_ADMIN', $roles, true)) {
-            $userRole = 'Admin';
-        } elseif (in_array('ROLE_EDITOR', $roles, true)) {
-            $userRole = 'Editeur';
-        } elseif (in_array('ROLE_ACCOUNTANT', $roles, true)) {
-            $userRole = 'Comptable';
-        }
+            if (in_array('ROLE_ADMIN', $roles, true)) {
+                $userRole = 'Admin';
+            } elseif (in_array('ROLE_EDITOR', $roles, true)) {
+                $userRole = 'Editeur';
+            } elseif (in_array('ROLE_ACCOUNTANT', $roles, true)) {
+                $userRole = 'Comptable';
+            }
 
-        foreach ($this->getPaginatedUsers($user, $page) as $user) {
             $rows[] = [
-                'name' => $user->getFirstName()." ".$user->getLastName(),
-                'mail' => $user->getEmail(),
+                'name' => $addedUser->getFirstName()." ".$addedUser->getLastName(),
+                'mail' => $addedUser->getEmail(),
                 'role' => $userRole,
-                'jobTitle' => $user->getJobTitle(),
-                'createdAt' => $user->getCreatedAt()->format('Y-m-d'),
-                'uid' => $user->getUid(),
-                'id' => $user->getId(),
+                'jobTitle' => $addedUser->getJobTitle() ?? "-",
+                'createdAt' => $addedUser->getCreatedAt()->format('Y-m-d'),
+                'uid' => $addedUser->getUid(),
+                'id' => $addedUser->getId(),
             ];
         }
 
