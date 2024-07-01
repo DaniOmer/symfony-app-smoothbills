@@ -100,7 +100,15 @@ invoice:
     invoice_pending: "Factures en attente"
     invoice_details: "Détails de la facture"
     status:
-        Paid: "Payée"
-        Unpaid: "Non payée"
-        Pending: "En attente"
-        Canceled: "Annulée"
+        paid: "Payée"
+        unpaid: "Non payée"
+        pending: "En attente"
+        cancelled: "Annulée"
+
+payment:
+    title: "Paiements"
+    table_title: "Tous les paiements"
+    Paid: "Payée"
+    Unpaid: "Non payée"
+    Pending: "En attente"
+    Canceled: "Annulée"

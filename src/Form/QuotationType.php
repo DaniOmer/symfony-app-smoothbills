@@ -34,8 +34,8 @@ class QuotationType extends AbstractType
         $builder
             ->add('type', ChoiceType::class, [
                 'choices' => [
-                    'Paiement unique' => 'Unique',
-                    'Paiement récurrent' => 'Recurrent',
+                    'Paiement unique' => 'OneTime',
+                    'Paiement récurrent' => 'Recurring',
                 ],
                 'constraints' => [
                     new NotBlank([

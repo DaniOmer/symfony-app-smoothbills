@@ -94,8 +94,6 @@ class PaymentService
 
     public function createPayment(FormInterface $form, Payment $payment, EntityManagerInterface $entityManager): void
     {
-        $invoice = $form->get('invoice')->getData();
-
         $status = $form->get('status')->getData();
         $invoice = $form->get('invoice')->getData();
         $now = new \DateTime();
