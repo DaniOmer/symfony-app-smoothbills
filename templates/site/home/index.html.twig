@@ -3,8 +3,29 @@
 {% block title %}Smoothbill{% endblock %}
 
 {% block body %}
+<div data-controller="animation_controller" data-animation-target="container">
+    <main class="container mx-auto">
+        <section class="flex flex-col justify-center items-center mt-20 ml-5">
+            <h1 class="text-title font-title font-semibold">Facturation simplifiée pour PME Digitales</h1>
+            <p>Optimisez vos finances avec notre solution de facturation intuitive. Simplifiez votre gestion financière dès aujourd'hui !</p>
+            <img src="{{ asset('build/images/dashboard.png') }}" alt="Dashboard" class="mt-7 custom-image-size">
+        </section>
 
-<div class="text-4xl">
-    <h1 class="text-primary/90 font-title">Welcome to Smoothbill Homepage !</h1>
+        <h2 class="text-subtitle font-title font-semibold text-center mt-20">Pourquoi choisir Smoothbill ?</h2>
+        <section id="dynamic-list" class="flex justify-between items-start w-full p-4" data-target="animation_controller.container">
+            <ul class="space-y-4" data-target="animation_controller.listItems">
+                <li class="custom-li-class">Gestion de facturation fluide</li>
+                <li>Relance et recouvrement automatisable</li>
+                <li>Analytics et suivi de performances</li>
+                <li>Intégration avec des meilleurs outils</li>
+            </ul>
+            <div class="image-container" data-target="animation_controller.images">
+                <img src="{{ asset('build/images/gestion.png') }}" alt="gestion ">
+                <img src="{{ asset('build/images/facture.png') }}" alt="facture">
+                <img src="{{ asset('build/images/Annalytics.png') }}" alt="Annalytics">
+                <img src="{{ asset('build/images/Integration.png') }}" alt="Integration">
+            </div>
+        </section>
+    </main>
 </div>
 {% endblock %}

@@ -22,6 +22,11 @@ class HomeController extends AbstractController
             'controller_name' => 'HomeController',
         ]);
     }
+    #[Route('/features', name: 'site.features')]
+    public function features(): Response
+    {
+        return $this->render('site/home/features.html.twig');
+    }
 
     #[Route('/quotation/validation/{token}', name: 'site.home.validation.quotation', methods: ['GET', 'POST'])]
     public function validateQuotation($token, Request $request, JWTService $jWTService, EntityManagerInterface $entityManager, QuotationService $quotationService, InvoiceService $invoiceService): Response
