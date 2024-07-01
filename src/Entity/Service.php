@@ -50,7 +50,6 @@ class Service
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "L'entreprise ne doit pas être vide.")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
