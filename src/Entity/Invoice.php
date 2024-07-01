@@ -37,6 +37,9 @@ class Invoice
     #[ORM\JoinColumn(nullable: false)]
     private ?Quotation $quotation = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    private ?\DateTimeInterface $due_date = null;
+
     public function __construct()
     {
         $this->UuidConstruct();
@@ -88,6 +91,17 @@ class Invoice
     public function setQuotation(?Quotation $quotation): static
     {
         $this->quotation = $quotation;
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTimeInterface
+    {
+        return $this->due_date;
+    }
+
+    public function setDueDate(\DateTimeInterface $due_date): static
+    {
+        $this->due_date = $due_date;
         return $this;
     }
 }

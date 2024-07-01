@@ -68,6 +68,9 @@ class CompanySubscription
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
+        if ($company && $company->getSubscription() !== $this) {
+            $company->setSubscription($this);
+        }
         return $this;
     }
 

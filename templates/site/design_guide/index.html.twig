@@ -178,7 +178,7 @@
             </div>
         </article>
     </section>
-<section class="pt-5 pb-10 border-b border-tertiary/10">
+    <section class="pt-5 pb-10 border-b border-tertiary/10">
             <h2 class="text-subtitle font-subtitle font-semibold mb-5">Composants de Service</h2>
             <article class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <p class="row-span-1">
@@ -209,6 +209,52 @@
                         </div>
                 </div>
             </article>
-        </section>
-    </div>
+    </section>
+    <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Plans d'abonnement</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <p>
+                    Cette section présente les différents plans d'abonnement disponibles pour les utilisateurs.
+                </p>
+                <div class="col-span-2">
+                   {% set plans = [
+                                        {
+                                            id: 1,
+                                            name: 'Freemium',
+                                            price: '0€ / mois',
+                                            features: [
+                                                { text: 'Création et envoi de facture (5 par mois)', active: true },
+                                                { text: 'Création et envoi de devis (5 par mois)', active: true },
+                                                { text: 'Ajout d\'autres utilisateurs', active: false },
+                                                { text: 'Personnalisation du dashboard', active: false },
+                                                { text: 'Personnalisation du shart graphique', active: false },
+                                                { text: 'Relance automatique des factures', active: false },
+                                                { text: 'Personnalisation des rapports', active: false },
+                                                { text: 'Exporter les données en csv', active: false }
+                                            ],
+                                            isCurrentPlan: true
+                                        },
+                                        {
+                                            id: 2,
+                                            name: 'Starter',
+                                            price: '9.99€ / mois',
+                                            features: [
+                                                { text: 'Création et envoi de facture (illimité)', active: true },
+                                                { text: 'Création et envoi de devis (illimité)', active: true },
+                                                { text: 'Ajout d\'autres utilisateurs', active: true },
+                                                { text: 'Personnalisation du dashboard', active: true },
+                                                { text: 'Support client premium', active: true },
+                                                { text: 'Export de données en format CSV', active: true },
+                                                { text: 'Automatisation du flux de travail', active: true },
+                                                { text: 'Rapports avancés', active: false }
+                                            ],
+                                            isCurrentPlan: false
+                                        }
+                                    ] %}
+
+                  <twig:Subscription :plans="plans"  />
+                </div>
+            </article>
+    </section>
+</div>
 {% endblock %}

@@ -13,7 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
-    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
@@ -59,6 +61,9 @@ class Company
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
     private ?LegalForm $legal_form = null;
+
+    #[ORM\OneToOne(mappedBy: 'company', cascade: ['persist', 'remove'])]
+    private ?CompanySubscription $subscription = null;
 
     /**
      * @var Collection<int, Customer>
@@ -313,6 +318,20 @@ class Company
             }
         }
 
+        return $this;
+    }
+
+    public function getSubscription(): ?CompanySubscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?CompanySubscription $subscription): static
+    {
+        $this->subscription = $subscription;
+        if ($subscription !== null && $subscription->getCompany() !== $this) {
+            $subscription->setCompany($this);
+        }
         return $this;
     }
 }
