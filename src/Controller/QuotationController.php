@@ -176,6 +176,7 @@ class QuotationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $this->addFlash('success', 'Le devis a été modifié avec succès.');
 
             return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
         }
@@ -195,6 +196,7 @@ class QuotationController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $quotation->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($quotation);
             $entityManager->flush();
+            $this->addFlash('success', 'Le devis a été supprimé avec succès.');
         }
 
         return $this->redirectToRoute('dashboard.quotation.index', [], Response::HTTP_SEE_OTHER);
