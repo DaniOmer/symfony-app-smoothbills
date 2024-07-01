@@ -27,6 +27,8 @@ class SubscriptionController extends AbstractController
     #[Route('/change', name: 'dashboard.settings.subscriptions.change')]
     public function changeSubscription(Request $request, CompanyService $companyService, SubscriptionRepository $subscriptionRepository): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé : Cette page est réservée aux administrateurs.');
+
         $company = $this->getUser()->getCompany();
         $subscriptionId = $request->query->get('subscriptionId');
 

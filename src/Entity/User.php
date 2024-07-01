@@ -19,7 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte associé à cette adresse e-mail.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
@@ -100,6 +102,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $resetTokenExpiresAt = null;
 
     public function __construct()
     {
@@ -309,5 +317,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isRegistrationComplete(): bool
     {
         return $this->getCompany() !== null;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+        return $this;
+    }
+
+    public function getResetTokenExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    public function setResetTokenExpiresAt(?\DateTimeInterface $resetTokenExpiresAt): static
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+        return $this;
     }
 }

@@ -26,6 +26,8 @@ class CompanyController extends AbstractController
     #[Route('/', name: 'dashboard.settings.company', methods: ['GET', 'POST'])]
     public function manage(Request $request, UserRegistrationChecker $userRegistrationChecker): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé : Cette page est réservée aux administrateurs.');
+
         $user = $this->getUser();
         $company = $this->getUser()->getCompany();
 
@@ -50,6 +52,9 @@ class CompanyController extends AbstractController
                 return $this->redirectToRoute('dashboard.settings.company', [], Response::HTTP_SEE_OTHER);
             }
 
+            $userRegistrationChecker->updateRegistrationCache($user->getId());
+
+            $this->addFlash('success', 'Les informations de votre entreprise ont bien été enregistré');
             return $this->redirectToRoute('dashboard.settings.company', [], Response::HTTP_SEE_OTHER);
         }
 
