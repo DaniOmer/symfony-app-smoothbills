@@ -12,7 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "payment")]
 class Payment
 {
-    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
@@ -33,13 +35,13 @@ class Payment
     private ?string $stripeLastDigits = null;
 
     #[ORM\ManyToOne(targetEntity: Invoice::class)]
-    #[ORM\JoinColumn(name: "invoice_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name: "invoice_id", referencedColumnName: "id", nullable: false, onDelete: 'CASCADE')]
     private ?Invoice $invoice = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?OneTimePayment $oneTimePayment = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?RecurringPayment $recurringPayment = null;
 
     public function __construct()
@@ -62,7 +64,7 @@ class Payment
         $this->payment_number = $payment_number;
         return $this;
     }
-    
+
     public function getAmount(): ?float
     {
         return $this->amount;

@@ -33,11 +33,11 @@ class QuotationHasService
     private ?int $quantity = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Quotation $quotation = null;
 
     public function getId(): ?int

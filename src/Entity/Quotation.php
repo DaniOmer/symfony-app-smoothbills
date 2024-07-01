@@ -48,7 +48,7 @@ class Quotation
     /**
      * @var Collection<int, QuotationHasService>
      */
-    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class)]
+    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Assert\Count(
         min: 1,
         minMessage: 'Vous devez ajouter au moins un service.'
