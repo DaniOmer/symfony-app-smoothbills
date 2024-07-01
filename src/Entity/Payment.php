@@ -20,6 +20,9 @@ class Payment
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(type: Types::STRING, length: 14, nullable: false)]
+    private ?string $payment_number = null;
+
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?float $amount = null;
 
@@ -49,6 +52,17 @@ class Payment
         return $this->id;
     }
 
+    public function getPaymentNumber(): ?string
+    {
+        return $this->payment_number;
+    }
+
+    public function setPaymentNumber(string $payment_number): static
+    {
+        $this->payment_number = $payment_number;
+        return $this;
+    }
+    
     public function getAmount(): ?float
     {
         return $this->amount;

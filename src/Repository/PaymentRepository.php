@@ -37,6 +37,21 @@ class PaymentRepository extends ServiceEntityRepository
         );
     }
 
+    public function getLastPaymentNumberForCompany(int $companyId): ?int
+    {
+        $lastNumber = $this->createQueryBuilder('p')
+            ->select('p.payment_number')
+            ->join('p.invoice', 'i')
+            ->where('i.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $lastNumber ? (int) substr($lastNumber['payment_number'], -4) : null;
+    }
+
 //    /**
 //     * @return Payment[] Returns an array of Payment objects
 //     */
