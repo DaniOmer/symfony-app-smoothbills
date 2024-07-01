@@ -41,12 +41,10 @@ class Customer
     private ?string $type = null;
 
     #[ORM\ManyToOne]
-    #[Assert\NotNull(message: "L'entreprise ne doit pas être vide.")]
     private ?Company $company = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "L'adresse ne doit pas être vide.")]
     private ?Address $address = null;
 
     /**
