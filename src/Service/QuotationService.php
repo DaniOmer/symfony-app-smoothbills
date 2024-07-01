@@ -93,7 +93,7 @@ class QuotationService
 
         $data = $this->getQuotationDataForPdf($quotation);
         $twigTemplate = $this->twig->render('dashboard/quotation/pdf/quotation_template.html.twig', $data);
-        $filename = 'quotation_' . $quotation->getUid() . '.pdf';
+        $filename = 'quotation_' . $quotation->getQuotationNumber() . '.pdf';
 
         $invoicePdf = $this->pdfGeneratorService->getPdfBinaryContent($twigTemplate);
 
