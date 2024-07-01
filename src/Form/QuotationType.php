@@ -44,11 +44,18 @@ class QuotationType extends AbstractType
                 ],
                 'trim' => true,
                 'label' => false,
+                'required' => true,
             ])
             ->add('quotation_status', EntityType::class, [
                 'class' => QuotationStatus::class,
                 'choice_label' => 'name',
                 'label' => false,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez choisir un statut de devis.',
+                    ]),
+                ],
+                'required' => true,
             ])
             ->add('customer', EntityType::class, [
                 'class' => Customer::class,
@@ -64,6 +71,7 @@ class QuotationType extends AbstractType
                         ->where('s.company = :company')
                         ->setParameter('company', $user->getCompany());
                 },
+                'required' => true,
             ])
             ->add('sendOption', ChoiceType::class, [
                 'mapped' => false,
@@ -95,8 +103,7 @@ class QuotationType extends AbstractType
                         'minMessage' => 'Vous devez ajouter au moins un service.',
                     ]),
                 ],
-            ])
-        ;
+            ]);
 
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
             $data = $event->getData();

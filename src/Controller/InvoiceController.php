@@ -44,7 +44,7 @@ class InvoiceController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $companyId = $company->getId();
         $paginateInvoices = $this->invoiceService->getPaginatedInvoices($user, $page);
-        $headers = ['Numéro Facture', 'Date Facture', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
+        $headers = ['Numéro Facture', 'Date Facture', 'Date d\'echéance', 'Montant HT', 'Montant TTC', 'Status', 'Nom du Client'];
         $rows = $this->invoiceService->getInvoicesRows($user, $page);
 
         $statusCounts = [];
