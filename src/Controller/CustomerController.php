@@ -71,7 +71,7 @@ class CustomerController extends AbstractController
         }
 
         if (!$this->subscriptionService->canAddCustomer()) {
-            $this->addFlash('error', 'Vous avez atteint la limite de clients pour votre abonnement actuel.');
+            $this->addFlash('error_customer', 'Vous avez atteint la limite de clients pour votre abonnement actuel.');
             return $this->redirectToRoute('dashboard.customer.index');
         }
 
@@ -84,10 +84,10 @@ class CustomerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $this->customerService->createCustomer($form, $address, $customer, $user);
-                $this->addFlash('success', 'Le client a été créé avec succès.');
+                $this->addFlash('success_customer', 'Le client a été créé avec succès.');
                 return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
-                $this->addFlash('error', $e->getMessage());
+                $this->addFlash('error_customer', 'Une erreur est survenue lors de la création du client.');
             }
         }
 
@@ -110,7 +110,7 @@ class CustomerController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $this->addFlash('success_customer', 'Le client a été mis à jour avec succès.');
             return $this->redirectToRoute('dashboard.customer.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -141,7 +141,7 @@ class CustomerController extends AbstractController
             return $redirectResponse;
         }
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
-            $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
+            $this->addFlash('error_customer', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.service.index');
         }
 

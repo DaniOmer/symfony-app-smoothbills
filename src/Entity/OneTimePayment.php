@@ -18,15 +18,11 @@ class OneTimePayment
     #[ORM\Column(type: Types::STRING, length: 100)]
     private ?string $status = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $paymentDate = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $stripeInvoiceId = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Payment $payment = null;
 
     public function getId(): ?int
     {
@@ -60,20 +56,9 @@ class OneTimePayment
         return $this->stripeInvoiceId;
     }
 
-    public function setStripeInvoiceId(string $stripeInvoiceId): static
+    public function setStripeInvoiceId(?string $stripeInvoiceId): static
     {
         $this->stripeInvoiceId = $stripeInvoiceId;
-        return $this;
-    }
-
-    public function getPayment(): ?Payment
-    {
-        return $this->payment;
-    }
-
-    public function setPayment(?Payment $payment): static
-    {
-        $this->payment = $payment;
         return $this;
     }
 }

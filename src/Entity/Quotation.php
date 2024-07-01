@@ -14,7 +14,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: QuotationRepository::class)]
 class Quotation
 {
-    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
@@ -43,10 +45,13 @@ class Quotation
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $sending_date = null;
 
+    #[ORM\Column(length: 14, nullable: false)]
+    private ?string $quotation_number = null;
+
     /**
      * @var Collection<int, QuotationHasService>
      */
-    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class)]
+    #[ORM\OneToMany(mappedBy: 'quotation', targetEntity: QuotationHasService::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Assert\Count(
         min: 1,
         minMessage: 'Vous devez ajouter au moins un service.'
@@ -151,6 +156,18 @@ class Quotation
                 $quotationHasService->setQuotation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getQuotationNumber(): ?string
+    {
+        return $this->quotation_number;
+    }
+
+    public function setQuotationNumber(string $quotation_number): static
+    {
+        $this->quotation_number = $quotation_number;
 
         return $this;
     }

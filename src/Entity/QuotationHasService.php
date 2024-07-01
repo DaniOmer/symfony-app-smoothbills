@@ -34,12 +34,13 @@ class QuotationHasService
     private ?int $quantity = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotNull(message: "Le service ne doit pas être vide.")]
     private ?Service $service = null;
 
+
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotNull(message: "Le devis ne doit pas être vide.")]
     private ?Quotation $quotation = null;
 

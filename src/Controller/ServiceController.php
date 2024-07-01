@@ -118,7 +118,7 @@ class ServiceController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $this->serviceService->createService($form, $service, $user);
-                $this->addFlash('success', 'Le service a été créé avec succès.');
+                $this->addFlash('success_service', 'Le service a été créé avec succès.');
                 return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
             }
 
@@ -127,7 +127,7 @@ class ServiceController extends AbstractController
                 'form' => $form,
             ]);
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue lors de la création du service.');
+            $this->addFlash('error_service', 'Une erreur est survenue lors de la création du service.');
             return $this->redirectToRoute('dashboard.service.index');
         }
     }
@@ -156,7 +156,7 @@ class ServiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            $this->addFlash('success', 'Le service a été modifié avec succès.');
+            $this->addFlash('success_service', 'Le service a été modifié avec succès.');
             return $this->redirectToRoute('dashboard.service.index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -186,9 +186,9 @@ class ServiceController extends AbstractController
         if ($redirectResponse = $this->isProfileComplete($this->userRegistrationChecker)) {
             return $redirectResponse;
         }
-        
+
         if ($this->subscriptionService->isCurrentSubscription('Freemium')) {
-            $this->addFlash('error', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
+            $this->addFlash('error_service', 'Vous avez pas accès à cette fonctionnalité avec l\'abonnement freemuim.');
             return $this->redirectToRoute('dashboard.service.index');
         }
 

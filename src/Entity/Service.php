@@ -18,7 +18,7 @@ class Service
         __construct as private UuidConstruct;
     }
     use TimestampableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -60,7 +60,7 @@ class Service
     /**
      * @var Collection<int, QuotationHasService>
      */
-    #[ORM\OneToMany(mappedBy: 'service', targetEntity: QuotationHasService::class)]
+    #[ORM\OneToMany(mappedBy: 'service', targetEntity: QuotationHasService::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $quotationHasServices;
 
     public function __construct()
