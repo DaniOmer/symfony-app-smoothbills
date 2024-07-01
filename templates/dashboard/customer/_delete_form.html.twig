@@ -1,12 +1,30 @@
-<form method="post" action="{{ path(deleteRoute, {'id': entity.id}) }}" onsubmit="return confirm(`{{ 'crud.delete_confirmation'|trans }}`);">
-    <input 
-        type="hidden" 
-        name="_token" 
-        value="{{ csrf_token('delete' ~ entity.id) }}"
-    >
-    <button 
-        class="w-full"
-    >
-        {{ 'crud.delete'|trans }}
-    </button>
-</form>
+<div data-controller="delete">
+    <div class="fixed inset-0 z-10 hidden" id="delete-confirmation-modal" role="dialog" aria-modal="true" data-delete-target="modal">
+        <div class="flex items-center justify-center min-h-screen w-full text-center p-2">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <div class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+                <div class="p-6">
+                    <h3 class="leading-6 font-medium text-gray-900 mb-4" id="modal-title">Confirmation de suppression</h3>
+                    <div class="flex justify-center items-center gap-2 text-red-500">
+                        <span class="text-2xl">{{ ux_icon('mi:warning') }}</span>
+                        <p class="text-sm">La suppression de ce client entrainera la suppression des devis et factures liés.</p>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-5">Êtes-vous sûr de vouloir supprimer ce client ?</p>
+                    <div class="mt-4 flex justify-end text-base">
+                        <button type="button" class="border border-gray-300 text-gray-700 py-1 px-4 rounded-md hover:bg-gray-100 transition ease-in-out delay-75" data-action="click->delete#cancel">Annuler</button>
+
+                        <form id="delete-form" method="post" style="display: inline;" data-delete-target="form">
+                            <input type="hidden" name="_token" id="delete-token" data-delete-target="token">
+                            <button type="submit" class="ml-2 bg-red-600 border border-red-600 text-white py-1 px-4 rounded-md hover:bg-red-700 transition ease-in-out delay-75">Confirmer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="{{ path(deleteRoute, {'id': entity.id}) }}" data-action="submit->delete#openModal">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}" >
+        <button type="submit" class="mt-2">{{ ux_icon('uiw:delete') }}</button>
+    </form>
+</div>
