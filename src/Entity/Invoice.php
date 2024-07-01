@@ -24,30 +24,21 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 14, nullable: false)]
-    #[Assert\NotBlank(message: "Le numéro de facture ne doit pas être vide.")]
-    #[Assert\Length(
-        max: 14,
-        maxMessage: "Le numéro de facture ne doit pas dépasser {{ limit }} caractères."
-    )]
     private ?string $invoice_number = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Le statut de la facture ne doit pas être vide.")]
     private ?InvoiceStatus $invoiceStatus = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "L'entreprise ne doit pas être vide.")]
     private ?Company $company = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Le devis ne doit pas être vide.")]
     private ?Quotation $quotation = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    #[Assert\NotNull(message: "La date d'échéance ne doit pas être vide.")]
     private ?\DateTimeInterface $due_date = null;
 
     public function __construct()
