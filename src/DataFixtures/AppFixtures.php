@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use App\Entity\Company;
 use App\Entity\Address;
+use App\Entity\Article;
 use App\Entity\LegalForm;
 use App\Entity\Service;
 use App\Entity\ServiceStatus;
@@ -183,6 +184,31 @@ class AppFixtures extends Fixture implements FixtureGroupInterface
         }
 
         $manager->persist($starter);
+
+        // Create Articles
+        $articleTitles = [
+            'How Technology is Shaping the Future',
+            'The Impact of Healthcare Advancements',
+            'Finance Trends to Watch in 2024',
+            'The Evolution of Education in the Digital Age',
+            'Manufacturing Innovations and Challenges',
+            'Retail: Adapting to a Changing Market',
+            'Construction Industry: New Techniques',
+            'Transportation: The Road Ahead',
+            'Real Estate Market Insights',
+            'Energy Sector: Sustainable Solutions'
+        ];
+
+        for ($i = 0; $i < 10; $i++) {
+            $article = new Article();
+            $article->setTitle($articleTitles[$i]);
+            $article->setContent($faker->paragraphs(3, true));
+            $article->setCreatedAt($faker->dateTimeBetween('-1 years', 'now'));
+            $article->setUpdatedAt($faker->dateTimeBetween($article->getCreatedAt(), 'now'));
+            $article->setThumbnail($faker->imageUrl(640, 480, 'abstract'));
+
+            $manager->persist($article);
+        }
 
         $manager->flush();
     }
