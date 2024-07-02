@@ -1,0 +1,16 @@
+{% extends 'partials/settings_menu.html.twig' %}
+
+{% block settings_content %}
+<header class="border-b">
+    <h1 class="text-subtitle font-semibold mb-2">Abonnements</h1>
+    <p class="text-sm text-black max-md:max-w-full mb-8">
+       Plus d'informations sur votre Abonnement actuel.
+    </p>
+</header>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+       {% for plan in subscriptions %}
+              <twig:Subscription plan="{{ plan|raw }}" />  </twig:Subscription>
+       {% endfor %}
+</div>
+{% endblock %}

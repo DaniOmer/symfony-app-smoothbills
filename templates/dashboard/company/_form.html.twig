@@ -1,0 +1,80 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations générales</h1>
+            <div id="customer_info" class="grid grid-cols-1 md:grid-cols-2 gap-x-2 md:gap-x-5">
+                {{ form_row(form.denomination, {
+                    label: 'Nom de l\'entreprise',
+                }) }}
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.mail, {
+                        label: 'Adresse mail',
+                    }) }}
+                    {{ form_row(form.phone_number, {
+                        label: 'Téléphone',
+                    }) }}
+                </div>
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.creation_date, {
+                        label: 'Date de création',
+                    }) }}
+                    {{ form_row(form.sector, {
+                        label: 'Secteur',
+                    }) }}
+                </div>
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.address.address, {
+                        label: 'Adresse',
+                    }) }}
+                    {{ form_row(form.address.zipcode, {
+                        label: 'Code postal',
+                    }) }}
+                </div>
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.address.city, {
+                        label: 'Ville',
+                    }) }}
+                    {{ form_row(form.address.country, {
+                        label: 'Pays',
+                    }) }}
+                </div>
+            </div>
+        </article>
+        <article class="mb-5">
+            <h1 class="text-subtitle font-title font-semibold mb-3">Informations légales</h1>
+            <div id="customer_info" class="grid grid-cols-1 md:grid-cols-2 gap-x-2 md:gap-x-5">
+                
+                {{ form_row(form.registered_social, {
+                    label: 'Capital social',
+                }) }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 md:gap-x-5">
+                    {{ form_row(form.siren, {
+                        label: 'N° Siren',
+                    }) }}
+                    {{ form_row(form.siret, {
+                        label: 'N° Siret',
+                    }) }}
+                </div>
+                <div class="grid grid-cols-2 gap-x-5">
+                    {{ form_row(form.tva_number, {
+                        label: 'Numero TVA',
+                    }) }}
+                    {{ form_row(form.rcs_number, {
+                        label: 'Numero RCS',
+                    }) }}
+                </div>
+                {{ form_row(form.legal_form, {
+                    label: 'Forme juridique',
+                }) }}
+            </div>
+        </article>
+        <div class="flex justify-end mt-4">
+            <button 
+                class="btn mt-4 bg-primary text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+                {{ company.id ? 'Mettre à jour' : 'Valider' }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

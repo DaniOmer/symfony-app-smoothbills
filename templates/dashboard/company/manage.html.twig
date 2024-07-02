@@ -1,0 +1,24 @@
+{% extends 'partials/settings_menu.html.twig' %}
+
+{% block settings_content %}
+        <section>
+        <header class="border-b flex justify-between">
+            <div>
+                <h1 class="text-subtitle font-semibold mb-2">Entreprise</h1>
+                <p class="text-sm text-black max-md:max-w-full mb-8">
+                Gérer les informations de votre entreprise.
+                </p>
+            </div>
+            {% for message in app.flashes('success_company') %}
+                <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </header>
+
+         <div class="mt-5">
+                {{ include('dashboard/company/_form.html.twig', {'company': company}) }}
+         </div>
+        </section>
+{% endblock %}
+

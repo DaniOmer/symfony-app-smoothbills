@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture n° {{ invoice.invoice_number }}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1.2em' font-size='96'>⚫️</text><text y='1.3em' x='0.2em' font-size='76' fill='#fff'>sf</text></svg>">
+    <style>
+        body {
+            background-color: #f7fafc;
+            padding: 32px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            background-color: white;
+            padding: 32px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+        header .flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header .flex img {
+            height: 48px;
+        }
+        header .flex div {
+            text-align: right;
+        }
+        header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        header p {
+            margin: 4px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .bg-gray-50 {
+            background-color: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .bg-gray-50 h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f7fafc;
+            font-weight: bold;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .font-semibold {
+            font-weight: 600;
+        }
+        .font-bold {
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 12px;
+        }
+        footer .flex {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        footer img {
+            height: 80px;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="flex">
+                <div>
+                    <img src="{{ company.logo }}" alt="Logo" class="logo">
+                </div>
+                <div class="text-right">
+                    <h1>Facture n° {{ invoice.invoice_number }}</h1>
+                    <p>Date : {{ invoice.sending_date|date('d/m/Y') }}</p>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="bg-gray-50">
+                    <h2>Informations sur l'entreprise</h2>
+                    <p>{{ company.name }}</p>
+                    <p>{{ company.address }}</p>
+                    <p>{{ company.zip_code }} {{ company.city }}</p>
+                    <p>{{ company.country }}</p>
+                    <p>Téléphone : {{ company.phone }}</p>
+                    <p>Email : {{ company.email }}</p>
+                    <p>SIRET : {{ company.siret }}</p>
+                </div>
+                <div class="bg-gray-50 text-right">
+                    <h2>Informations sur le client</h2>
+                    <p>Nom : {{ customer.name }}</p>
+                    <p>Code : {{ customer.code }}</p>
+                    {% if customer.vat_number %}
+                        <p>Numéro de TVA : {{ customer.vat_number }}</p>
+                    {% endif %}
+                    <p>{{ customer.address }}</p>
+                    <p>{{ customer.zip_code }} {{ customer.city }}</p>
+                    <p>{{ customer.country }}</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Quantité</th>
+                        <th>Prix unitaire</th>
+                        <th>Montant HT</th>
+                        <th>Montant TTC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                        <tr>
+                            <td>{{ service.name }}</td>
+                            <td class="text-center">{{ service.quantity }}</td>
+                            <td class="text-right">{{ service.price_without_tax|number_format(2, ',', ' ') }} €</td>
+                            <td class="text-right">{{ (service.price_without_tax * service.quantity)|number_format(2, ',', ' ') }} €</td>
+                            <td class="text-right">{{ (service.price_with_tax * service.quantity)|number_format(2, ',', ' ') }} €</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-right font-semibold">Total HT</td>
+                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + (service.price_without_tax * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-right font-semibold">TVA</td>
+                        <td class="text-right font-semibold">{{ services|reduce((carry, service) => carry + ((service.price_with_tax - service.price_without_tax) * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-right font-bold">Total TTC</td>
+                        <td class="text-right font-bold">{{ services|reduce((carry, service) => carry + (service.price_with_tax * service.quantity), 0)|number_format(2, ',', ' ') }} €</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+
+        <footer>
+            <p>Merci de votre confiance</p>
+            <p>Pour toute question, contactez-nous</p>
+            <p>Au plaisir de vous servir à nouveau</p>
+            <p class="font-bold">IBAN : FR76 1234 5678 9123 4567 8901 234</p>
+            <p>Numéro de TVA : FR12345678901</p>
+            <p>Adresse : 123 Rue Exemple, 75001 Paris - Téléphone : 01 23 45 67 89</p>
+            <p>SIRET : 123 456 789 00012</p>
+        </footer>
+    </div>
+</body>
+</html>

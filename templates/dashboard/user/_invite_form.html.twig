@@ -1,0 +1,62 @@
+{# templates/dashboard/user/invite.html.twig #}
+
+{% form_theme form 'theme/form.html.twig' %}
+
+<div data-controller="invite">
+    <button 
+        type="button" 
+        class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" 
+        data-action="click->invite#openModal">
+        Ajouter un membre
+    </button>
+
+    <div class="fixed z-10 inset-0 overflow-y-auto hidden" data-invite-target="modal" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-tertiary/60 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+
+            <div class="inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle sm:max-w-lg sm:w-full">
+                <div class="p-6">
+                    <div>
+                        <div>
+                            <h3 class="text-subtitle leading-6 font-medium text-secondary mb-4" id="modal-title">
+                                Inviter un collaborateur
+                            </h3>
+                            <span data-invite-target="message" class="mb-2 text-sm hidden"></span>
+                            <div class="mt-2">
+                                <form data-invite-target="form" action="{{ path('dashboard.settings.user.invite') }}" method="post" data-action="submit->invite#submitForm">
+                                    {{ form_start(form) }}
+                                        <div class="flex flex-col gap-3">
+                                            <h3>Email</h3>
+                                            {{ form_row(form.email) }}
+                                        </div>
+
+                                        <div class="flex flex-col gap-3">
+                                            <h3>Role</h3>
+                                            {{ form_row(form.role) }}
+                                        </div>
+                                        
+                                        <div class="flex gap-8 mt-4">
+                                            <button
+                                                type="submit" 
+                                                class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                                                Envoyer
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                class="btn border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75"
+                                                data-action="click->invite#closeModal">
+                                                Annuler
+                                            </button>
+                                        </div>
+                                    {{ form_end(form) }}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family={{ theme.getTitleFont() }}:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family={{ theme.getSubtitleFont() }}:wght@200..900&family={{theme.getContentFont()}}:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+                :root {
+                    --primary-color: {{ theme.getPrimaryColor() }};
+                    --secondary-color: {{ theme.getSecondaryColor() }};
+                    --tertiary-color: {{ theme.getTertiaryColor() }};
+                    --background-color: {{ theme.getBgColor() }};
+                    --title-font: "{{ theme.getTitleFont() }}";
+                    --subtitle-font: "{{ theme.getSubtitleFont() }}";
+                    --content-font: "{{ theme.getContentFont() }}";
+                    --sidebar-position: "{{ theme.getSidebarPosition() }}";
+                    --title-font-size: 24px;
+                    --subtitle-font-size: 18px;
+                    --content-font-size: 14px;
+                }
+            </style>
+            
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+            {# {% block importmap %}{{ importmap('app') }}{% endblock %} #}
+        {% endblock %}
+
+        {% set prior_role = app.user.roles[0] ?? null %}
+        {% set role_labels = {
+            'ROLE_ADMIN': 'Admin',
+            'ROLE_EDITOR': 'Éditeur',
+            'ROLE_ACCOUNTANT': 'Comptable',
+        } %}
+    </head>
+    <body>
+        <div class="relative h-screen w-screen flex flex-col">
+            {% if not isRegistrationComplete and app.current_route != 'dashboard.settings.company' %}
+                <div class="absolute top-0 left-0 right-0 z-50">
+                    <twig:Banner>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                            <p class="text-sm">
+                                Renseignez les informations de votre entreprise pour profiter de nos services.
+                            </p>
+                            <a href="{{ path('dashboard.settings.company') }}" 
+                                class="flex gap-1 items-center rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-tertiary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-secondary">
+                                Compléter
+                                {{ ux_icon('material-symbols:line-end-arrow') }}
+                            </a>
+                        </div>
+                    </twig:Banner>
+                </div>
+            {% endif %}
+
+            {% include "partials/DashboardHeader.html.twig" %}
+
+            <div class="flex md:h-[calc(100vh_-_60px)] flex-1 bg-background relative text-content mt-[60px] md:mt-0">
+                <div class="hidden md:block">
+                    {% include "partials/Sidebar.html.twig" %}
+                </div>
+                <div class="box-border flex basis-full flex-col w-1/4 max-w-full">
+                    <div class="md:overflow-y-auto h-full">
+                        <main class="w-full min-h-[calc(100vh_-_120px)] px-3 lg:px-6 py-8 max-w-[1200px] mx-auto">
+                            {% block body %}{% endblock %}
+                        </main>
+                        {{ include('partials/DashboardFooter.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

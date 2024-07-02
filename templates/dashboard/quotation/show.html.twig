@@ -1,0 +1,59 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'quotation.name'|trans }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'quotation.name'|trans }}</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Date</th>
+                <td>{{ quotation.sendingDate ? quotation.sendingDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ quotation.type }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>{{ 'quotation.details'|trans }}</h2>
+    <table class="table">
+        {% if quotationDetails is not empty %}
+            <thead>
+                <tr>
+                    <th>Nom du service</th>
+                    <th>Prix HT</th>
+                    <th>Prix TTC</th>
+                    <th>Quantité</th>
+                </tr>
+            </thead>
+        {% endif %}
+        <tbody>
+            {% if quotationDetails is empty %}
+                <tr>
+                    <td colspan="5">Aucun service</td>
+                </tr>
+            {% else %}
+                {% for detail in quotationDetails %}
+                    <tr>
+                        <td>{{ detail.serviceName }}</td>
+                        <td>{{ detail.priceWithoutTax }}€</td>
+                        <td>{{ detail.priceWithTax }}€</td>
+                        <td>{{ detail.quantity }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    <h3>{{ 'Total HT'|trans }}: {{ totalPriceWithoutTax }}€</h3>
+    <h3>{{ 'Total TTC'|trans }}: {{ totalPriceWithTax }}€</h3>
+
+    <a href="{{ path('dashboard.quotation.index') }}">{{ 'crud.back_to_list'|trans }}</a>
+
+    <a href="{{ path('dashboard.quotation.edit', {'uid': quotation.uid}) }}">{{ 'crud.edit'|trans }}</a>
+
+    {# {{ include('dashboard/quotation/_delete_form.html.twig') }} #}
+{% endblock %}

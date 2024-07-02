@@ -1,0 +1,261 @@
+{% extends 'base/base_site.html.twig' %}
+
+{% block title %}Smoothbill - Design Guide{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto">
+        <section class="flex pt-5 pb-10 border-b border-tertiary/10">
+            <article>
+                <span class="text-sm text-primary font-content font-semibold">Réalisé par la team Smoothbill</span>
+                <h1 class="text-title font-title font-semibold">Design Guide - Charte Graphique et Composants</h1>
+                <div class="flex gap-10 mb-3">
+                    <div class="w-fit flex gap-1 items-center">
+                        {{ ux_icon('vscode-icons:file-type-twig') }}
+                        <span class="inline-block text-tertiary/60">TWIG</span>
+                    </div>
+                    <div class="w-fit flex gap-1 items-center text-primary/70">
+                        {{ ux_icon('teenyicons:tailwind-solid') }}
+                        <span class="inline-block text-tertiary/60">TailwindCSS</span>
+                    </div>   
+                </div>
+                <p class="text-content">
+                    L'équipe de Smoothbill, composée de développeurs et de designers UX/UI, a élaboré ce Guide de Conception.
+                    La charte graphique met en avant les couleurs, les polices et les tailles de police utilisées dans 
+                    l'application. La section des composants répertorie les différents éléments disponibles 
+                    pour assurer une cohérence visuelle et une expérience utilisateur harmonieuse.
+                </p>
+            </article>
+            <article>
+                <twig:Button bg="outlined" rounded="sm" type="submit">
+                    Annuler
+                </twig:Button>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Couleurs</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p>
+                    Cette section regroupe les couleurs utilisées par défaut dans notre application.
+                    Smoothbill permet à ses utilisateurs de personnaliser le thème
+                    du tableau de bord à leur convenance, mais cette section présente uniquement les couleurs
+                    définies par défaut.
+                </p>
+                <div class="flex lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Primary</h3>
+                        <div class="h-40 w-40 rounded-md bg-primary"></div>
+                    </div>
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Secondary</h3>
+                        <div class="h-40 w-40 rounded-md bg-secondary"></div>
+                    </div>
+                    <div class="flex flex-col-reverse gap-3">
+                        <h3>Tertiary</h3>
+                        <div class="h-40 w-40 rounded-md bg-tertiary"></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Typographie</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p class="row-span-1">
+                    Tout comme pour les couleurs, nous présentons ici les typographies,
+                    soigneusement choisies par nos équipes, disponibles par défaut.
+                    L'utilisateur peut également définir les typographies qu'il souhaite pour
+                    personnaliser son tableau de bord.
+                </p>
+                <div class="flex lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Titre h1</h3>
+                        <div>
+                            Font family: Raleway<br>
+                            Font size: 36px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Titre h2</h3>
+                        <div>
+                            Font family: David Libre<br>
+                            Font size: 26px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <h3 class="font-semibold">Contenu p</h3>
+                        <div>
+                            Font family: Poppins<br>
+                            Font size: 16px<br>
+                            Couleur: #000000
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Boutons</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p class="row-span-1">
+                    Les boutons sont des éléments interactifs essentiels dans notre application. 
+                    Nous avons conçu un composant TWIG Button qui peut prendre une variété de styles 
+                    de boutons pour répondre à différents besoins d'interaction, tout en assurant une 
+                    cohérence visuelle avec le reste de la charte graphique. 
+                </p>
+                <div class="flex flex-wrap lg:flex-nowrap lg:justify-end gap-10 col-span-2">
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="filled" rounded="sm" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=filled </br> rounded=sm</p>
+                    </div>
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="outline" rounded="sm" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=outline </br> rounded=sm</p>
+                    </div>
+                     <div class="flex flex-col gap-3">
+                        <twig:Button bg="filled" rounded="half" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=filled </br> rounded=half</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <twig:Button bg="outline" rounded="half" type="submit">
+                            Valider
+                        </twig:Button>
+                        <p>bg=outline </br> rounded=half</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Sidebar</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p class="row-span-1">
+                    La sidebar de Smoothbill regroupe toutes les fonctionnalités essentielles pour une gestion efficace et simplifiée de votre activité. Smoothbill offre à ses utilisateurs la possibilité de personnaliser leur expérience, mais cette section met en avant les options et outils disponibles par défaut pour vous aider à démarrer rapidement. 
+                </p>
+                <div class="flex flex-wrap lg:flex-nowrap lg:justify-center gap-10 col-span-2">
+                    {% include "partials/Sidebar.html.twig" %}
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Indicateurs clés de performance (KPI)</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <p>
+                    Cette section illustre comment utiliser le composant KpiCard pour afficher divers indicateurs clés.
+                </p>
+                <div class="flex flex-wrap lg:flex-nowrap lg:justify-end gap-10 col-span-2">
+                    <div class="flex flex-col gap-3">
+                        <twig:KpiCard kpi_name="Clients récurents" kpi_value="421" icon_name="skill-icons:billing-icon">
+                        </twig:KpiCard>
+                        <p>Clients récurents: 421</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <twig:KpiCard kpi_name="Devis acceptés" kpi_value="120" icon_name="skill-icons:invoice">
+                        </twig:KpiCard>
+                        <p>Devis acceptés : 120</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="pt-5 pb-10 border-b border-tertiary/10">
+        <h2 class="text-subtitle font-subtitle font-semibold mb-5">Cartes Sélectionnables</h2>
+        <article class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <p>
+                Les cartes sélectionnables permettent aux utilisateurs de choisir plusieurs éléments pour des actions groupées, 
+                comme la suppression ou la mise à jour. Voici un exemple de carte que vous pouvez sélectionner :
+            </p>
+            <div class="flex lg:justify-end gap-10 col-span-2">
+                <div class="flex flex-col gap-3">
+                    <twig:SelectableCard card_title="Rapport de Ventes" card_id="1">
+                       Rapport de ventes des services et des produits consomés
+                    </twig:SelectableCard>
+
+                </div>
+            </div>
+        </article>
+    </section>
+    <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Composants de Service</h2>
+            <article class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <p class="row-span-1">
+                    Cette section illustre comment utiliser les composants TopService et TopTransaction pour afficher diverses informations liées aux services et transactions.
+                </p>
+                <div class="flex flex-col gap-10 col-span-1">
+                    <div class="w-[400px]">
+                        {% set services = [
+                            {title: "Site vitrine avec wordpress", sales: 20, revenue: "22.000€"},
+                            {title: "Application mobile avec React Native", sales: 11, revenue: "15.000€"},
+                            {title: "Déploiement AWS VPC avec terraform", sales: 5, revenue: "5.000€"}
+                        ] %}
+                        <twig:TopService header_title="Top Service" header_icon="skill-icons:billing-icon" :services="services" />
+                    </div>
+                    <div class="w-[400px]">
+                            {% set transactions = [
+                                {id: "#22440", service: "Application mobile...", date: "2023-01-12", price: "15.000€"},
+                                {id: "#26004", service: "Site vitrine...", date: "2023-01-10", price: "2.750€"},
+                                {id: "#21990", service: "Site vitrine...", date: "2023-01-14", price: "2.750€"}
+                            ] %}
+                            {% set headersTopTransaction = {
+                                id: "ID",
+                                service: "Service",
+                                date: "Date",
+                                price: "Prix"
+                            } %}
+                            <twig:TopTransaction header_title="Top transaction" header_icon="skill-icons:billing-icon" :transactions="transactions" :headersTopTransaction="headersTopTransaction" />
+                        </div>
+                </div>
+            </article>
+    </section>
+    <section class="pt-5 pb-10 border-b border-tertiary/10">
+            <h2 class="text-subtitle font-subtitle font-semibold mb-5">Plans d'abonnement</h2>
+            <article class="my-2 gap-10">
+                <p class="my-8">
+                    Cette section présente les différents plans d'abonnement disponibles pour les utilisateurs.
+                </p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                   {% set plans = [
+                                        {
+                                            id: 1,
+                                            name: 'Freemium',
+                                            price: '0€ / mois',
+                                            features: [
+                                                { text: 'Création et envoi de facture (5 par mois)', active: true },
+                                                { text: 'Création et envoi de devis (5 par mois)', active: true },
+                                                { text: 'Ajout d\'autres utilisateurs', active: false },
+                                                { text: 'Personnalisation du dashboard', active: false },
+                                                { text: 'Personnalisation du shart graphique', active: false },
+                                                { text: 'Relance automatique des factures', active: false },
+                                                { text: 'Personnalisation des rapports', active: false },
+                                                { text: 'Exporter les données en csv', active: false }
+                                            ],
+                                            isCurrentPlan: true
+                                        },
+                                        {
+                                            id: 2,
+                                            name: 'Starter',
+                                            price: '9.99€ / mois',
+                                            features: [
+                                                { text: 'Création et envoi de facture (illimité)', active: true },
+                                                { text: 'Création et envoi de devis (illimité)', active: true },
+                                                { text: 'Ajout d\'autres utilisateurs', active: true },
+                                                { text: 'Personnalisation du dashboard', active: true },
+                                                { text: 'Support client premium', active: true },
+                                                { text: 'Export de données en format CSV', active: true },
+                                                { text: 'Automatisation du flux de travail', active: true },
+                                                { text: 'Rapports avancés', active: false }
+                                            ],
+                                            isCurrentPlan: false
+                                        }
+                                    ] %}
+                    {% for plan in plans %}
+                     <twig:Subscription plan="{{ plan|raw }}" />  </twig:Subscription>
+                    {% endfor %}
+                </div>
+            </article>
+    </section>
+</div>
+{% endblock %}

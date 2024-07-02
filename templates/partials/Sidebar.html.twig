@@ -1,0 +1,112 @@
+{% set classes = "flex items-center gap-2 p-2 rounded-md hover:text-primary hover:bg-primary/10 hover:border-l-4 hover:border-primary border-l-4 transition ease-in-out delay-75" %}
+
+<aside id="sidebar" class="w-52 h-full xl:w-72 px-6 py-8 bg-white border-r shrink-0 flex-col overflow-y-auto">
+
+    <h2 class="text-subtitle font-semibold mb-4">MENU</h2>
+    <nav class="menu flex-1">
+        <ul class="flex flex-col gap-1">
+            {# <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.home') }}" 
+                    alt="General" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.home' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+                    {{ ux_icon('zondicons:view-tile') }}
+                    Général
+                </twig:MenuItem>
+            </li> #}
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.customer.index') }}" 
+                    alt="Clients" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.customer' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('fluent:people-team-16-regular') }}
+                    Clients
+                </twig:MenuItem>
+            </li>
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.service.index') }}" 
+                    alt="Services" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.service' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('ph:handshake') }}
+                    Services
+                </twig:MenuItem>
+            </li>
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.quotation.index') }}" 
+                    alt="Devis" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.quotation' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('teenyicons:cost-estimate-outline') }}
+                    Devis
+                </twig:MenuItem>
+            </li>
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.invoice.index') }}" 
+                    alt="Factures" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.invoice' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('la:file-invoice-dollar') }}
+                    Factures
+                </twig:MenuItem>
+            </li>
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.payment.index') }}" 
+                    alt="Paiement" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('solar:hand-money-linear') }}
+                    Paiement
+                </twig:MenuItem>
+            </li>
+            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                <twig:MenuItem 
+                    href="{{ path('dashboard.financial.report') }}" alt="Rapports" 
+                    additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.financial.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                    {{ ux_icon('lets-icons:line-up') }}
+                    Rapports
+                </twig:MenuItem>
+            </li>
+        </ul>
+    </nav>
+    <div id="integration" class="mt-14">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-subtitle font-semibold">INTEGRATION (v2)</h2>
+            {{ ux_icon('ph:plus-fill') }}
+        </div>
+        <div class="rounded-lg p-2 bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+            <ul class="flex flex-col gap-1">
+                <twig:MenuItem href="#" alt="Slack" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
+                    {{ ux_icon('ant-design:slack-circle-filled') }}
+                    Slack
+                </twig:MenuItem>
+                <twig:MenuItem href="#" alt="Jira software" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
+                    {{ ux_icon('mdi:jira') }}
+                    Jira software
+                </twig:MenuItem>
+            </ul>
+        </div>
+    </div>
+    <div id="settings" class="mt-14">
+        <ul class="flex flex-col gap-1">
+            <twig:MenuItem href="{{ path('dashboard.settings') }}" alt="Settings" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.settings' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+                {{ ux_icon('clarity:settings-line') }}
+                Settings
+            </twig:MenuItem>
+            <twig:MenuItem href="#" alt="Aide & Support" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
+                {{ ux_icon('material-symbols:chat-outline') }}
+                Aide & Support (v2)
+            </twig:MenuItem>
+        </ul>
+    </div>
+    {# <div id="theme_switcher" class="flex items-center justify-between mt-10 mb-6 p-2 rounded-md bg-[#F5F1F1] shadow-sm drop-shadow-sm">
+        <button type="button" class="flex items-center gap-2 px-6 py-2 rounded-md bg-secondary">
+            {{ ux_icon('noto:light-bulb') }}
+            <span class="text-white">Light</span>
+        </button>
+        <button type="button" class="flex items-center gap-2 px-6 py-2 bg-transparent rounded-small">
+            {{ ux_icon('ph:moon-bold') }}
+            <span>Dark</span>
+        </button>
+    </div> #}
+</aside>

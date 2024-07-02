@@ -1,0 +1,16 @@
+{# templates/dashboard/user/update.html.twig #}
+
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block body %}
+    <div>
+        {% for message in app.flashes('success') %}
+            <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {{ include('dashboard/user/_form.html.twig') }}
+    </div>
+{% endblock %}

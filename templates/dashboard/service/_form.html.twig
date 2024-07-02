@@ -1,0 +1,42 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article>
+            <div id="service_info" class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-2">
+                <div>
+                    <h3 class="text-sm font-title mb-1 font-medium">Nom du service</h3>
+                    {{ form_row(form.name) }}
+                </div>
+                <div>
+                    <h3 class="text-sm font-title mb-1 font-medium">Prix (€)</h3>
+                    {{ form_row(form.price) }}
+                </div>
+                <div>
+                    <h3 class="text-sm font-title mb-1 font-medium">Durée estimée</h3>
+                    {{ form_row(form.estimated_duration) }}
+                </div>
+                <div>
+                    <h3 class="text-sm font-title mb-1 font-medium">Statut</h3>
+                    {{ form_row(form.serviceStatus) }}
+                </div>
+            </div>
+            <div class="mt-5">
+                <div>
+                    <h3 class="text-sm font-title mb-1 font-medium">Description</h3>
+                    {{ form_row(form.description) }}
+                </div>
+            </div>
+        </article>
+        <div class="flex justify-end gap-5 mt-10">
+            <a 
+                href="{{ path('dashboard.service.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                {{ 'button.cancel'|trans }}
+            </a>
+            <button class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

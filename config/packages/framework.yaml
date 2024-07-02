@@ -1,15 +1,17 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    secret: '%env(APP_SECRET)%'
+    secret: "%env(APP_SECRET)%"
     #csrf_protection: true
     annotations: false
     http_method_override: false
     handle_all_throwables: true
+    csrf_protection: ~
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
     session:
-        handler_id: null
+        handler_id: "session.handler.native_file"
+        save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
         cookie_secure: auto
         cookie_samesite: lax
 

@@ -1,0 +1,12 @@
+<div data-controller="actions">
+    <div data-actions-target="modal" data-target="actions.modalTarget" class="w-full flex items-center gap-x-6 bg-primary text-white px-6 py-2 sm:before:flex-1">
+        {% block content %}
+            Smoothbill
+        {% endblock %}
+        <div class="flex flex-1 justify-end">
+            <button data-action="click->actions#closeModal" type="button" class="-m-3 p-3 focus-visible:outline-offset-[-4px]">
+            <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -3,42 +3,71 @@
 namespace App\Entity;
 
 use App\Repository\CompanyRepository;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 class Company
 {
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La dénomination ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "La dénomination ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $denomination = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro SIREN ne doit pas être vide.")]
+    #[Assert\Length(exactly: 9, exactMessage: "Le numéro SIREN doit contenir exactement {{ limit }} chiffres.")]
+    #[Assert\Regex(pattern: "/^\d{9}$/", message: "Le numéro SIREN doit contenir exactement 9 chiffres.")]
     private ?string $siren = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro SIRET ne doit pas être vide.")]
+    #[Assert\Length(exactly: 14, exactMessage: "Le numéro SIRET doit contenir exactement {{ limit }} chiffres.")]
+    #[Assert\Regex(pattern: "/^\d{14}$/", message: "Le numéro SIRET doit contenir exactement 14 chiffres.")]
     private ?string $siret = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255, maxMessage: "Le numéro de TVA ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $tva_number = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le numéro RCS ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le numéro RCS ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $rcs_number = null;
 
     #[ORM\Column(length: 65)]
+    #[Assert\NotBlank(message: "Le numéro de téléphone ne doit pas être vide.")]
+    #[Assert\Length(max: 65, maxMessage: "Le numéro de téléphone ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^\+?[0-9\s\-()]{10,65}$/", message: "Le numéro de téléphone doit être valide.")]
     private ?string $phone_number = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse e-mail ne doit pas être vide.")]
+    #[Assert\Email(message: "L'adresse e-mail '{{ value }}' n'est pas valide.")]
+    #[Assert\Length(max: 255, maxMessage: "L'adresse e-mail ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $mail = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creation_date = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Le capital social ne doit pas être vide.")]
+    #[Assert\Positive(message: "Le capital social doit être un nombre positif.")]
     private ?int $registered_social = null;
 
     #[ORM\Column(length: 255)]
@@ -50,14 +79,34 @@ class Company
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $signing = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
-
     #[ORM\ManyToOne(inversedBy: 'companies')]
     private ?LegalForm $legal_form = null;
+
+    #[ORM\OneToOne(mappedBy: 'company', cascade: ['persist', 'remove'])]
+    private ?CompanySubscription $subscription = null;
+
+    /**
+     * @var Collection<int, Customer>
+     */
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Customer::class)]
+    private Collection $customers;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $address = null;
+
+    /**
+     * @var Collection<int, Quotation>
+     */
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Quotation::class)]
+    private Collection $quotations;
+
+    public function __construct()
+    {
+        $this->UuidConstruct();
+        $this->customers = new ArrayCollection();
+        $this->quotations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -208,30 +257,6 @@ class Company
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
     public function getLegalForm(): ?LegalForm
     {
         return $this->legal_form;
@@ -241,6 +266,92 @@ class Company
     {
         $this->legal_form = $legal_form;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): static
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): static
+    {
+        if ($this->customers->removeElement($customer)) {
+            // set the owning side to null (unless already changed)
+            if ($customer->getCompany() === $this) {
+                $customer->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Quotation>
+     */
+    public function getQuotations(): Collection
+    {
+        return $this->quotations;
+    }
+
+    public function addQuotation(Quotation $quotation): static
+    {
+        if (!$this->quotations->contains($quotation)) {
+            $this->quotations->add($quotation);
+            $quotation->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuotation(Quotation $quotation): static
+    {
+        if ($this->quotations->removeElement($quotation)) {
+            // set the owning side to null (unless already changed)
+            if ($quotation->getCompany() === $this) {
+                $quotation->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSubscription(): ?CompanySubscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?CompanySubscription $subscription): static
+    {
+        $this->subscription = $subscription;
+        if ($subscription !== null && $subscription->getCompany() !== $this) {
+            $subscription->setCompany($this);
+        }
         return $this;
     }
 }

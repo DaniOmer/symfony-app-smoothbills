@@ -1,0 +1,77 @@
+login:
+    title: "Login"
+    google: "Login with Google"
+    or: "or"
+    email: "Email"
+    password: "Password"
+    create: "You don't have account ?"
+    register: "Register"
+    legal_notice: "Legal notices"
+
+register:
+    welcome: "Welcome!"
+    success: "Your account has been successfully created."
+    message: "A confirmation email has been sent to the address you provided during registration. Please check your inbox and click on the confirmation link to activate your account."
+    additional_info: "Once you have confirmed your account, you'll be able to log in and enjoy all the features of our application."
+    link_to_gmail: "Go to your emails"
+
+crud:
+    delete: "Delete"
+    delete_confirmation: "Are you sure you want to delete this item?"
+    save: "Save"
+    update: "Update"
+    back_to_list: "Back to list"
+    show: "Show"
+    edit: "Edit"
+    no_records_found: "No records found"
+    create_new: "Create new"
+    upload: "Upload"
+    download: "Download"
+    export: "Export"
+    export_all: "Export all"
+
+customer:
+    title: "Clients"
+    edit_title: "Edit Customer"
+    table_title: "All customers"
+    new: "Add new Customer"
+    name: "Customer"
+
+error:
+    not_found: "The page requested is not found. We suggest you to go back home."
+    general: "An error has occurred. Please try again later."
+
+site:
+    home: "Home"
+
+dashboard:
+    home:
+        title: "General"
+
+quotation:
+    title: "Quotations"
+    edit_quotation: "Edit Quotation"
+    table_title: "All quotations"
+    new: "Add new Quotation"
+    name: "Quotation"
+    invoice_total: "Total quotations"
+    invoice_accepted: "Accepted quotations"
+    invoice_rejected: "Rejected quotations"
+    details: "Services"
+
+invoice:
+    title: "Invoices"
+    table_title: "All invoices"
+    invoice_paid: "Paid invoices"
+    invoice_unpaid: "Unpaid invoices"
+    invoice_pending: "Pending invoices"
+    invoice_details: "Details of the invoice"
+    status:
+        paid: "Paid"
+        unpaid: "Unpaid"
+        pending: "Pending"
+        cancelled: "Cancelled"
+
+payment:
+    title: "Payments"
+    table_title: "All payments"

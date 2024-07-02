@@ -1,0 +1,19 @@
+{% props card_title = '', card_id = '' %}
+
+<label for="select-card-{{ card_id }}" class="w-60 flex justify-between items-center px-4 py-5 text-black rounded-xl border border-indigo-600 border-solid bg-white cursor-pointer">
+    <div class="flex flex-col">
+        <div class="font-semibold text-base">{{ card_title }}</div>
+        <p class="mt-3.5 text-xs">
+            {% block content %}
+                Valider
+            {% endblock %}
+        </p>
+    </div>
+    <input type="checkbox" id="select-card-{{ card_id }}" name="selected_cards[]" value="{{ card_id }}" class="sr-only peer">
+        <div class="hidden peer-checked:block">
+            {{ ux_icon('skill-icons:checked-icon') }}
+        </div>
+        <div class="block peer-checked:hidden text-white">
+            {{ ux_icon('skill-icons:ellipse-icon') }}
+        </div>
+</label>

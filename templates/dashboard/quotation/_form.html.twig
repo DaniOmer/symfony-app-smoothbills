@@ -1,0 +1,62 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <div class="mb-3 text-red-600">
+            {{ form_errors(form.quotationHasServices) }}
+        </div>
+        <article>
+            <div>
+                <h2 class="text-sm font-title mb-1 font-semibold">Nom du client</h2>
+                {{ form_row(form.customer) }}
+            </div>
+        </article>
+        <article class="mb-5">
+            <div>
+                <h2 class="text-sm font-title mb-1 font-semibold">Type de paiement</h2>
+                {{ form_row(form.type) }}
+            </div>
+        </article>
+        <article>
+            <div id="quotation_status" class="grid grid-cols-2 gap-x-5">
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-semibold">Status</h2>
+                    {{ form_row(form.quotation_status) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-semibold">Options d'envoie</h2>
+                    {{ form_widget(form.sendOption, {
+                        'attr': {'class': 'flex flex-row items-center gap-2 mr-10 w-fit'}
+                    }) }}
+                </div>
+            </div>
+            <div>
+                    <div {{ stimulus_controller('form-collection') }}
+                         data-form-collection-index-value="{{ form.quotationHasServices|length > 0 ? form.quotationHasServices|last.vars.name + 1 : 0 }}"
+                         data-form-collection-prototype-value="{{ form_widget(form.quotationHasServices.vars.prototype)|e('html_attr') }}"
+                    >
+                        <ul class="grid grid-cols-3 gap-4" {{ stimulus_target('form-collection', 'collectionContainer') }}>
+                            {% for quotationHasService in form.quotationHasServices %}
+                                <li class="list-none">{{ form_widget(quotationHasService) }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button 
+                            type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}
+                            class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                            Ajouter un service
+                        </button>
+                    </div>
+                </div>
+        </article>
+        <div class="flex justify-end gap-5 mt-10">
+            <a 
+                href="{{ path('dashboard.quotation.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                Annuler
+            </a>
+            <button class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

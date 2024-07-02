@@ -4,21 +4,47 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    admin_email: "no-reply@smoothbill.fr"
+    aws_s3_bucket_name: "smoothbill-dev-eu-west-3"
+    jwt_secret_key: "%env(JWT_SECRET_KEY)%"
 
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
+        resource: "../src/"
         exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+            - "../src/DependencyInjection/"
+            - "../src/Entity/"
+            - "../src/Kernel.php"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\UserRegistrationChecker:
+        arguments:
+            $cache: "@cache.app"
+            $userRepository: '@App\Repository\UserRepository'
+            $security: "@security.helper"
+
+    App\EventSubscriber\UserRegistrationSubscriber:
+        arguments:
+            $registrationChecker: '@App\Service\UserRegistrationChecker'
+            $router: "@router"
+            $twig: "@twig"
+        tags:
+            - { name: "kernel.event_subscriber" }
+
+    App\Service\CsvExporter:
+        public: true
+    
+    App\Twig\AppExtension:
+        arguments:
+            $companySubscriptionRepository: '@App\Repository\CompanySubscriptionRepository'
+            $security: '@security.helper'
+        tags: ['twig.extension']

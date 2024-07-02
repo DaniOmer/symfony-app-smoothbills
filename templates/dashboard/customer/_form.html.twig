@@ -1,0 +1,58 @@
+{% form_theme form 'theme/form.html.twig' %}
+
+<section>
+    {{ form_start(form) }}
+        <article class="mb-5">
+            <h1 class="text-base font-title font-semibold mb-3">Informations générales</h1>
+            <div id="customer_info" class="grid grid-cols-2 gap-x-5">
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Nom du client</h2>
+                    {{ form_row(form.name) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Adresse mail</h2>
+                    {{ form_row(form.mail) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Téléphone</h2>
+                    {{ form_row(form.phone) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Type de client</h2>
+                    {{ form_row(form.type) }}
+                </div>
+            </div>
+        </article>
+        <article>
+            <h1 class="text-base font-title font-semibold mb-3">Coordonnées</h1>
+            <div id="customer_address" class="grid grid-cols-2 gap-x-5">
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Adresse</h2>
+                    {{ form_row(form.address.address) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Code postal</h2>
+                    {{ form_row(form.address.zipcode) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Ville</h2>
+                    {{ form_row(form.address.city) }}
+                </div>
+                <div>
+                    <h2 class="text-sm font-title mb-1 font-medium">Pays</h2>
+                    {{ form_row(form.address.country) }}
+                </div>
+            </div>
+        </article>
+        <div class="flex justify-end gap-5 mt-10">
+            <a 
+                href="{{ path('dashboard.customer.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                Annuler
+            </a>
+            <button class="btn bg-primary border border-primary text-white py-2 px-6 rounded-md hover:bg-transparent hover:text-black transition ease-in-out delay-75">
+                {{ 'button.save'|trans }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</section>

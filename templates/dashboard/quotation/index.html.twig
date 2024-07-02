@@ -1,0 +1,42 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'quotation.index_title'|trans }}{% endblock %}
+
+{% set statusColors = {
+    'Accepted': 'bg-green-100 text-green-800',
+    'Rejected': 'bg-red-100 text-red-800',
+    'Pending': 'bg-yellow-100 text-yellow-800'
+} %}
+
+{% block body %}
+    <section class="flex flex-col gap-10">
+        {% for flash_success in app.flashes('success_quotation') %}
+            <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+       {% for flash_error in app.flashes('error_quotation') %}
+            <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
+        {% endfor %}
+
+        <header class="w-full flex justify-between">
+            <h1 class="text-title font-title font-semibold">{{ 'quotation.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <a class="block px-4 py-2 border border-primary bg-primary text-white rounded-small hover:bg-transparent hover:text-black transition ease-in-out delay-75" href="{{ path('dashboard.quotation.new') }}">{{ 'crud.create_new'|trans }}</a>
+                 {% if subscriptionName != 'Freemium' %}
+                    <twig:MenuItem href="{{ path('dashboard.quotation.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                        <span class="text-xl">{{ ux_icon('tabler:cloud-download') }}</span>
+                        {{ 'crud.export_all'|trans }}
+                    </twig:MenuItem>
+                {% endif %}
+            </div>
+        </header>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_total'|trans }}" kpi_value="{{ totalQuotation }}" icon_name="pajamas:stage-all"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_accepted'|trans }}" kpi_value="{{ statusCounts['accepted'] }}" icon_name="healthicons:i-documents-accepted-outline"></twig:KpiCard>
+            <twig:KpiCard kpi_name="{{ 'quotation.invoice_rejected'|trans }}" kpi_value="{{ statusCounts['rejected'] }}" icon_name="marketeq:rejected-file-2"></twig:KpiCard>
+            <twig:KpiCard kpi_name="Taux de conversion" kpi_value="{{ conversionRate }} %" icon_name="prime:percentage"></twig:KpiCard>
+        </div>
+        <div class="">
+            {{ component('Table', { quotations: quotations, headers: headers, rows: rows, title: 'quotation.table_title'|trans, actions: actions, paginatedData: quotations, statusColors: statusColors, deleteFormTemplate: deleteFormTemplate, deleteRoute: deleteRoute, }) }}
+        </div>
+    </section>
+{% endblock %}

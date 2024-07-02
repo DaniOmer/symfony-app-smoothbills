@@ -1,0 +1,143 @@
+{% set classes = "flex items-center gap-4 p-2 rounded-md hover:text-primary hover:bg-primary/10 transition ease-in-out delay-75" %}
+
+<header class="flex w-full h-[60px] items-center justify-between border-b px-3 lg:px-6 py-2 fixed z-10 md:relative bg-background md:bg-transparent">
+    <a href={{ path('site.home') }} class="hidden md:flex items-center gap-4 text-xl">
+        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+        <h1 class="font-bold">SMOOTHBILL</h1>
+    </a>
+    <div data-controller="actions">
+        <span class=" md:hidden text-2xl font-semibold" data-action="click->actions#showModal">{{ ux_icon('ri:menu-2-fill') }}</span>
+        <div class="hidden" data-actions-target="modal" data-target="actions.modalTarget">
+            <div class="close absolute top-0 left-0 h-[100vh] w-full px-3 bg-white z-30">
+                <div class="h-[60px] flex items-center"><span class="cursor-pointer text-3xl font-bold" data-action="click->actions#closeModal">{{ ux_icon('material-symbols:close') }}</span></div>
+                <nav class="menu flex-1">
+                    <a href={{ path('site.home') }} class="flex justify-center items-center gap-4 text-lg my-10">
+                        <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+                        <h1 class="font-bold">SMOOTHBILL</h1>
+                    </a>
+                    <ul class="flex flex-col gap-1 mt-16">
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.home') }}" 
+                                alt="General" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.home' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+                                {{ ux_icon('zondicons:view-tile') }}
+                                Général
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.customer.index') }}" 
+                                alt="Clients" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.customer' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('fluent:people-team-16-regular') }}
+                                Clients
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.service.index') }}" 
+                                alt="Services" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.service' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('ph:handshake') }}
+                                Services
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.quotation.index') }}" 
+                                alt="Devis" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.quotation' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('teenyicons:cost-estimate-outline') }}
+                                Devis
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.invoice.index') }}" 
+                                alt="Factures" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.invoice' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('la:file-invoice-dollar') }}
+                                Factures
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="#" 
+                                alt="Paiement" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('solar:hand-money-linear') }}
+                                Paiement
+                            </twig:MenuItem>
+                        </li>
+                        <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+                            <twig:MenuItem 
+                                href="{{ path('dashboard.financial.report') }}" alt="Rapports" 
+                                additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.financial.report' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
+                                {{ ux_icon('lets-icons:line-up') }}
+                                Rapports
+                            </twig:MenuItem>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="flex gap-40 items-center" >
+       <form class="hidden lg:block relative" data-controller="search">
+            <input type="text" placeholder="Rechercher une section" class="px-2 py-2 border rounded-full bg-transparent w-64 text-xs" data-search-target="input" data-action="input->search#search" />
+            <button type="button" class="absolute border-none right-3 bottom-1/2 translate-y-1/2 text-sm" data-action="click->search#search">
+                {{ ux_icon('teenyicons:search-outline') }}
+            </button>
+            <div data-search-target="results" class="absolute mt-2 w-64 bg-white border rounded-lg shadow-lg z-10 hidden">
+                <ul class="border-t border-gray-300" data-search-target="resultList"></ul>
+            </div>
+        </form>
+        <div class="flex justify-center items-center gap-5">
+            {{ ux_icon('clarity:notification-outline-badged') }}
+            <select name="language" id="language" data-controller="langue" class="bg-transparent">
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex justify-center items-center">
+        <div data-controller="actions" class="relative text-center">
+            <button class="actions-button flex justify-between items-center gap-4 md:border-l-2 pl-5" data-action="click->actions#showModal">
+                <div class="hidden md:block text-sm">
+                    <span class="block font-semibold">
+                        {{ app.user.firstName }} {{ app.user.lastName }}
+                    </span>
+                    <span class="block">
+                        {{ role_labels[prior_role] }}
+                    </span>
+                </div>
+                <div class="flex justify-center items-center gap-1">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                        {% if app.user.avatar is not none %}
+                            <img src="{{ app.user.avatar }}" alt="avatar" class="w-full h-full object-cover rounded-full" />
+                        {% else %}
+                            {{ app.user.firstName|slice(0, 1) }}{{ app.user.lastName|slice(0, 1) }}
+                        {% endif %}
+                    </div>
+                    <span class="hidden md:block text-lg">{{ ux_icon('solar:alt-arrow-down-bold') }}</span>
+                </div>
+            </button>
+
+            <div class="modal absolute top-[120%] right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
+                <div class="actions-content">
+                    <div class="close text-right p-2 text-3xl font-bold flex justify-end" data-action="click->actions#closeModal">
+                        <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
+                    </div>
+                    <nav id="actions-list" class="flex flex-col text-[12px] shadow-md drop-shadow-md">
+                        <span class="block px-6 py-2 border-b">{{ app.user.email }}</span>
+                        <span class="block px-6 py-2 border-b">{{ subscriptionName }}</span>
+                        <twig:MenuItem href="{{ path('dashboard.settings.user.profile' )}}" additionalClasses="hover:bg-primary/10 px-6 py-2">Profil</twig:MenuItem>
+                        <twig:MenuItem href="#" additionalClasses="hover:bg-primary/10 px-6 py-2">Settings</twig:MenuItem>
+                        <button onclick="window.location.href='{{ path('site.logout') }}'" class="hover:bg-primary/10 p-2">Se déconnecter</button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

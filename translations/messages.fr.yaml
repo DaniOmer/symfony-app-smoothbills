@@ -1,0 +1,117 @@
+login:
+    title: "Connexion"
+    google: "Se connecter avec Google"
+    or: "ou"
+    email: "Email"
+    password: "Mot de passe"
+    create: "Vous n'avez pas de compte ?"
+    register: "Inscription"
+    legal_notice: "Mentions légales"
+    forgot_password: "Mot de passe oublié ?"
+
+register:
+    welcome: "Bienvenue !"
+    success: "Votre compte a été créé avec succès."
+    message: "Un e-mail de confirmation a été envoyé à l'adresse que vous avez fournie lors de l'inscription. Veuillez vérifier votre boîte de réception et cliquer sur le lien de confirmation pour activer votre compte."
+    additional_info: "Une fois que vous avez confirmé votre compte, vous pourrez vous connecter et profiter de toutes les fonctionnalités de notre application."
+    link_to_gmail: "Accéder à vos e-mails"
+    complete_registration: "Compléter l'inscription"
+
+crud:
+    delete: "Supprimer"
+    delete_confirmation: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    save: "Enregistrer"
+    update: "Mettre à jour"
+    back_to_list: "Retour à la liste"
+    show: "Afficher"
+    edit: "Modifier"
+    no_records_found: "Aucun enregistrement trouvé"
+    create_new: "Créer un nouveau"
+    upload: "Importer"
+    download: "Exporter"
+    export: "Exporter"
+    export_all: "Tout exporter"
+
+customer:
+    title: "Clients"
+    edit_title: "Modifier le client"
+    table_title: "Tous les clients"
+    new: "Ajouter un client"
+    name: "Client"
+
+table:
+    not_data: "Aucune donnée disponible dans le tableau"
+
+button:
+    save: "Enregistrer"
+    cancel: "Annuler"
+    close: "Fermer"
+    delete: "Supprimer"
+    edit: "Modifier"
+    show: "Afficher"
+    create: "Créer"
+    update: "Mettre à jour"
+    back: "Retour"
+    upload: "Importer"
+    download: "Exporter"
+    export: "Exporter"
+    export_all: "Tout exporter"
+    change_subscription: "Changer d'abonnement"
+    current_subscription: "Abonnement actuel"
+    reset_password: "Réinitialiser le mot de passe"
+    update_password: "Mettre à jour le mot de passe"
+
+service:
+    title: "Services"
+    edit_title: "Modifier le service"
+    table_title: "Tous les services"
+    new: "Ajouter un service"
+    name: "Service"
+    uid: "UID"
+    price: "Prix"
+    description: "Description"
+    estimatedDuration: "Durée estimée"
+    not_data: "Aucune donnée"
+
+error:
+    not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
+    general: "Une erreur s'est produite. Veuillez réessayer plus tard."
+
+site:
+    home: "Acceuil"
+
+general:
+    home:
+        title: "Général"
+
+quotation:
+    title: "Devis"
+    edit_quotation: "Modifier le devis"
+    table_title: "Tous les devis"
+    new: "Ajouter un devis"
+    name: "Devis"
+    invoice_total: "Total de devis"
+    invoice_accepted: "Devis acceptés"
+    invoice_rejected: "Devis rejetés"
+    details: "Services"
+
+invoice:
+    title: "Factures"
+    table_title: "Toutes les factures"
+    invoice_paid: "Factures payées"
+    invoice_unpaid: "Factures impayées"
+    invoice_pending: "Factures en attente"
+    invoice_details: "Détails de la facture"
+    status:
+        paid: "Payée"
+        unpaid: "Non payée"
+        pending: "En attente"
+        cancelled: "Annulée"
+
+payment:
+    title: "Paiements"
+    table_title: "Tous les paiements"
+    Paid: "Payée"
+    Unpaid: "Non payée"
+    Pending: "En attente"
+    Canceled: "Annulée"

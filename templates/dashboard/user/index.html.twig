@@ -1,0 +1,26 @@
+{% extends 'partials/settings_menu.html.twig' %}
+
+{% block settings_content %}
+    <section>
+        <header class="border-b flex justify-between">
+            <div>
+                <h1 class="text-subtitle font-semibold mb-2">Gestion d'équipe</h1>
+                <p class="text-sm text-black max-md:max-w-full mb-8">
+                Faites la gestion de votre équipe.
+                </p>
+            </div>
+            <div class="my-4 flex justify-end">
+                {{ include('dashboard/user/_invite_form.html.twig') }}
+            </div>
+        </header>
+            {{ component('Table', {
+                headers: headers,
+                rows: rows,
+                title: "Tous les membres",
+                actions: actions,
+                paginatedData: users,
+                deleteFormTemplate: deleteFormTemplate,
+                deleteRoute: deleteRoute,
+            }) }}
+        </section>
+{% endblock %}

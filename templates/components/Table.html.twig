@@ -1,0 +1,78 @@
+{# templates/components/table.html.twig #}
+{% set rowClasses = "py-3 px-4" %}
+<section class="bg-white border w-full max-w-full rounded-md overflow-x-auto">
+    <h1 class="font-bold ml-4 py-4">{{ title }}</h1>
+    
+    <div class="overflow-x-auto lg:overflow-x-visible">
+        <div class="border-t table min-w-full text-left pb-5">
+            <div class="table-header-group bg-background">
+                <div class="table-row font-semibold">
+                    {% for header in headers %}
+                        <div class="{{ rowClasses }} table-cell text-left">{{ header }}</div>
+                    {% endfor %}
+                    <div class="{{ rowClasses }} table-cell text-center">Actions</div>
+                </div>
+            </div>
+
+            {% if rows|length != 0 %}
+                <div class="table-row-group overflow-x-hidden">
+                    {% for row in rows %}
+                        <div class="table-row">
+                            {% for key, value in row %}
+                                {% if key != 'uid' and key != 'id' %}
+                                    <div class="{{ rowClasses }} table-cell whitespace-nowrap">
+                                        {% if statusColors is defined and key == 'status' %}
+                                            {% set classes = statusColors[value] %}
+                                            <span class="px-2 py-1 rounded-sm {{ classes }}">{{ value }}</span>
+                                        {% else %}
+                                            {{ value|raw }}
+                                        {% endif %}
+                                    </div>   
+                                {% endif %}
+                            {% endfor %}
+                            <div data-controller="actions" class="relative flex justify-center items-center gap-2">
+                                {% if null != deleteRoute %}
+                                    <div class="hover:bg-primary/10 text-lg justify-center items-start">{{ include(deleteFormTemplate, {'deleteRoute': deleteRoute, 'entity': row}) }}</div>
+                                {% endif %}
+                                <button class="actions-button flex text-lg justify-center items-start" data-action="click->actions#showModal">
+                                    {{ ux_icon('charm:menu-kebab') }}
+                                </button>
+                                <div id="actions-modal" class="modal min-w-40 absolute top-0 right-0 bg-background hidden opacity-0 rounded-lg z-10 drop-shadow-md" data-actions-target="modal" data-target="actions.modalTarget">
+                                    <div class="modal-content">
+                                        <div class="close text-right p-2 text-3xl font-bold flex justify-end" data-action="click->actions#closeModal">
+                                            <span class="cursor-pointer">{{ ux_icon('material-symbols:close') }}</span>
+                                        </div>
+                                        <nav id="actions-list" class="flex flex-col">
+                                            {% for action in actions %}
+                                                <a
+                                                    href="{{ path(action.route, {'uid': row.uid}) }}"
+                                                    id="show-link"
+                                                    class="hover:bg-primary/10 px-4 py-2 text-center"
+                                                >
+                                                    {{ action.label }}
+                                                </a>
+                                            {% endfor %}
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div>
+    
+    {% if rows|length == 0 %}
+        <div class="w-full py-10 text-center">
+             {{ 'table.not_data'|trans }}
+        </div>
+    {% endif %}
+
+    {% if paginatedData is defined %}
+        <div class="w-full flex justify-center my-6">
+            {{ knp_pagination_render(paginatedData) }}
+        </div>
+    {% endif %}
+</section>

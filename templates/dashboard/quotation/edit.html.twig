@@ -1,0 +1,12 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}Quotation - Edition{% endblock %}
+
+{% block body %}
+
+    <div>
+        <h1 class="text-subtitle font-title font-semibold mb-3">Éditer un devis</h1>
+        {{ include('dashboard/quotation/_form.html.twig') }}
+    </div>
+
+{% endblock %}

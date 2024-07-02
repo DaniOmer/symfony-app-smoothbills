@@ -1,0 +1,18 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'dashboard.home.title'|trans }}{% endblock %}
+
+{% block body %}
+    <section>
+        <header class="w-full flex justify-between mb-[40px]">
+            <h1 class="text-title font-title font-semibold">{{ 'dashboard.home.title'|trans }}</h1>
+            <div class="flex gap-4 items-center">
+                <button class="flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                    Les 7 derniers jours
+                    <span class="text-md">{{ ux_icon('ep:arrow-down-bold') }}</span>
+                </button>
+            </div>
+        </header>
+    </section>
+</div>
+{% endblock %}

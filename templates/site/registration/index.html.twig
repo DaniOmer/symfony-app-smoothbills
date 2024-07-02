@@ -1,0 +1,63 @@
+{# templates/site/registration/index.html.twig #}
+
+
+{% extends 'base/base_site.html.twig' %}
+
+{% form_theme registrationForm 'theme/authentification.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container mx-auto py-10">
+    <a href={{ path('site.home') }} class='block text-center font-semibold text-title mb-7'>SMOOTHBILL</a>
+    <div class='lg:w-1/3 mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
+        <h2 class='w-full bg-white font-semibold text-subtitle text-center py-[18px] shadow-sm mb-5'>Inscription</h2>
+        <div class='px-[20px]'>
+            <div class='pb-8 mb-5 border-b border-tertiary/50 relative'>
+                <a href='site.register.sso' class=' w-full flex justify-center items-center gap-4 text-primary border border-tertiary hover:border-primary px-4 py-2'>
+                    {{ ux_icon('devicon:google') }}
+                    <span>S'incrire avec Google</span>
+                </a>
+                <span class='block w-[30px] text-tertiary absolute bottom-[-10px] left-1/2 translate-x-[-50%] z-10 bg-[#FEF9F9] text-center'>ou</span>
+            </div>
+
+            {% for flash_error in app.flashes('verify_email_error') %}
+                <div class="text-red-500 my-1 text-sm" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.lastName, {
+                    label: 'NOM',
+                }) }}
+                {{ form_row(registrationForm.firstName, {
+                    label: 'PRÉNOM',
+                }) }}
+                {{ form_row(registrationForm.email, {
+                    label: 'EMAIL'
+                }) }}
+                {{ form_row(registrationForm.password.first, {
+                    label: 'MOT DE PASSE'
+                }) }}
+                {{ form_row(registrationForm.password.second, {
+                    label: 'CONFIRMATION DE MOT DE PASSE'
+                }) }}
+                
+                <twig:Button bg="filled" rounded="sm" type="submit" additionalClasses='w-full rounded-sm mt-5'>
+                    Inscription
+                </twig:Button>
+                <div class='text-[14px] mt-2'>
+                    <span class='text-tertiary/60'>Vous avez déjà un compte ?</span>
+                    <a href={{path('site.login')}} class='text-primary'>Connexion</a>
+                </div>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+    <div class='w-fit mx-auto mt-10'>
+        <span class='font-semiboled'>&copy; {{ "now"|date('Y') }} Smoothbill -</span>
+        <a href={{ path('site.legal_notice')}} class='text-primary underline'>Mentions légales</a>
+    </div>
+</div>
+{% endblock %}

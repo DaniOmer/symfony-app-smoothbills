@@ -3,27 +3,39 @@
 namespace App\Entity;
 
 use App\Repository\AddressRepository;
+use App\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 class Address
 {
+    use TimestampableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message: "Le code postal ne doit pas être vide.")]
+    #[Assert\Regex(pattern: "/^[0-9]{5}$/", message: "Le code postal doit être composé de 5 chiffres.")]
     private ?string $zipcode = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La ville ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "La ville ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le pays ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le pays ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'adresse ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "L'adresse ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $address = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
@@ -31,16 +43,6 @@ class Address
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $latitude = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
-
-    #[ORM\OneToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Company $company = null;
 
     public function getId(): ?int
     {
@@ -115,42 +117,6 @@ class Address
     public function setLatitude(?string $latitude): static
     {
         $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?Company $company): static
-    {
-        $this->company = $company;
 
         return $this;
     }

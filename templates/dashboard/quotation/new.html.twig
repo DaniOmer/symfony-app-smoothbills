@@ -1,0 +1,53 @@
+{% extends 'base/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'quotation.new'|trans }}{% endblock %}
+
+{% block body %}
+
+    <div>
+        <h1 class="text-subtitle font-title font-semibold mb-3">Créer un devis</h1>
+        {% if customer is null and service is null %}
+            <twig:Banner>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <p class="text-sm">
+                        Vous devez créer au moins un client et un service pour créer un devis.
+                    </p>
+                    <a href="{{ path('dashboard.customer.new') }}" 
+                        class="flex gap-1 items-center rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-tertiary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-secondary">
+                        Ajouter un client
+                        {{ ux_icon('material-symbols:line-end-arrow') }}
+                    </a>
+                </div>
+            </twig:Banner>
+        {% elseif null == customer %}
+            <twig:Banner>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <p class="text-sm">
+                        Vous devez créer au moins un client pour créer un devis.
+                    </p>
+                    <a href="{{ path('dashboard.customer.new') }}" 
+                        class="flex gap-1 items-center rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-tertiary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-secondary">
+                        Ajouter un client
+                        {{ ux_icon('material-symbols:line-end-arrow') }}
+                    </a>
+                </div>
+            </twig:Banner>
+        {% elseif null == service %}
+            <twig:Banner>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <p class="text-sm">
+                        Vous devez créer au moins un service pour créer un devis.
+                    </p>
+                    <a href="{{ path('dashboard.service.new') }}" 
+                        class="flex gap-1 items-center rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-tertiary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:bg-secondary">
+                        Ajouter un service
+                        {{ ux_icon('material-symbols:line-end-arrow') }}
+                    </a>
+                </div>
+            </twig:Banner>
+        {% endif %}
+
+        {{ include('dashboard/quotation/_form.html.twig') }}
+    </div>
+    
+{% endblock %}

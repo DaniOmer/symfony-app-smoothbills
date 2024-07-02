@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\ThemeRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use App\Trait\TimestampableTrait;
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
 class Theme
 {
+    use TimestampableTrait;
     public const SIDEBAR_POSITION_LEFT = 'left';
     public const SIDEBAR_POSITION_RIGHT = 'right';
 
@@ -42,21 +42,14 @@ class Theme
     #[ORM\JoinColumn(nullable: false)]
     private ?Font $subtitle_font = null;
 
-    #[ORM\Column]
-    private ?bool $is_active = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
     #[ORM\Column(type: 'string', length: 10)]
     private ?string $sidebar_position = null;
+
+    #[ORM\Column(length: 45)]
+    private ?string $bg_color = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_default = null;
 
     public function getId(): ?int
     {
@@ -147,54 +140,6 @@ class Theme
         return $this;
     }
 
-    public function isIsActive(): ?bool
-    {
-        return $this->is_active;
-    }
-
-    public function setIsActive(bool $is_active): static
-    {
-        $this->is_active = $is_active;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updated_at): static
-    {
-        $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getSidebarPosition(): ?string
     {
         return $this->sidebar_position;
@@ -206,6 +151,30 @@ class Theme
             throw new \InvalidArgumentException("Invalid sidebar position");
         }
         $this->sidebar_position = $sidebar_position;
+        return $this;
+    }
+
+    public function getBgColor(): ?string
+    {
+        return $this->bg_color;
+    }
+
+    public function setBgColor(string $bg_color): static
+    {
+        $this->bg_color = $bg_color;
+
+        return $this;
+    }
+
+    public function isDefault(): ?bool
+    {
+        return $this->is_default;
+    }
+
+    public function setDefault(?bool $is_default): static
+    {
+        $this->is_default = $is_default;
+
         return $this;
     }
 }
