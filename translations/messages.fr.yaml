@@ -7,6 +7,7 @@ login:
     create: "Vous n'avez pas de compte ?"
     register: "Inscription"
     legal_notice: "Mentions légales"
+    forgot_password: "Mot de passe oublié ?"
 
 register:
     welcome: "Bienvenue !"
@@ -57,6 +58,8 @@ button:
     export_all: "Tout exporter"
     change_subscription: "Changer d'abonnement"
     current_subscription: "Abonnement actuel"
+    reset_password: "Réinitialiser le mot de passe"
+    update_password: "Mettre à jour le mot de passe"
 
 service:
     title: "Services"
@@ -69,7 +72,6 @@ service:
     description: "Description"
     estimatedDuration: "Durée estimée"
     not_data: "Aucune donnée"
-
 
 error:
     not_found: "La page demandée est introuvable. Nous vous suggérons de retourner à la page d'accueil."
@@ -93,7 +95,7 @@ quotation:
     invoice_rejected: "Devis rejetés"
     details: "Services"
 
-invoice: 
+invoice:
     title: "Factures"
     table_title: "Toutes les factures"
     invoice_paid: "Factures payées"
@@ -101,7 +103,15 @@ invoice:
     invoice_pending: "Factures en attente"
     invoice_details: "Détails de la facture"
     status:
-        Paid: "Payée"
-        Unpaid: "Non payée"
-        Pending: "En attente"
-        Canceled: "Annulée"
+        paid: "Payée"
+        unpaid: "Non payée"
+        pending: "En attente"
+        cancelled: "Annulée"
+
+payment:
+    title: "Paiements"
+    table_title: "Tous les paiements"
+    Paid: "Payée"
+    Unpaid: "Non payée"
+    Pending: "En attente"
+    Canceled: "Annulée"

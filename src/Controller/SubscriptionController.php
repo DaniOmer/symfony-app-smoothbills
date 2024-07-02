@@ -27,11 +27,13 @@ class SubscriptionController extends AbstractController
     #[Route('/change', name: 'dashboard.settings.subscriptions.change')]
     public function changeSubscription(Request $request, CompanyService $companyService, SubscriptionRepository $subscriptionRepository): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé : Cette page est réservée aux administrateurs.');
+
         $company = $this->getUser()->getCompany();
         $subscriptionId = $request->query->get('subscriptionId');
 
         if (!$subscriptionId) {
-            $this->addFlash('error', 'Abonnement non trouvé.');
+            $this->addFlash('error_subscription', 'Abonnement non trouvé.');
             return $this->redirectToRoute('dashboard.settings.subscriptions.index');
         }
 
@@ -39,9 +41,9 @@ class SubscriptionController extends AbstractController
 
         if ($newSubscription) {
             $companyService->changeSubscription($company, $newSubscription);
-            $this->addFlash('success', 'Abonnement changé avec succès.');
+            $this->addFlash('success_subscription', 'Abonnement changé avec succès.');
         } else {
-            $this->addFlash('error', 'Abonnement non trouvé.');
+            $this->addFlash('error_subscription', 'Abonnement non trouvé.');
         }
 
         return $this->redirectToRoute('dashboard.settings.subscriptions.index');

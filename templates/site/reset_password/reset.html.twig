@@ -1,0 +1,33 @@
+{# templates/site/reset_password/reset.html.twig #}
+
+{% extends 'base/base_site.html.twig' %}
+{% set inputClasses = "mb-2 py-2 block w-full border border-tertiary/50 focus:border-primary focus:ring-primary rounded-sm" %}
+
+{% block title %}{{ 'Réinitialiser le mot de passe'|trans }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto h-[calc(100vh_-_200px)] flex flex-col justify-center items-center">
+    <div class='lg:w-1/3 mx-auto pb-10 bg-[#FEF9F9] drop-shadow-md'>
+        <h2 class='w-full bg-white font-semibold text-subtitle text-center py-[18px] shadow-sm mb-5'>{{ 'Réinitialiser le mot de passe'|trans }}</h2>
+        <div class='px-[20px]'>
+
+            {% for flash_error in app.flashes('verify_email_error') %}
+                <div class="text-red-500 my-1 text-sm" role="alert">{{ flash_error }}</div>
+            {% endfor %}
+
+            {{ form_start(resetForm) }}
+                {{ form_row(resetForm.password.first, { 'attr': { 'class': inputClasses }, 'label': 'Nouveau mot de passe'|trans }) }}
+                {{ form_row(resetForm.password.second, { 'attr': { 'class': inputClasses }, 'label': 'Confirmer le mot de passe'|trans }) }}
+
+                <twig:Button bg="filled" rounded="sm" type="submit" additionalClasses='w-full rounded-sm mt-5'>
+                    {{ 'button.update_password'|trans }}
+                </twig:Button>
+            {{ form_end(resetForm) }}
+        </div>
+    </div>
+    <div class='w-fit mx-auto mt-10'>
+        <span class='font-semiboled'>&copy; {{ "now"|date('Y') }} Smoothbill -</span>
+        <a href="{{ path('site.legal_notice') }}" class='text-primary underline'>Mentions légales</a>
+    </div>
+</div>
+{% endblock %}

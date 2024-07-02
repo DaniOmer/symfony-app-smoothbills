@@ -1,0 +1,27 @@
+{% extends 'base/base_site.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8">{{ article.title }}</h1>
+
+        {% if article.thumbnail %}
+            <div class="mb-8">
+                <img src="{{ asset('uploads/images/' ~ article.thumbnail) }}" class="w-full h-64 object-cover rounded-lg" alt="{{ article.title }}">
+            </div>
+        {% endif %}
+
+        <div class="mb-8 text-gray-700">
+            {{ article.content|nl2br }}
+        </div>
+
+        <div class="flex justify-start gap-5 mt-10">
+            <a 
+                href="{{ path('site.article.index') }}" 
+                class="btn bg-transparent border border-primary text-black py-2 px-6 rounded-md hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+{% endblock %}

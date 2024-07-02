@@ -71,3 +71,7 @@ invoice:
         unpaid: "Unpaid"
         pending: "Pending"
         cancelled: "Cancelled"
+
+payment:
+    title: "Payments"
+    table_title: "All payments"

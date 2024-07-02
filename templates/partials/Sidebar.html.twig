@@ -5,7 +5,7 @@
     <h2 class="text-subtitle font-semibold mb-4">MENU</h2>
     <nav class="menu flex-1">
         <ul class="flex flex-col gap-1">
-            <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
+            {# <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
                     href="{{ path('dashboard.home') }}" 
                     alt="General" 
@@ -13,7 +13,7 @@
                     {{ ux_icon('zondicons:view-tile') }}
                     Général
                 </twig:MenuItem>
-            </li>
+            </li> #}
             <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
                     href="{{ path('dashboard.customer.index') }}" 
@@ -52,7 +52,7 @@
             </li>
             <li data-controller="tooltip" data-tooltip-target="container" class="tooltip-container relative">
                 <twig:MenuItem 
-                    href="#" 
+                    href="{{ path('dashboard.payment.index') }}" 
                     alt="Paiement" 
                     additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.payment' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }} {{ isRegistrationComplete ? ' ' : 'pointer-events-none opacity-60' }}" >
                     {{ ux_icon('solar:hand-money-linear') }}
@@ -71,16 +71,16 @@
     </nav>
     <div id="integration" class="mt-14">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-subtitle font-semibold">INTEGRATION</h2>
+            <h2 class="text-subtitle font-semibold">INTEGRATION (v2)</h2>
             {{ ux_icon('ph:plus-fill') }}
         </div>
         <div class="rounded-lg p-2 bg-[#F5F1F1] shadow-sm drop-shadow-sm">
             <ul class="flex flex-col gap-1">
-                <twig:MenuItem href="#" alt="Slack" additionalClasses="{{ classes }}">
+                <twig:MenuItem href="#" alt="Slack" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
                     {{ ux_icon('ant-design:slack-circle-filled') }}
                     Slack
                 </twig:MenuItem>
-                <twig:MenuItem href="#" alt="Jira software" additionalClasses="{{ classes }}">
+                <twig:MenuItem href="#" alt="Jira software" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
                     {{ ux_icon('mdi:jira') }}
                     Jira software
                 </twig:MenuItem>
@@ -89,13 +89,13 @@
     </div>
     <div id="settings" class="mt-14">
         <ul class="flex flex-col gap-1">
-            <twig:MenuItem href="#" alt="Settings" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.settings' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+            <twig:MenuItem href="{{ path('dashboard.settings') }}" alt="Settings" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.settings' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
                 {{ ux_icon('clarity:settings-line') }}
                 Settings
             </twig:MenuItem>
-            <twig:MenuItem href="#" alt="Aide & Support" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.support' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+            <twig:MenuItem href="#" alt="Aide & Support" additionalClasses="flex items-center gap-2 p-2 rounded-md pointer-events-none opacity-60 border-transparent">
                 {{ ux_icon('material-symbols:chat-outline') }}
-                Aide & Support
+                Aide & Support (v2)
             </twig:MenuItem>
         </ul>
     </div>

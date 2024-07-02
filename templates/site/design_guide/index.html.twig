@@ -212,11 +212,11 @@
     </section>
     <section class="pt-5 pb-10 border-b border-tertiary/10">
             <h2 class="text-subtitle font-subtitle font-semibold mb-5">Plans d'abonnement</h2>
-            <article class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <p>
+            <article class="my-2 gap-10">
+                <p class="my-8">
                     Cette section présente les différents plans d'abonnement disponibles pour les utilisateurs.
                 </p>
-                <div class="col-span-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                    {% set plans = [
                                         {
                                             id: 1,
@@ -251,8 +251,9 @@
                                             isCurrentPlan: false
                                         }
                                     ] %}
-
-                  <twig:Subscription :plans="plans"  />
+                    {% for plan in plans %}
+                     <twig:Subscription plan="{{ plan|raw }}" />  </twig:Subscription>
+                    {% endfor %}
                 </div>
             </article>
     </section>

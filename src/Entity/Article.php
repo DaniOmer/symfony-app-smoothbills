@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use App\Trait\TimestampableTrait;
+use App\Trait\UuidTypeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "article")]
 class Article
 {
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
+    use TimestampableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,14 +28,13 @@ class Article
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updatedAt = null;
-
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $thumbnail = null;
+
+    public function __construct()
+    {
+        $this->UuidConstruct();
+    }
 
     public function getId(): ?int
     {
@@ -54,28 +60,6 @@ class Article
     public function setContent(string $content): static
     {
         $this->content = $content;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
         return $this;
     }
 

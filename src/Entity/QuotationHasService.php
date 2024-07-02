@@ -25,7 +25,8 @@ class QuotationHasService
     private ?string $price_with_tax = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'La quantité ne doit pas être vide.')]
+    #[Assert\Positive(message: 'La quantité doit être un nombre positif.')]
     #[Assert\Regex(
         pattern: '/^\+?[0-9\s\-]+$/',
         message: 'La quantité saisie n\'est pas valide.'
@@ -33,11 +34,14 @@ class QuotationHasService
     private ?int $quantity = null;
 
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: "Le service ne doit pas être vide.")]
     private ?Service $service = null;
 
+
     #[ORM\ManyToOne(inversedBy: 'quotationHasServices')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: "Le devis ne doit pas être vide.")]
     private ?Quotation $quotation = null;
 
     public function getId(): ?int

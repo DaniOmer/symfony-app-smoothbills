@@ -26,9 +26,12 @@
              {% include 'partials/Header.html.twig' %}
          {% endif %}
        
-		<main > {% block body %}{% endblock %}
+		<main > 
+			<div class="px-2 md:px-4">
+				{% block body %}{% endblock %}
+			</div>
 		</main>
 
-			{# Composant ou partial Footer #}
+		{{ include('partials/Footer.html.twig') }}
 		</body>
 	</html>

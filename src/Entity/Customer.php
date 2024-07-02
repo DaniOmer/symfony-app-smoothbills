@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use App\Trait\TimestampableTrait;
 use App\Trait\UuidTypeTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -21,15 +22,22 @@ class Customer
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le nom ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
     #[ORM\Column(length: 45, nullable: true)]
+    #[Assert\Length(max: 45, maxMessage: "L'adresse e-mail ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Email(message: "L'adresse e-mail doit être valide.")]
     private ?string $mail = null;
 
     #[ORM\Column(length: 45, nullable: true)]
+    #[Assert\Length(max: 45, maxMessage: "Le numéro de téléphone ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[0-9+\s\-]*$/", message: "Le numéro de téléphone doit être valide.")]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "Le type ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $type = null;
 
     #[ORM\ManyToOne]

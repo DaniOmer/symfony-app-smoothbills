@@ -26,13 +26,15 @@ class CompanyController extends AbstractController
     #[Route('/', name: 'dashboard.settings.company', methods: ['GET', 'POST'])]
     public function manage(Request $request, UserRegistrationChecker $userRegistrationChecker): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé : Cette page est réservée aux administrateurs.');
+
         $user = $this->getUser();
         $company = $this->getUser()->getCompany();
 
-        if (!$company){
+        if (!$company) {
             $company = new Company();
             $address = new Address();
-        }else{
+        } else {
             $address = $company->getAddress();
         }
 
@@ -40,10 +42,18 @@ class CompanyController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->companyService->manageCompany($form, $address, $company, $user);
+            try {
+
+                $this->companyService->manageCompany($form, $address, $company, $user);
+                $userRegistrationChecker->updateRegistrationCache($user->getId());
+                $this->addFlash('success_company', 'Les informations de votre entreprise ont bien été enregistré');
+            } catch (\Exception $e) {
+                $this->addFlash('error_company', 'Une erreur est survenue lors de l\'enregistrement de votre entreprise');
+                return $this->redirectToRoute('dashboard.settings.company', [], Response::HTTP_SEE_OTHER);
+            }
 
             $userRegistrationChecker->updateRegistrationCache($user->getId());
-            
+
             $this->addFlash('success', 'Les informations de votre entreprise ont bien été enregistré');
             return $this->redirectToRoute('dashboard.settings.company', [], Response::HTTP_SEE_OTHER);
         }

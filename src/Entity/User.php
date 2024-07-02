@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -18,7 +19,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte associé à cette adresse e-mail.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    use UuidTypeTrait { __construct as private UuidConstruct;}
+    use UuidTypeTrait {
+        __construct as private UuidConstruct;
+    }
     use TimestampableTrait;
 
     #[ORM\Id]
@@ -27,6 +30,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: "L'email ne doit pas être vide.")]
+    #[Assert\Email(message: "L'email '{{ value }}' n'est pas un email valide.")]
+    #[Assert\Length(max: 180, maxMessage: "L'email ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $email = null;
 
     /**
@@ -39,21 +45,46 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au moins {{ limit }} caractères.")]
+    #[Assert\Regex(
+        pattern: "/[a-z]/",
+        message: "Le mot de passe doit contenir au moins une lettre minuscule."
+    )]
+    #[Assert\Regex(
+        pattern: "/[A-Z]/",
+        message: "Le mot de passe doit contenir au moins une lettre majuscule."
+    )]
+    #[Assert\Regex(
+        pattern: "/\d/",
+        message: "Le mot de passe doit contenir au moins un chiffre."
+    )]
+    #[Assert\Regex(
+        pattern: "/[^a-zA-Z\d]/",
+        message: "Le mot de passe doit contenir au moins un caractère spécial."
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le prénom ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le prénom ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[\p{L} '-]+$/u", message: "Le prénom ne doit contenir que des lettres, des espaces, des apostrophes et des tirets.")]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de famille ne doit pas être vide.")]
+    #[Assert\Length(max: 255, maxMessage: "Le nom de famille ne doit pas dépasser {{ limit }} caractères.")]
+    #[Assert\Regex(pattern: "/^[\p{L} '-]+$/u", message: "Le nom de famille ne doit contenir que des lettres, des espaces, des apostrophes et des tirets.")]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_auth_id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "Le nom du fichier ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $avatar = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "Le titre du poste ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $job_title = null;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
@@ -70,6 +101,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $resetTokenExpiresAt = null;
 
     public function __construct()
     {
@@ -279,5 +316,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isRegistrationComplete(): bool
     {
         return $this->getCompany() !== null;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+        return $this;
+    }
+
+    public function getResetTokenExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    public function setResetTokenExpiresAt(?\DateTimeInterface $resetTokenExpiresAt): static
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
+        return $this;
     }
 }
