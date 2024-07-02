@@ -43,7 +43,10 @@ module.exports = {
       },
       gap:{
         '13':"52px"
-      }
+      },
+      margin: {
+        '25': '100px',
+      },
     },
   },
   plugins: [],
