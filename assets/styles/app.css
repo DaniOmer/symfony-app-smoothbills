@@ -22,3 +22,9 @@
     --red-status-text-color: 244, 67, 54;
     --yellow-status-text-color: 255, 152, 0;
 }
+
+@layer components {
+    .custom-list {
+        @apply text-white bg-primary rounded-full;
+    }
+}
