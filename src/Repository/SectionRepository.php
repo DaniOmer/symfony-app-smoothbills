@@ -40,4 +40,19 @@ class SectionRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+public function findLinksByName(string $name): array
+{
+    return $this->getEntityManager()
+        ->createQuery(
+            'SELECT s.name, s.link
+            FROM App\Entity\Section s
+            WHERE s.name LIKE :name'
+        )
+        ->setParameter('name', '%' . $name . '%')
+        ->getResult();
+}
+
+
+
 }

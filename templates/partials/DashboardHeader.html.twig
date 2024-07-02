@@ -13,9 +13,14 @@
         </div>
     </div>
     <div class="flex gap-40 items-center" >
-        <form class="hidden lg:block relative">
-            <input type="text" placeholder="Rechercher une section" class="px-2 py-2 border rounded-full bg-transparent w-64 text-xs"/>
-            <button class="absolute border-none right-3 bottom-1/2 translate-y-1/2 text-sm">{{ ux_icon('teenyicons:search-outline') }}</button>
+       <form class="hidden lg:block relative" data-controller="search">
+            <input type="text" placeholder="Rechercher une section" class="px-2 py-2 border rounded-full bg-transparent w-64 text-xs" data-search-target="input" data-action="input->search#search" />
+            <button type="button" class="absolute border-none right-3 bottom-1/2 translate-y-1/2 text-sm" data-action="click->search#search">
+                {{ ux_icon('teenyicons:search-outline') }}
+            </button>
+            <div data-search-target="results" class="absolute mt-2 w-64 bg-white border rounded-lg shadow-lg z-10 hidden">
+                <ul class="border-t border-gray-300" data-search-target="resultList"></ul>
+            </div>
         </form>
         <div class="flex justify-center items-center gap-5">
             {{ ux_icon('clarity:notification-outline-badged') }}
