@@ -1,27 +1,25 @@
-{% extends 'base/base_dashboard.html.twig' %}
+{% extends 'partials/settings_menu.html.twig' %}
 
-{% block title %}Settings - Team{% endblock %}
+{% block settings_content %}
+        <section>
+        <header class="mb-5">
+                    <h2 class="font-title font-semibold text-subtitle mb-2">Gestion d'équipe</h2>
+                    <p>Faites la gestion de votre équipe.</p>
+                   
+        </header>
+        <hr class="shrink-0 mt-9 h-px border my-8 border-solid bg-gray-400 bg-opacity-50 border-gray-300 border-opacity-50 max-md:max-w-full">
 
-{% block body %}
-    <section>
-        <article class="w-full flex justify-between mb-5 pb-3 border-b">
-            <div class="">
-                <h2 class="font-semibold mb-2 text-title">Gestion d'équipe</h2>
-                <p>Gerer vos équipes.</p>
+            <div class="my-4 flex justify-end">
+                        {{ include('dashboard/user/_invite_form.html.twig') }}
             </div>
-            <div>
-                {{ include('dashboard/user/_invite_form.html.twig') }}
-            </div>
-        </article>
-
-        {{ component('Table', {
-            headers: headers,
-            rows: rows,
-            title: "Tous les membres",
-            actions: actions,
-            paginatedData: users,
-            deleteFormTemplate: deleteFormTemplate,
-            deleteRoute: deleteRoute,
-        }) }}
-    </section>
+            {{ component('Table', {
+                headers: headers,
+                rows: rows,
+                title: "Tous les membres",
+                actions: actions,
+                paginatedData: users,
+                deleteFormTemplate: deleteFormTemplate,
+                deleteRoute: deleteRoute,
+            }) }}
+        </section>
 {% endblock %}

@@ -89,7 +89,7 @@
     </div>
     <div id="settings" class="mt-14">
         <ul class="flex flex-col gap-1">
-            <twig:MenuItem href="#" alt="Settings" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.settings' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
+            <twig:MenuItem href="{{ path('dashboard.settings') }}" alt="Settings" additionalClasses="{{ classes }} {{ app.current_route starts with 'dashboard.settings' ? 'text-primary bg-primary/10 border-primary' : 'border-transparent' }}">
                 {{ ux_icon('clarity:settings-line') }}
                 Settings
             </twig:MenuItem>

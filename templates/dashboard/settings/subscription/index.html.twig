@@ -1,26 +1,14 @@
-{% extends 'base/base_dashboard.html.twig' %}
+{% extends 'partials/settings_menu.html.twig' %}
 
-{% block title %}{{ 'settings.subscription.index_title'|trans }}{% endblock %}
-
-{% block body %}
-<section class="">
-       {% for flash_success in app.flashes('success_subscription') %}
-       <div class="bg-green-100 text-green-800 my-1 p-2 rounded" role="alert">
-              {{ flash_success }}
-       </div>
-       {% endfor %}
-       {% for flash_error in app.flashes('error_subscription') %}
-              <div class="bg-red-100 text-red-800 my-1 p-2 rounded" role="alert">{{ flash_error }}</div>
-       {% endfor %}
-       <header class="mb-5">
-              <h2 class="font-title font-semibold text-subtitle mb-1">Abonnements</h2>
+{% block settings_content %}
+<header class="mb-5">
+              <h2 class="font-title font-semibold text-subtitle mb-2">Abonnements</h2>
               <p>Plus d'informations sur votre Abonnement actuel.</p>
-       </header>
-       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+</header>
+<hr class="shrink-0 mt-9 h-px border my-8 border-solid bg-gray-400 bg-opacity-50 border-gray-300 border-opacity-50 max-md:max-w-full">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {% for plan in subscriptions %}
                      <twig:Subscription plan="{{ plan|raw }}" />  </twig:Subscription>
               {% endfor %}
-       </div>
-
-</section>
+</div>
 {% endblock %}
