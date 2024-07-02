@@ -20,10 +20,10 @@
                 >
                     {{ 'crud.create_new'|trans }}
                 </a>
-                <twig:MenuItem href="#" additionalClasses="hidden md:flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
+                {# <twig:MenuItem href="#" additionalClasses="hidden md:flex justify-center items-center gap-3 px-4 py-2 border border-primary rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">
                     <span class="text-xl">{{ ux_icon('tabler:cloud-upload') }}</span>
                     {{ 'crud.upload'|trans }}
-                </twig:MenuItem>
+                </twig:MenuItem> #}
 
                 {% if subscriptionName != 'Freemium' %}
                         <twig:MenuItem href="{{ path('dashboard.customer.export_all') }}" additionalClasses="flex justify-center items-center gap-3 px-4 py-2 border border-primary   rounded-small hover:bg-primary hover:text-white transition ease-in-out delay-75">

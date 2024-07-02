@@ -2,18 +2,21 @@
 
 {% block settings_content %}
         <section>
-        <header class="mb-5">
-                    <h2 class="font-title font-semibold text-subtitle mb-2">Entreprise</h2>
-                    <p>Gérer les informations de votre entreprise</p>                
-        </header>
-         {% for message in app.flashes('success_company') %}
-            <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
-                {{ message }}
+        <header class="border-b flex justify-between">
+            <div>
+                <h1 class="text-subtitle font-semibold mb-2">Entreprise</h1>
+                <p class="text-sm text-black max-md:max-w-full mb-8">
+                Gérer les informations de votre entreprise.
+                </p>
             </div>
-        {% endfor %}
-        <hr class="shrink-0 mt-9 h-px border my-8 border-solid bg-gray-400 bg-opacity-50 border-gray-300 border-opacity-50 max-md:max-w-full">
+            {% for message in app.flashes('success_company') %}
+                <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </header>
 
-         <div>
+         <div class="mt-5">
                 {{ include('dashboard/company/_form.html.twig', {'company': company}) }}
          </div>
         </section>

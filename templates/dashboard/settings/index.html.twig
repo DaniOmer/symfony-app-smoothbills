@@ -1,9 +1,12 @@
 {% extends 'partials/settings_menu.html.twig' %}
 
 {% block settings_content %}
-<p class="mt-6 text-sm text-black max-md:max-w-full">
-    Mettez à jour les informations générales de votre compte.
-</p>
-<hr class="shrink-0 mt-9 h-px border border-solid bg-gray-500 bg-opacity-50 border-gray-500 border-opacity-50 max-md:max-w-full">
+<header class="border-b">
+    <h1 class="text-subtitle font-semibold mb-2">Général</h1>
+    <p class="text-sm text-black max-md:max-w-full mb-8">
+        Mettez à jour les informations générales de votre compte.
+    </p>
+</header>
+
 <!-- Contenu spécifique à la section générale -->
 {% endblock %}
