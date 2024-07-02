@@ -42,9 +42,7 @@ class Company
     private ?string $siret = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le numéro de TVA ne doit pas être vide.")]
     #[Assert\Length(max: 255, maxMessage: "Le numéro de TVA ne doit pas dépasser {{ limit }} caractères.")]
-    #[Assert\Regex(pattern: "/^[A-Z]{2}[A-Z0-9]+$/", message: "Le numéro de TVA doit commencer par deux lettres suivies de chiffres.")]
     private ?string $tva_number = null;
 
     #[ORM\Column(length: 255)]
@@ -64,8 +62,6 @@ class Company
     #[Assert\Length(max: 255, maxMessage: "L'adresse e-mail ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $mail = null;
 
-    #[Assert\NotBlank(message: "La date de création ne doit pas être vide.")]
-    #[Assert\Date(message: "La date de création doit être une date valide.")]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $creation_date = null;
 
