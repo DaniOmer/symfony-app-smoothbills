@@ -43,7 +43,7 @@
 
             <ul class="flex items-center gap-4">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <twig:MenuItem href="{{path('dashboard.home')}}" additionalClasses="{{dashboardClasses}}">Dashboard</twig:MenuItem>
+                    <twig:MenuItem href="{{path('dashboard.customer.index')}}" additionalClasses="{{dashboardClasses}}">Dashboard</twig:MenuItem>
                 {% else %}
                     <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{baseClasses}}">Se connecter</twig:MenuItem>
                     <twig:MenuItem href="{{path('site.register')}}" additionalClasses="{{createAccountClasses}}">Créer un compte</twig:MenuItem>
