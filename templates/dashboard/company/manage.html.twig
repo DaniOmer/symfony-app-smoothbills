@@ -1,15 +1,21 @@
-{% extends 'base/base_dashboard.html.twig' %}
+{% extends 'partials/settings_menu.html.twig' %}
 
-{% block title %}Entreprise{% endblock %}
-
-
-{% block body %}
-<div>
-    {% for message in app.flashes('success_company') %}
+{% block settings_content %}
+        <section>
+        <header class="mb-5">
+                    <h2 class="font-title font-semibold text-subtitle mb-2">Entreprise</h2>
+                    <p>Gérer les informations de votre entreprise</p>                
+        </header>
+         {% for message in app.flashes('success_company') %}
             <div class="px-2 p-1 border border-primary bg-primary text-white rounded-md">
                 {{ message }}
             </div>
-    {% endfor %}
-    {{ include('dashboard/company/_form.html.twig', {'company': company}) }}
-</div>
+        {% endfor %}
+        <hr class="shrink-0 mt-9 h-px border my-8 border-solid bg-gray-400 bg-opacity-50 border-gray-300 border-opacity-50 max-md:max-w-full">
+
+         <div>
+                {{ include('dashboard/company/_form.html.twig', {'company': company}) }}
+         </div>
+        </section>
 {% endblock %}
+
