@@ -3,46 +3,38 @@
 {% block title %}Smoothbill{% endblock %}
 {% block body %}
 <div class="container mx-auto">
-     <div class="w-2/3 mt-32">
+     <div class="my-20">
         <h1 class="text-title font-title font-semibold">Fonctionnalités Avancées pour une Expérience Utilisateur Optimale</h1>
         <p>Simplifiez votre gestion financière dès aujourd'hui !</p>
     </div>
 
-    <div  class="flex justify-between items-start w-full mt-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-20">
             <div class="space-y-4">
                 <h2 class="text-subtitle font-title font-semibold">Interface Intuitive</h2>
                 <p>Commencez à utiliser notre produit immédiatement sans formation compliquée.</p>
                 <a href ="#" class="inline-flex items-center border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-2 transition ease-in-out delay-100">Demarrer</a> 
             </div>
-            <div class="image-container">
+            <div class="image-container md:col-span-2">
                 <img src="{{ asset('build/images/gestion.png') }}" alt="Image 1">
-               
             </div>
-    </div>
 
-    <div class="flex  justify-between items-start w-full ">
-        <div class="image-container ">
-            <img src="{{ asset('build/images/gestion.png') }}" alt="Image 1" >
-        </div>
-        <div class="space-y-4">
-            <h2 class="text-subtitle font-title font-semibold">Collaboration de Groupe Optimisée</h2>
-            <p class="w-4/6">Idéal pour les grandes équipes et organisations, permettant une coopération et une productivité maximales</p>
-            <a href="#" class="inline-flex items-center border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-full px-6 py-2 transition ease-in-out delay-100">Démarrer</a>
-        </div>
-    </div>
+            <div class="image-container md:col-span-2 ">
+                <img src="{{ asset('build/images/gestion.png') }}" alt="Image 1" >
+            </div>
+            <div class="space-y-4">
+                <h2 class="text-subtitle font-title font-semibold">Collaboration de Groupe Optimisée</h2>
+                <p class="w-4/6">Idéal pour les grandes équipes et organisations, permettant une coopération et une productivité maximales</p>
+                <a href="#" class="inline-flex items-center border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-full px-6 py-2 transition ease-in-out delay-100">Démarrer</a>
+            </div>
 
-        <div  class="flex justify-between items-start w-full ">
             <div class="space-y-4">
                 <h2 class="text-subtitle font-title font-semibold">Gestion Transparente des Paiements Clientse</h2>
                 <p>Gérez efficacement les finances de votre entreprise en gardant un contrôle total sur les paiements entrants et sortants</p>
                 <a href ="#" class="inline-flex items-center border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-2 transition ease-in-out delay-100">Demarrer</a> 
             </div>
-            <div class="image-container">
+            <div class="image-container md:col-span-2">
                 <img src="{{ asset('build/images/gestion.png') }}" alt="Image 1">
-               
             </div>
     </div>
-    
-
 </div>
 {% endblock %}

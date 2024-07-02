@@ -1,15 +1,39 @@
 {% set baseClasses = "flex items-center gap-2 border-transparent border-b-2 hover:border-primary hover:text-primary transition ease-in-out delay-75" %}
-{% set createAccountClasses = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-6 py-4 transition ease-in-out delay-100" %}
+{% set createAccountClasses = "flex items-center gap-2 border border-primary bg-primary hover:bg-transparent hover:text-black text-white rounded-half px-4 py-2 transition ease-in-out delay-100" %}
 {% set dashboardClasses = "flex items-center border border-primary bg-transparent text-black hover:bg-primary hover:text-white rounded-half px-4 py-2 transition ease-in-out delay-100" %}
 
 <header>
-   <div class="container mx-auto py-4 flex" >
-        <div class="flex items-center gap-4 text-xl">
+   <div class="container mx-auto py-4 px-2 lg:px-4 lg:flex lg:flex-row justify-between lg:justify-normal" >
+        <div class="hidden lg:flex items-center gap-4 text-xl">
             <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
             <a href="{{path('site.home')}}" class="font-bold">SMOOTHBILL</a>
         </div>
 
-        <nav class="flex-grow flex items-center justify-between">
+        <div data-controller="actions">
+            <div class="w-full flex lg:hidden justify-between">
+                <span class="block lg:hidden text-2xl font-semibold" data-action="click->actions#showModal">{{ ux_icon('ri:menu-2-fill') }}</span>
+                <twig:MenuItem href="{{path('site.login')}}" additionalClasses="{{createAccountClasses}}">Se connecter</twig:MenuItem>
+            </div>
+            <div class="hidden" data-actions-target="modal" data-target="actions.modalTarget">
+                <div class="close absolute top-0 left-0 h-[100vh] w-full px-3 bg-white z-30">
+                    <div class="h-[60px] flex items-center"><span class="cursor-pointer text-3xl font-bold" data-action="click->actions#closeModal">{{ ux_icon('material-symbols:close') }}</span></div>
+                    <nav class="menu flex-1">
+                        <a href={{ path('site.home') }} class="flex justify-center items-center gap-4 text-lg my-10">
+                            <span class="text-4xl">{{ ux_icon('la:file-invoice-dollar') }}</span>
+                            <h1 class="font-bold">SMOOTHBILL</h1>
+                        </a>
+                        <ul class="flex flex-col gap-1 mt-16">
+                            <twig:MenuItem href="{{path('site.home')}}" additionalClasses="{{baseClasses}}">Accueil</twig:MenuItem>
+                            <twig:MenuItem href="{{path('site.features')}}" additionalClasses="{{baseClasses}}">Features</twig:MenuItem>
+                            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Pricing</twig:MenuItem>
+                            <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Blog</twig:MenuItem>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <nav class="hidden flex-grow lg:flex flex-col md:flex-row items-center justify-between">
             <ul class="flex justify-center flex-grow gap-13">
                 <twig:MenuItem href="{{path('site.home')}}" additionalClasses="{{baseClasses}}">Accueil</twig:MenuItem>
                 <twig:MenuItem href="{{path('site.features')}}" additionalClasses="{{baseClasses}}">Features</twig:MenuItem>
@@ -17,7 +41,6 @@
                 <twig:MenuItem href="#" additionalClasses="{{baseClasses}}">Blog</twig:MenuItem>
             </ul>
 
-            
             <ul class="flex items-center gap-4">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <twig:MenuItem href="{{path('dashboard.home')}}" additionalClasses="{{dashboardClasses}}">Dashboard</twig:MenuItem>
